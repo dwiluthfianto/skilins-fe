@@ -119,8 +119,8 @@ export function Menu({ isOpen }: MenuProps) {
           <li className="w-full grow flex items-end">
             <DropdownMenu>
               <DropdownMenuTrigger className="outline-none">
-                <div className="flex items-center justify-between space-x-6">
-                  <div className="flex items-center">
+                <div className="grid grid-cols-8 items-center">
+                  <div className="flex items-center col-span-7">
                     <span className={cn(isOpen === false ? "" : "mr-4")}>
                       <Avatar>
                         <AvatarImage src="https://github.com/shadcn.png" />
@@ -132,28 +132,35 @@ export function Menu({ isOpen }: MenuProps) {
                         "whitespace-nowrap",
                         isOpen === false
                           ? "opacity-0 hidden"
-                          : "flex flex-col text-start opacity-100"
+                          : "overflow-hidden text-start opacity-100"
                       )}
                     >
-                      <p className="font-bold">John Doe</p>
-                      <p className="text-sm">johndoe@gmail.com</p>
+                      <p className="font-bold truncate">Dwi Luthfianto</p>
+                      <p className="text-sm truncate ">
+                        dwiluthfianto@example.com
+                      </p>
                     </div>
                   </div>
-                  <ChevronRight
-                    width={18}
+                  <div
                     className={cn(
                       "whitespace-nowrap",
-                      isOpen === false ? "opacity-0 hidden" : " opacity-100"
+                      isOpen === false
+                        ? "opacity-0 hidden"
+                        : "flex items-center justify-end opacity-100"
                     )}
-                  />
+                  >
+                    <ChevronRight width={18} />
+                  </div>
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56" align="end" side="right">
-                <DropdownMenuLabel className="font-normal flex items-center justify-between">
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">John Doe</p>
-                    <p className="text-xs leading-none text-muted-foreground">
-                      johndoe@example.com
+                <DropdownMenuLabel className="font-normal grid grid-cols-6 items-center justify-between">
+                  <div className="flex flex-col space-y-1 col-span-5">
+                    <p className="text-sm font-medium leading-none truncate">
+                      Dwi Luthfianto
+                    </p>
+                    <p className="text-xs leading-none text-muted-foreground truncate">
+                      dwiluthfianto@example.com
                     </p>
                   </div>
                   <ModeToggle />

@@ -45,7 +45,7 @@ export function getMenuList(pathname: string): Group[] {
         {
           href: "/admin/e-books",
           label: "e-Books",
-          active: pathname.includes("/e-books"),
+          active: pathname.includes("/admin/e-books"),
           icon: FileHeart,
           submenus: [],
         },
@@ -58,7 +58,7 @@ export function getMenuList(pathname: string): Group[] {
             {
               href: "/admin/student-works/e-books",
               label: "e-Books",
-              active: pathname === "/student-works/books",
+              active: pathname === "/student-works/e-books",
             },
             {
               href: "/admin/student-works/audio-podcasts",

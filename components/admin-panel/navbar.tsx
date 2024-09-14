@@ -1,6 +1,7 @@
 import { SheetMenu } from "@/components/admin-panel/sheet-menu";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { format } from "date-fns";
 
 import { CalendarDays, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -30,7 +31,8 @@ export function Navbar() {
         </div>
         <div className="flex flex-1 items-center justify-end space-x-4">
           <Button variant={"outline"} className="hidden md:flex">
-            <CalendarDays className="mr-2" width={18} /> 14 Sep 2024
+            <CalendarDays className="mr-2" width={18} />{" "}
+            {format(new Date(), "dd MMM yy")}
           </Button>
           <Button>
             <Plus className="mr-2" width={18} /> Create a Blog

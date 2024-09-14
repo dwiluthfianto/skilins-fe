@@ -10,59 +10,30 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 
-import { Payment, columns } from "./columns";
+import { eBooks, columns } from "./columns";
 import { DataTable } from "./data-table";
 
-async function getData(): Promise<Payment[]> {
+async function getData(): Promise<eBooks[]> {
   // Fetch data from your API here.
   return [
     {
       id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
-    },
-    {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
-    },
-    {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
-    },
-    {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
-    },
-    {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
-    },
-    {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
-    },
-    {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
-    },
-    {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
+      image:
+        "https://www.gutenberg.org/cache/epub/74406/pg74406.cover.medium.jpg",
+      author: "Very, Edward W. (Edward Wilson), 1847-1910",
+      title:
+        "Navies of the world : giving concise descriptions of the plans, armament and armor of the naval vessels of twenty of the principal nations.",
+      category: "Text",
+      pages: 452,
+      publication: "New York: John Wiley & Sons, 1880.",
+      release_date: "Sep 12, 2024",
+      subject: [
+        "Naval battles",
+        "Navies",
+        "Torpedoes",
+        "Naval architecture",
+        "Ordnance, naval",
+      ],
     },
   ];
 }
@@ -70,7 +41,7 @@ async function getData(): Promise<Payment[]> {
 export default async function EbooksPage() {
   const data = await getData();
   return (
-    <ContentLayout title="Student Works">
+    <ContentLayout title="Users">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -87,7 +58,7 @@ export default async function EbooksPage() {
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <Link href="/student-works">Student Works</Link>
+              <Link href="/dashboard">Student Works</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
@@ -98,7 +69,7 @@ export default async function EbooksPage() {
       </Breadcrumb>
       <div className="w-full py-8">
         <div className=" mx-auto">
-          <div className="flex flex-col gap-10 ">
+          <div className="flex flex-col gap-4 ">
             <DataTable columns={columns} data={data} />
           </div>
         </div>
