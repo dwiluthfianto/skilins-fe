@@ -7,7 +7,7 @@ export function Footer() {
         </a>
 
         <p className="text-sm text-gray-600 dark:text-gray-300">
-          © Copyright 2021. All Rights Reserved.
+          Build by Dwi Luthfianto © Copyright 2024. All Rights Reserved.
         </p>
 
         <div className="flex -mx-2">

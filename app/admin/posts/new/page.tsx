@@ -9,6 +9,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { PlateEditor } from "@/components/plate-editor";
 
 export default function NewPostPage() {
   return (
@@ -38,6 +39,7 @@ export default function NewPostPage() {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
+      <PlateEditor />
     </ContentLayout>
   );
 }
