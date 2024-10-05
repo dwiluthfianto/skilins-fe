@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 
 import { ContentLayout } from "@/components/admin-panel/content-layout";
@@ -10,65 +12,15 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 
-import { Payment, columns } from "./columns";
+import { columns } from "./columns";
 import { DataTable } from "./data-table";
+import { useStudent } from "@/hooks/use-student";
 
-async function getData(): Promise<Payment[]> {
-  // Fetch data from your API here.
-  return [
-    {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
-    },
-    {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
-    },
-    {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
-    },
-    {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
-    },
-    {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
-    },
-    {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
-    },
-    {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
-    },
-    {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
-    },
-  ];
-}
+export default function EbooksPage() {
+  const { student, isLoading, isError } = useStudent();
 
-export default async function EbooksPage() {
-  const data = await getData();
+  if (isLoading) return <h1>Loading..</h1>;
+  if (isError) return <h1>Error</h1>;
   return (
     <ContentLayout title="Users">
       <Breadcrumb>
@@ -86,20 +38,14 @@ export default async function EbooksPage() {
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <Link href="/student-works">Student Works</Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>Audio Podcasts</BreadcrumbPage>
+            <BreadcrumbPage>Students</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
       <div className="w-full py-8">
         <div className=" mx-auto">
           <div className="flex flex-col gap-10 ">
-            <DataTable columns={columns} data={data} />
+            <DataTable columns={columns} data={student.data} />
           </div>
         </div>
       </div>

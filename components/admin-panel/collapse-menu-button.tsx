@@ -4,19 +4,19 @@ import Link from "next/link";
 import { useState } from "react";
 import { ChevronDown, Dot, LucideIcon } from "lucide-react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/libs/utils";
 import { Button } from "@/components/ui/button";
 import { DropdownMenuArrow } from "@radix-ui/react-dropdown-menu";
 import {
   Collapsible,
   CollapsibleContent,
-  CollapsibleTrigger
+  CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
-  TooltipProvider
+  TooltipProvider,
 } from "@/components/ui/tooltip";
 import {
   DropdownMenu,
@@ -24,7 +24,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
   DropdownMenuContent,
-  DropdownMenuSeparator
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 
 type Submenu = {
@@ -46,7 +46,7 @@ export function CollapseMenuButton({
   label,
   active,
   submenus,
-  isOpen
+  isOpen,
 }: CollapseMenuButtonProps) {
   const isSubmenuActive = submenus.some((submenu) => submenu.active);
   const [isCollapsed, setIsCollapsed] = useState<boolean>(isSubmenuActive);

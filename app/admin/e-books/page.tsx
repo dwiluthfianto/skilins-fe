@@ -27,13 +27,15 @@ async function getData(): Promise<eBooks[]> {
       pages: 452,
       publication: "New York: John Wiley & Sons, 1880.",
       release_date: "Sep 12, 2024",
-      subject: [
+      subjects: [
         "Naval battles",
         "Navies",
         "Torpedoes",
         "Naval architecture",
         "Ordnance, naval",
       ],
+      ebookFile: "test.pdf",
+      tags: ["War", "Battle", "Drama"],
     },
   ];
 }

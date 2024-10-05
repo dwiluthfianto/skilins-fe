@@ -10,59 +10,21 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 
-import { Payment, columns } from "./columns";
+import { PKLReport, columns } from "./columns";
 import { DataTable } from "./data-table";
 
-async function getData(): Promise<Payment[]> {
+async function getData(): Promise<PKLReport[]> {
   // Fetch data from your API here.
   return [
     {
       id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
-    },
-    {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
-    },
-    {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
-    },
-    {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
-    },
-    {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
-    },
-    {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
-    },
-    {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
-    },
-    {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
+      reportFile: "test.pdf",
+      title: "Perancangan Website SMKN 1 Gunungputri",
+      description: "Lorem ipsum dolor met",
+      author: "Jane Doe",
+      major: "Rekayasa Perangkat Lunak",
+      subjects: ["Website", "React", "Javascript"],
+      published_at: "27 Des 2024",
     },
   ];
 }

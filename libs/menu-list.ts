@@ -42,6 +42,47 @@ export function getMenuList(pathname: string): Group[] {
           icon: LayoutGrid,
           submenus: [],
         },
+
+        {
+          href: "/admin/students",
+          label: "Students",
+          active: pathname.includes("/students"),
+          icon: SquareUser,
+          submenus: [],
+        },
+        {
+          href: "/admin/majors",
+          label: "Majors",
+          active: pathname.includes("/majors"),
+          icon: Shapes,
+          submenus: [],
+        },
+        {
+          href: "/admin/categories",
+          label: "Categories",
+          active: pathname.includes("/categories"),
+          icon: Bookmark,
+          submenus: [],
+        },
+        {
+          href: "/admin/tags",
+          label: "Tags",
+          active: pathname.includes("/tags"),
+          icon: Tag,
+          submenus: [],
+        },
+      ],
+    },
+    {
+      groupLabel: "Content",
+      menus: [
+        {
+          href: "",
+          label: "Blogs",
+          active: pathname.includes("/admin/blogs"),
+          icon: SquarePen,
+          submenus: [],
+        },
         {
           href: "/admin/e-books",
           label: "e-Books",
@@ -72,67 +113,11 @@ export function getMenuList(pathname: string): Group[] {
             },
           ],
         },
-      ],
-    },
-    {
-      groupLabel: "PKL Reports",
-      menus: [
         {
           href: "/admin/pkl-reports",
-          label: "Reports",
-          active: pathname.includes("/reports"),
+          label: "PKL Reports",
+          active: pathname.includes("/pkl-reports"),
           icon: Proportions,
-          submenus: [],
-        },
-        {
-          href: "/admin/students",
-          label: "Students",
-          active: pathname.includes("/students"),
-          icon: SquareUser,
-          submenus: [],
-        },
-        {
-          href: "/admin/majors",
-          label: "Majors",
-          active: pathname.includes("/majors"),
-          icon: Shapes,
-          submenus: [],
-        },
-      ],
-    },
-    {
-      groupLabel: "Blogs",
-      menus: [
-        {
-          href: "",
-          label: "Posts",
-          active: pathname.includes("/admin/posts"),
-          icon: SquarePen,
-          submenus: [
-            {
-              href: "/admin/posts",
-              label: "All Posts",
-              active: pathname === "/posts",
-            },
-            {
-              href: "/admin/posts/new",
-              label: "New Post",
-              active: pathname === "/posts/new",
-            },
-          ],
-        },
-        {
-          href: "/admin/categories",
-          label: "Categories",
-          active: pathname.includes("/categories"),
-          icon: Bookmark,
-          submenus: [],
-        },
-        {
-          href: "/admin/tags",
-          label: "Tags",
-          active: pathname.includes("/tags"),
-          icon: Tag,
           submenus: [],
         },
       ],

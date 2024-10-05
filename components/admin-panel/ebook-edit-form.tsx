@@ -1,7 +1,4 @@
-"use client";
-
-import { CheckIcon, FileHeart } from "lucide-react";
-
+import * as React from "react";
 import { CalendarIcon, CaretSortIcon } from "@radix-ui/react-icons";
 import { format } from "date-fns";
 
@@ -30,12 +27,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
-import * as React from "react";
+import { CheckIcon } from "lucide-react";
 
 const categories = [
   {
@@ -60,7 +55,7 @@ const categories = [
   },
 ];
 
-function EbookForm() {
+function EbookEditForm({ isEditDialogOpen, setIsEditDialogOpen }) {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const [date, setDate] = React.useState<Date>();
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -68,17 +63,15 @@ function EbookForm() {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const [value, setValue] = React.useState("");
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button>
-          <FileHeart className="mr-2" width={16} /> Add e-Book
-        </Button>
-      </DialogTrigger>
+    <Dialog
+      open={isEditDialogOpen}
+      onOpenChange={isEditDialogOpen ? setIsEditDialogOpen : false}
+    >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add e-Book</DialogTitle>
+          <DialogTitle>Edit e-book</DialogTitle>
           <DialogDescription>
-            {"Add new data e-book here. Click save when you're done."}
+            {"Make changes to your e-book here. Click save when you're done."}
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
@@ -88,11 +81,19 @@ function EbookForm() {
           </div>
           <div className="grid grid-cols-4 items-center gap-2">
             <Label htmlFor="author">Author</Label>
-            <Input id="author" className="col-span-3" />
+            <Input
+              id="author"
+              value="Very, Edward W. (Edward Wilson), 1847-1910	"
+              className="col-span-3"
+            />
           </div>
           <div className="grid grid-cols-4 items-center gap-2">
             <Label htmlFor="title">Title</Label>
-            <Input id="title" className="col-span-3" />
+            <Input
+              id="title"
+              value="Navies of the world : giving concise descriptions of the plans, armament and armor of the naval vessels of twenty of the principal nations."
+              className="col-span-3"
+            />
           </div>
           <div className="grid grid-cols-4 items-center gap-2">
             <Label htmlFor="category">Category</Label>
@@ -150,11 +151,15 @@ function EbookForm() {
           </div>
           <div className="grid grid-cols-4 items-center gap-2">
             <Label htmlFor="pages">Pages</Label>
-            <Input id="pages" className="col-span-3" />
+            <Input id="pages" value="452" className="col-span-3" />
           </div>
           <div className="grid grid-cols-4 items-center gap-2">
             <Label htmlFor="publication">Publication</Label>
-            <Input id="publication" className="col-span-3" />
+            <Input
+              id="publication"
+              value="New York: John Wiley & Sons, 1880.	"
+              className="col-span-3"
+            />
           </div>
           <div className="grid grid-cols-4 items-center gap-2">
             <Label htmlFor="release_date">Release date</Label>
@@ -183,7 +188,11 @@ function EbookForm() {
           </div>
           <div className="grid grid-cols-4 items-center gap-2">
             <Label htmlFor="subject">Subject</Label>
-            <Input id="subject" className="col-span-3" />
+            <Input
+              id="subject"
+              value="Naval battles,Navies,Torpedoes,Naval architecture,Ordnance, naval	"
+              className="col-span-3"
+            />
           </div>
         </div>
         <DialogFooter>
@@ -194,4 +203,4 @@ function EbookForm() {
   );
 }
 
-export default EbookForm;
+export default EbookEditForm;

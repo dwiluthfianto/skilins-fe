@@ -1,12 +1,18 @@
+"use client";
 import { SheetMenu } from "@/components/admin-panel/sheet-menu";
-import { cn } from "@/lib/utils";
+import { cn } from "@/libs/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { format } from "date-fns";
 
 import { CalendarDays, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useUser } from "@/hooks/use-user";
 
 export function Navbar() {
+  const { user, isLoading, isError } = useUser();
+
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error loading user</div>;
   return (
     <header className="sticky top-0 z-10 w-full bg-background/95 shadow backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:shadow-secondary">
       <div className="mx-4 sm:mx-8 flex h-14 items-center">
@@ -24,7 +30,7 @@ export function Navbar() {
                 "whitespace-nowrap hidden md:flex flex-col text-start opacity-100"
               )}
             >
-              <p className="font-bold">Dwi Luthfianto</p>
+              <p className="font-bold">{user.data.full_name}</p>
               <p className="text-xs">Welcome back to Synergy 💪</p>
             </div>
           </div>
