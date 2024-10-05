@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ChevronRight, Ellipsis, LogOut, User } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 import { cn } from "@/libs/utils";
 import { getMenuList } from "@/libs/menu-list";
@@ -29,12 +29,28 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ModeToggle } from "../mode-toggle";
 import { useUser } from "@/hooks/use-user";
+import Cookies from "js-cookie";
+import axios from "../../utils/axios";
 
 interface MenuProps {
   isOpen: boolean | undefined;
 }
 
 export function Menu({ isOpen }: MenuProps) {
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await axios.post("/auth/logout"); // API untuk logout
+
+      Cookies.remove("accessToken");
+
+      router.push("/auth/admin/login");
+    } catch (error) {
+      console.error("Logout failed", error);
+    }
+  };
+
   const pathname = usePathname();
   const menuList = getMenuList(pathname);
   const { user, isLoading, isError } = useUser();
@@ -182,7 +198,7 @@ export function Menu({ isOpen }: MenuProps) {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   className="hover:cursor-pointer"
-                  onClick={() => {}}
+                  onClick={() => handleLogout()}
                 >
                   <LogOut className="w-4 h-4 mr-3 text-muted-foreground" />
                   Sign out

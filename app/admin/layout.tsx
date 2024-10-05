@@ -1,7 +1,9 @@
 "use client";
 import AdminPanelLayout from "@/components/admin-panel/admin-panel-layout";
+import { Toaster } from "@/components/ui/toaster";
 import { useUser } from "@/hooks/use-user";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function DemoLayout({
   children,
@@ -9,14 +11,18 @@ export default function DemoLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const { user, isLoading, isError } = useUser();
+  const { user, isLoading } = useUser();
 
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error loading user</div>;
+  useEffect(() => {
+    if (!isLoading && (!user || user.data?.role !== "admin")) {
+      router.push("/auth/admin/login");
+    }
+  }, [isLoading, user, router]);
 
-  if (!user || user.data?.role !== "admin") {
-    router.push("/auth/admin/login");
-  }
-
-  return <AdminPanelLayout>{children}</AdminPanelLayout>;
+  return (
+    <>
+      <AdminPanelLayout>{children}</AdminPanelLayout>
+      <Toaster />
+    </>
+  );
 }

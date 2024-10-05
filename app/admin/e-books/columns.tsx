@@ -176,10 +176,10 @@ export const columns: ColumnDef<eBooks>[] = [
             isEditDialogOpen={isEditDialogOpen}
             setIsEditDialogOpen={setIsEditDialogOpen}
           />
-          <DeleteDialog
+          {/* <DeleteDialog
             isDeleteDialogOpen={isDeleteDialogOpen}
             setIsDeleteDialogOpen={setIsDeleteDialogOpen}
-          />
+          /> */}
         </div>
       );
     },

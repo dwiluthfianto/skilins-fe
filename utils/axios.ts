@@ -28,13 +28,10 @@ api.interceptors.response.use(
           { withCredentials: true }
         );
 
-        // Simpan access token baru ke cookie
         Cookies.set("accessToken", data.accessToken);
 
-        // Set Authorization header dengan token baru
         originalRequest.headers["Authorization"] = `Bearer ${data.accessToken}`;
 
-        // Ulangi request yang gagal
         return axios(originalRequest);
       } catch (refreshError) {
         console.error("Refresh token failed", refreshError);

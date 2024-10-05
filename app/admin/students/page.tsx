@@ -16,7 +16,7 @@ import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import { useStudent } from "@/hooks/use-student";
 
-export default function EbooksPage() {
+export default function StudentPage() {
   const { student, isLoading, isError } = useStudent();
 
   if (isLoading) return <h1>Loading..</h1>;

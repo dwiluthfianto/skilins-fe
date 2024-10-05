@@ -2,7 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 
-import { MoreHorizontal } from "lucide-react";
+import { FilePenLine, MoreHorizontal, Trash2 } from "lucide-react";
 // import { Badge } from "@/components/ui/badge";
 
 import { Button } from "@/components/ui/button";
@@ -11,21 +11,24 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
 import { ArrowUpDown } from "lucide-react";
 import { format } from "date-fns";
 import Image from "next/image";
+import DeleteDialog from "@/components/admin-panel/delete-dialog";
+import React from "react";
+import StudentEditForm from "@/components/admin-panel/student-edit-form";
 
 export type Student = {
+  uuid: string;
   nis: string;
   image_url: string;
   name: string;
   birthplace: string;
   birthdate: Date;
-  sex: "Male" | "Female";
+  sex: "male" | "female";
   major: string;
   status: boolean;
 };
@@ -164,27 +167,41 @@ export const columns: ColumnDef<Student>[] = [
     id: "actions",
     cell: ({ row }) => {
       const student = row.original;
-
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(student.nis)}
-            >
-              Copy payment ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+
+              <DropdownMenuItem onClick={() => setIsEditDialogOpen(true)}>
+                <FilePenLine className="mr-2" width={16} /> Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setIsDeleteDialogOpen(true)}>
+                <Trash2 className="mr-2" width={16} /> Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <StudentEditForm
+            student={student}
+            isEditDialogOpen={isEditDialogOpen}
+            setIsEditDialogOpen={setIsEditDialogOpen}
+          />
+          <DeleteDialog
+            isDeleteDialogOpen={isDeleteDialogOpen}
+            setIsDeleteDialogOpen={setIsDeleteDialogOpen}
+            pathApi={`/students/${student.uuid}`}
+          />
+        </div>
       );
     },
   },
