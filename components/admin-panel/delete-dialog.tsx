@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,11 +13,19 @@ import { toast } from "@/hooks/use-toast";
 import { mutate } from "swr";
 import axios from "../../utils/axios";
 
-function DeleteDialog({ isDeleteDialogOpen, setIsDeleteDialogOpen, pathApi }) {
+function DeleteDialog({
+  isDeleteDialogOpen,
+  setIsDeleteDialogOpen,
+  pathApi,
+}: any) {
   const deleteHandle = async () => {
     try {
       const { data } = await axios.delete(pathApi);
 
+      const path = pathApi.replace(
+        /\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
+        ""
+      );
       toast({
         title: "Delete Successful!",
         description: (
@@ -28,8 +37,19 @@ function DeleteDialog({ isDeleteDialogOpen, setIsDeleteDialogOpen, pathApi }) {
         ),
       });
 
-      mutate("/students");
-    } catch (error) {}
+      mutate(path);
+      setIsDeleteDialogOpen(false);
+    } catch (error) {
+      toast({
+        title: "Error!",
+        description:
+          error.response.data.statusCode === 400
+            ? "Major cannot be deleted because major is used"
+            : "An error occurred while delete the major.",
+        variant: "destructive",
+      });
+      setIsDeleteDialogOpen(false);
+    }
   };
 
   return (

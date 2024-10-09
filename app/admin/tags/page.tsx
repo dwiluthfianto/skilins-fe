@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 
 import { ContentLayout } from "@/components/admin-panel/content-layout";
@@ -10,59 +11,23 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 
-import {
-  Blocks,
-  Infinity,
-  Laptop,
-  ListEnd,
-  Tag,
-  Zap,
-  ZoomIn,
-} from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useTag } from "@/hooks/use-tag";
+import React from "react";
+import DeleteDialog from "@/components/admin-panel/delete-dialog";
+import TagForm from "@/components/admin-panel/forms/tag/tag-form";
+import Image from "next/image";
+import TagEditForm from "@/components/admin-panel/forms/tag/tag-edit-form";
 
 export default function TagsPage() {
-  const features = [
-    {
-      title: "#react",
-      description:
-        "Official tag for Facebook's React JavaScript library for building user interfaces",
-      icon: <ZoomIn className="size-6" />,
-      link: "#",
-    },
-    {
-      title: "#python",
-      description: "import antigravity",
-      icon: <Blocks className="size-6" />,
-      link: "#",
-    },
-    {
-      title: "#programming",
-      description: "The magic behind computers. 💻",
-      icon: <Laptop className="size-6" />,
-      link: "#",
-    },
-    {
-      title: "#javascript",
-      description:
-        "Once relegated to the browser as one of the 3 core technologies of the web, JavaScript can now be found almost anywhere you find code. JavaScript developers move fast and push software development forward; they can be as opinionated as the frameworks they use, so let's keep it clean here and make it a place to learn from each other!",
-      icon: <ListEnd className="size-6" />,
-      link: "#",
-    },
-    {
-      title: "#node",
-      description:
-        "A JavaScript runtime built on Chrome's V8 JavaScript engine.",
-      icon: <Zap className="size-6" />,
-      link: "#",
-    },
-    {
-      title: "#typescript",
-      description: "Optional static type-checking for JavaScript.",
-      icon: <Infinity className="size-6" />,
-      link: "#",
-    },
-  ];
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
+  const { tags, isLoading, isError } = useTag();
+
+  if (isLoading) <h1>Loading..</h1>;
+  if (isError) <h1>Error cuy</h1>;
   return (
     <ContentLayout title="Tags">
       <Breadcrumb>
@@ -93,28 +58,48 @@ export default function TagsPage() {
               Lorem ipsum, dolor sit amet consectetur adipisicing elit.
             </p>
           </div>
-          <Button>
-            {" "}
-            <Tag width={18} className="mr-2" /> Add tag
-          </Button>
+          <TagForm />
         </div>
         <div className="z-30 grid gap-6 md:grid-cols-3 lg:grid-cols-4">
-          {features.map((feature, index) => (
+          {tags?.map((tag) => (
             <div
-              key={index}
+              key={tag.uuid}
               className="flex flex-col gap-10 rounded-lg border bg-background p-8"
             >
               <div>
-                {feature.icon}
-                <h3 className="mb-2 mt-6 font-medium">{feature.title}</h3>
+                <div className="h-10 w-10 relative">
+                  <Image
+                    src={tag.avatar_url}
+                    alt="avatar tags"
+                    layout="fill"
+                    objectFit="cover"
+                    priority={false}
+                  />
+                </div>
+                <h3 className="mb-1 mt-2 font-medium">#{tag.name}</h3>
                 <p className="text-sm text-muted-foreground line-clamp-3">
-                  {feature.description}
+                  {tag.description}
                 </p>
               </div>
               <div className="w-full grow flex items-end">
-                <Button>Edit</Button>
-                <Button variant="link">Delete</Button>
+                <Button onClick={() => setIsEditDialogOpen(true)}>Edit</Button>
+                <Button
+                  variant="link"
+                  onClick={() => setIsDeleteDialogOpen(true)}
+                >
+                  Delete
+                </Button>
               </div>
+              <TagEditForm
+                isEditDialogOpen={isEditDialogOpen}
+                setIsEditDialogOpen={setIsEditDialogOpen}
+                values={tag}
+              />
+              <DeleteDialog
+                isDeleteDialogOpen={isDeleteDialogOpen}
+                setIsDeleteDialogOpen={setIsDeleteDialogOpen}
+                pathApi={`/tags/${tag.uuid}`}
+              />
             </div>
           ))}
         </div>

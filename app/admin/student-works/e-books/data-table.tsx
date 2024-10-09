@@ -34,7 +34,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ChevronDownIcon } from "lucide-react";
-import EbookForm from "@/components/admin-panel/ebook-form";
+import EbookForm from "@/components/admin-panel/forms/e-book/ebook-form";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];

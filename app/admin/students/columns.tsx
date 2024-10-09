@@ -19,7 +19,8 @@ import { format } from "date-fns";
 import Image from "next/image";
 import DeleteDialog from "@/components/admin-panel/delete-dialog";
 import React from "react";
-import StudentEditForm from "@/components/admin-panel/student-edit-form";
+import StudentEditForm from "@/components/admin-panel/forms/student/student-edit-form";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 export type Student = {
   uuid: string;
@@ -52,13 +53,15 @@ export const columns: ColumnDef<Student>[] = [
     accessorKey: "image",
     header: "Image",
     cell: ({ row }) => (
-      <Image
-        src={row.original.image_url}
-        alt="Image"
-        className=" object-cover"
-        width={96}
-        height={96}
-      />
+      <AspectRatio ratio={4 / 3} className="h-full relative">
+        <Image
+          src={row.original.image_url}
+          alt="Image"
+          layout="fill"
+          objectFit="cover"
+          objectPosition="center"
+        />
+      </AspectRatio>
     ),
   },
   {

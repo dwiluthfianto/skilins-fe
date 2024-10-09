@@ -26,14 +26,14 @@ import {
 import { Input } from "@/components/ui/input";
 
 import * as React from "react";
-import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
+import { RadioGroup, RadioGroupItem } from "../../../ui/radio-group";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../ui/select";
+} from "../../../ui/select";
 import { useMajor } from "@/hooks/use-major";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -45,9 +45,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../ui/form";
+} from "../../../ui/form";
 
-import axios from "../../utils/axios";
+import axios from "../../../../utils/axios";
 import { toast } from "@/hooks/use-toast";
 import { mutate } from "swr";
 

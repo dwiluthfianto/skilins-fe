@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { CalendarIcon } from "@radix-ui/react-icons";
@@ -23,14 +24,14 @@ import {
 import { Input } from "@/components/ui/input";
 
 import * as React from "react";
-import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
+import { RadioGroup, RadioGroupItem } from "../../../ui/radio-group";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../ui/select";
+} from "../../../ui/select";
 import { useMajor } from "@/hooks/use-major";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -42,13 +43,13 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../ui/form";
+} from "../../../ui/form";
 
-import axios from "../../utils/axios";
+import axios from "../../../../utils/axios";
 import { toast } from "@/hooks/use-toast";
 import { mutate } from "swr";
 import Image from "next/image";
-import { AspectRatio } from "../ui/aspect-ratio";
+import { AspectRatio } from "../../../ui/aspect-ratio";
 
 const StudentSchema = z.object({
   image: z.instanceof(File).optional(),
@@ -62,7 +63,11 @@ const StudentSchema = z.object({
   major: z.string().min(1, { message: "Major is required." }),
 });
 
-function StudentEditForm({ isEditDialogOpen, setIsEditDialogOpen, student }) {
+function StudentEditForm({
+  isEditDialogOpen,
+  setIsEditDialogOpen,
+  student,
+}: any) {
   const form = useForm<z.infer<typeof StudentSchema>>({
     resolver: zodResolver(StudentSchema),
     defaultValues: {

@@ -33,7 +33,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import StudentForm from "@/components/admin-panel/student-form";
+import StudentForm from "@/components/admin-panel/forms/student/student-form";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];

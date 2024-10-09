@@ -15,7 +15,7 @@ import {
 import { ArrowUpDown } from "lucide-react";
 import Image from "next/image";
 import * as React from "react";
-import EbookEditForm from "@/components/admin-panel/ebook-edit-form";
+import EbookEditForm from "@/components/admin-panel/forms/e-book/ebook-edit-form";
 import { Button } from "@/components/ui/button";
 import DeleteDialog from "@/components/admin-panel/delete-dialog";
 
