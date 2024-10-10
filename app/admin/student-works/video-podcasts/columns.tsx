@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
 
-import { MoreHorizontal, PencilRuler, Trash2 } from "lucide-react";
+import { FilePenLine, MoreHorizontal, Trash2, Youtube } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,55 +15,51 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { ArrowUpDown } from "lucide-react";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 import Image from "next/image";
-import * as React from "react";
-import EbookEditForm from "@/components/admin-panel/forms/e-book/ebook-edit-form";
-import { Button } from "@/components/ui/button";
+import React from "react";
 import DeleteDialog from "@/components/admin-panel/delete-dialog";
+import VideoEditForm from "@/components/admin-panel/forms/video/video-edit-form";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
-export type eBooks = {
-  id: string;
-  image: string;
-  author: string;
+export type Video = {
+  uuid: string;
   title: string;
-  category: string;
-  pages: number;
-  publication: string;
-  release_date: string;
+  thumbnail: string;
+  description: string;
   subjects: string[];
+  category: string;
+  creator: string;
+  duration: number;
+  file_url: string;
   tags: string[];
-  ebookFile: string;
 };
 
-export const columns: ColumnDef<eBooks>[] = [
+export const columns: ColumnDef<Video>[] = [
   {
-    accessorKey: "image",
-    header: "Image",
-    cell: ({ row }) => (
-      <Image
-        src={row.original.image}
-        alt="Image"
-        className=" object-cover"
-        width={96}
-        height={96}
-      />
-    ),
+    accessorKey: "No",
+    header: () => {
+      return <p>No</p>;
+    },
+    cell: ({ row }) => {
+      return <div>{row.index + 1}</div>;
+    },
   },
   {
-    accessorKey: "author",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Author
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
+    accessorKey: "thumbnail",
+    header: () => <div className="text-right">Image</div>,
+    cell: ({ row }) => (
+      <AspectRatio ratio={4 / 3} className="h-full relative">
+        <Image
+          src={row.original.thumbnail}
+          alt="Image"
+          layout="fill"
+          objectFit="cover"
+          objectPosition="center"
+        />
+      </AspectRatio>
+    ),
   },
   {
     accessorKey: "title",
@@ -72,6 +70,34 @@ export const columns: ColumnDef<eBooks>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Title
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+  },
+  {
+    accessorKey: "description",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Description
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+  },
+  {
+    accessorKey: "subjects",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Subjects
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
@@ -92,63 +118,84 @@ export const columns: ColumnDef<eBooks>[] = [
     },
   },
   {
-    accessorKey: "pages",
+    accessorKey: "creator",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Pages
+          Creator
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
   },
   {
-    accessorKey: "publication",
+    accessorKey: "duration",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Publication
+          Duration
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
-  },
-  {
-    accessorKey: "subjects",
-    header: "Subjects",
+    cell: ({ row }) => {
+      const hours = Math.floor(row.original.duration / 60);
+      const minutes = row.original.duration % 60;
+      return hours > 0 ? `${hours} Hours` : `${minutes} Minutes`;
+    },
   },
   {
     accessorKey: "tags",
-    header: "Tags",
-  },
-  {
-    accessorKey: "ebookFile",
-    header: "e-Book File",
-  },
-  {
-    accessorKey: "release_date",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Release Date
+          Tags
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
+      );
+    },
+    cell: ({ row }) => {
+      return row.original.tags.map((tag: any) => tag?.name).join(", ");
+    },
+  },
+  {
+    accessorKey: "file_url",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          File
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      return (
+        <a
+          href={row.original.file_url}
+          className="text-pink-600 items-center flex gap-2"
+        >
+          <Youtube width={16} />
+          Youtube
+        </a>
       );
     },
   },
 
   {
     id: "actions",
-    cell: () => {
+    cell: ({ row }) => {
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
       // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -165,20 +212,22 @@ export const columns: ColumnDef<eBooks>[] = [
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem onClick={() => setIsEditDialogOpen(true)}>
-                <PencilRuler className="mr-2" width={16} /> Edit
+                <FilePenLine className="mr-2" width={16} /> Edit
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setIsDeleteDialogOpen(true)}>
                 <Trash2 className="mr-2" width={16} /> Delete
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <EbookEditForm
+          <VideoEditForm
             isEditDialogOpen={isEditDialogOpen}
             setIsEditDialogOpen={setIsEditDialogOpen}
+            values={row.original}
           />
           <DeleteDialog
             isDeleteDialogOpen={isDeleteDialogOpen}
             setIsDeleteDialogOpen={setIsDeleteDialogOpen}
+            pathApi={`/contents/videos/${row.original.uuid}`}
           />
         </div>
       );

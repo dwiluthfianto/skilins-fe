@@ -97,9 +97,9 @@ export function getMenuList(pathname: string): Group[] {
           icon: Layers,
           submenus: [
             {
-              href: "/admin/student-works/e-books",
-              label: "e-Books",
-              active: pathname === "/student-works/e-books",
+              href: "/admin/student-works/novels",
+              label: "Novels",
+              active: pathname === "/student-works/novels",
             },
             {
               href: "/admin/student-works/audio-podcasts",

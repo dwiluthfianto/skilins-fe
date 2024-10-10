@@ -62,7 +62,7 @@ const AudioSchema = z.object({
     .number()
     .min(1, { message: "Duration must be greater than 0." })
     .nonnegative(),
-  file: z.instanceof(File, { message: "File is required." }),
+  file: z.instanceof(File).optional(),
   creator: z.string().min(1, { message: "Creator is required." }),
   tags: z.array(z.object({ name: z.string().min(1) })),
 });

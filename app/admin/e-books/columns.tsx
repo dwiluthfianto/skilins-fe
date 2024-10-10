@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
 
-import { MoreHorizontal, PencilRuler, Trash2 } from "lucide-react";
+import { FileText, MoreHorizontal, PencilRuler, Trash2 } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -18,30 +19,33 @@ import * as React from "react";
 import EbookEditForm from "@/components/admin-panel/forms/e-book/ebook-edit-form";
 import { Button } from "@/components/ui/button";
 import DeleteDialog from "@/components/admin-panel/delete-dialog";
+import { format } from "date-fns";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type eBooks = {
-  id: string;
-  image: string;
+  uuid: string;
+  thumbnail: string;
   author: string;
   title: string;
+  description: string;
   category: string;
   pages: number;
   publication: string;
+  isbn: string;
   release_date: string;
   subjects: string[];
   tags: string[];
-  ebookFile: string;
+  file_url: string;
 };
 
 export const columns: ColumnDef<eBooks>[] = [
   {
-    accessorKey: "image",
-    header: "Image",
+    accessorKey: "thumbnail",
+    header: "Thumbnail",
     cell: ({ row }) => (
       <Image
-        src={row.original.image}
+        src={row.original.thumbnail}
         alt="Image"
         className=" object-cover"
         width={96}
@@ -72,6 +76,34 @@ export const columns: ColumnDef<eBooks>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Title
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+  },
+  {
+    accessorKey: "description",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Description
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+  },
+  {
+    accessorKey: "isbn",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          ISBN
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
@@ -121,15 +153,62 @@ export const columns: ColumnDef<eBooks>[] = [
   },
   {
     accessorKey: "subjects",
-    header: "Subjects",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Subjects
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      return row.original.subjects.join(", ");
+    },
   },
   {
     accessorKey: "tags",
-    header: "Tags",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Tags
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      return row.original.tags.map((tag: any) => tag?.name).join(", ");
+    },
   },
   {
-    accessorKey: "ebookFile",
-    header: "e-Book File",
+    accessorKey: "file_url",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          File
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      return (
+        <a
+          href={row.original.file_url}
+          className="text-pink-600 items-center flex gap-2"
+        >
+          <FileText width={16} />
+          .pdf
+        </a>
+      );
+    },
   },
   {
     accessorKey: "release_date",
@@ -144,11 +223,14 @@ export const columns: ColumnDef<eBooks>[] = [
         </Button>
       );
     },
+    cell: ({ row }) => {
+      return format(row.original.release_date, "dd MMM yyyy");
+    },
   },
 
   {
     id: "actions",
-    cell: () => {
+    cell: ({ row }) => {
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
       // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -175,11 +257,13 @@ export const columns: ColumnDef<eBooks>[] = [
           <EbookEditForm
             isEditDialogOpen={isEditDialogOpen}
             setIsEditDialogOpen={setIsEditDialogOpen}
+            values={row.original}
           />
-          {/* <DeleteDialog
+          <DeleteDialog
             isDeleteDialogOpen={isDeleteDialogOpen}
             setIsDeleteDialogOpen={setIsDeleteDialogOpen}
-          /> */}
+            pathApi={`/contents/ebooks/${row.original.uuid}`}
+          />
         </div>
       );
     },

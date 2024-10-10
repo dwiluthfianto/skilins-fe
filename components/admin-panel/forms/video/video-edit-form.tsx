@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { CalendarIcon, CheckIcon, CircleX } from "lucide-react";
+import { CheckIcon, CircleX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import {
@@ -30,6 +30,7 @@ import {
 import axios from "../../../../utils/axios";
 import { toast } from "@/hooks/use-toast";
 import { mutate } from "swr";
+import { useStudent } from "@/hooks/use-student";
 import {
   Popover,
   PopoverContent,
@@ -46,12 +47,10 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Calendar } from "@/components/ui/calendar";
-import { format } from "date-fns";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import Image from "next/image";
 
-const EbookSchema = z.object({
+const AudioSchema = z.object({
   title: z
     .string()
     .min(5, { message: "title must be longer than or equal to 5 characters" }),
@@ -59,38 +58,47 @@ const EbookSchema = z.object({
   description: z.string().min(1, { message: "Category is required." }),
   subjects: z.array(z.string()).optional(),
   category: z.string().min(1, { message: "Category is required." }),
-  pages: z
+  duration: z
     .number()
-    .min(1, { message: "Pages must be greater than 0." })
+    .min(1, { message: "Duration must be greater than 0." })
     .nonnegative(),
-  publication: z.string().min(1, { message: "Author is required." }),
-  file: z.instanceof(File).optional(),
-  author: z.string().min(1, { message: "Author is required." }),
-  isbn: z.string().min(1, { message: "ISBN is required." }),
-  release_date: z.date().optional(),
+  file: z.string().min(1, { message: "Video URL is required" }),
+  creator: z.string().min(1, { message: "Creator is required." }),
   tags: z.array(z.object({ name: z.string().min(1) })),
 });
 
-function EbookEditForm({ isEditDialogOpen, setIsEditDialogOpen, values }: any) {
-  const form = useForm<z.infer<typeof EbookSchema>>({
-    resolver: zodResolver(EbookSchema),
+function VideoEditForm({ isEditDialogOpen, setIsEditDialogOpen, values }: any) {
+  const form = useForm<z.infer<typeof AudioSchema>>({
+    resolver: zodResolver(AudioSchema),
     defaultValues: {
       title: values?.title || "",
       thumbnail: undefined,
       description: values?.description || "",
       subjects: values?.subjects || [],
       category: values?.category || "",
-      pages: values?.pages || 0,
-      file: undefined,
-      author: values?.author || "",
-      publication: values?.publication || "",
-      release_date: new Date(values?.release_date) || new Date(),
-      isbn: values?.isbn || "",
+      duration: values?.duration || 0,
+      file: values?.file_url || "",
+      creator: values?.creator || "",
       tags: values?.tags || [],
     },
   });
 
   const { categories } = useCategory();
+  const { student, isLoading, isError } = useStudent();
+
+  React.useEffect(() => {
+    const initialCreator = values?.creator;
+    if (initialCreator) {
+      const foundStudent = student?.data.find(
+        (st: any) => st.name === initialCreator
+      );
+      if (foundStudent) {
+        setCreatorUuid(foundStudent.uuid);
+        form.setValue("creator", foundStudent.name);
+      }
+    }
+  }, [values?.creator, student?.data]);
+
   React.useEffect(() => {
     if (!isEditDialogOpen) {
       form.reset({
@@ -99,12 +107,10 @@ function EbookEditForm({ isEditDialogOpen, setIsEditDialogOpen, values }: any) {
         description: values?.description || "",
         subjects: values?.subjects || [],
         category: values?.category || "",
-        pages: values?.pages || 0,
-        file: undefined,
-        author: values?.author || "",
-        publication: values?.publication || "",
-        release_date: new Date(values?.release_date) || new Date(),
-        isbn: values?.isbn || "",
+        duration: values?.duration || 0,
+        file: values?.file_url || "",
+        creator:
+          values?.creator === student?.data.name ? student?.data?.uuid : "",
         tags: values?.tags || [],
       });
     }
@@ -133,26 +139,10 @@ function EbookEditForm({ isEditDialogOpen, setIsEditDialogOpen, values }: any) {
     }
   };
 
-  const [fileMedia, setFileMedia] = React.useState<File | null>(null);
-  const [fileUrl, setFileUrl] = React.useState<string | null>(
-    values?.file_url || null
-  );
+  const [creatorUuid, setCreatorUuid] = React.useState<string>("");
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setFileMedia(file);
-      form.setValue("file", file);
-
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        if (event.target?.result) {
-          setFileUrl(event.target.result as string);
-        }
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  if (isLoading) return <h1>Loading..</h1>;
+  if (isError) return <h1>Error</h1>;
 
   const tags = form.watch("tags") || [];
 
@@ -182,24 +172,21 @@ function EbookEditForm({ isEditDialogOpen, setIsEditDialogOpen, values }: any) {
     form.setValue("subjects", updatedSubjects);
   };
 
-  async function onSubmit(data: z.infer<typeof EbookSchema>) {
+  async function onSubmit(data: z.infer<typeof AudioSchema>) {
     const formData = new FormData();
     if (image) formData.append("thumbnail", image);
     formData.append("title", data.title);
     formData.append("description", data.description);
     formData.append("subjects", JSON.stringify(data.subjects));
     formData.append("category_name", data.category);
-    formData.append("pages", String(data.pages));
-    if (fileMedia) formData.append("file_url", fileMedia);
-    formData.append("author", data.author);
-    formData.append("publication", data.publication);
-    formData.append("isbn", data.isbn);
-    formData.append("release_date", String(data.release_date));
+    formData.append("duration", String(data.duration));
+    formData.append("file_url", data.file);
+    formData.append("creator_uuid", creatorUuid);
     formData.append("tags", JSON.stringify(data.tags));
 
     try {
-      const { data: ebookData } = await axios.patch(
-        `/contents/ebooks/${values?.uuid}`,
+      const { data: videoData } = await axios.patch(
+        `/contents/videos/${values?.uuid}`,
         formData,
         {
           headers: {
@@ -209,21 +196,27 @@ function EbookEditForm({ isEditDialogOpen, setIsEditDialogOpen, values }: any) {
       );
 
       toast({
-        title: "Ebook Added Successfully!",
+        title: "Student Added Successfully!",
         description: (
           <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
             <code className="text-white">
-              {JSON.stringify(ebookData.message, null, 2)}
+              {JSON.stringify(videoData.message, null, 2)}
             </code>
           </pre>
         ),
       });
 
-      mutate("/contents/ebooks");
+      mutate("/contents/videos");
 
       setIsEditDialogOpen(false);
     } catch (error) {
       console.log(error);
+
+      toast({
+        title: "Error!",
+        description: "An error occurred while update the audio.",
+        variant: "destructive",
+      });
     }
   }
   return (
@@ -233,9 +226,9 @@ function EbookEditForm({ isEditDialogOpen, setIsEditDialogOpen, values }: any) {
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add ebook</DialogTitle>
+          <DialogTitle>Update audio podcast</DialogTitle>
           <DialogDescription>
-            {"Update data ebook here. Click save when you're done."}
+            {"Update data video podcast here. Click save when you're done."}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -276,12 +269,12 @@ function EbookEditForm({ isEditDialogOpen, setIsEditDialogOpen, values }: any) {
               <FormField
                 control={form.control}
                 name="file"
-                render={() => (
+                render={({ field }) => (
                   <FormItem className="grid grid-cols-4 items-center gap-2">
-                    <FormLabel>File Novel</FormLabel>
+                    <FormLabel>File Audio</FormLabel>
                     <div className="col-span-3">
                       <FormControl>
-                        <Input type="file" onChange={handleFileChange} />
+                        <Input {...field} type="text" />
                       </FormControl>
                       <FormMessage />
                     </div>
@@ -320,11 +313,11 @@ function EbookEditForm({ isEditDialogOpen, setIsEditDialogOpen, values }: any) {
               />
               <FormField
                 control={form.control}
-                name="pages"
+                name="duration"
                 render={({ field }) => (
                   <FormItem className="grid grid-cols-4 items-center gap-2">
-                    <FormLabel>Pages</FormLabel>
-                    <div className="col-span-3">
+                    <FormLabel>Duration</FormLabel>
+                    <div className="col-span-2">
                       <FormControl>
                         <Input
                           {...field}
@@ -338,19 +331,73 @@ function EbookEditForm({ isEditDialogOpen, setIsEditDialogOpen, values }: any) {
                       </FormControl>
                       <FormMessage />
                     </div>
+                    <div className="col-span-1">
+                      <p>Minutes</p>
+                    </div>
                   </FormItem>
                 )}
               />
               <FormField
                 control={form.control}
-                name="author"
+                name="creator"
                 render={({ field }) => (
                   <FormItem className="grid grid-cols-4 items-center gap-2">
-                    <FormLabel>Author</FormLabel>
+                    <FormLabel>Creator</FormLabel>
                     <div className="col-span-3">
-                      <FormControl>
-                        <Input {...field} type="text" />
-                      </FormControl>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              className={cn(
+                                "w-full justify-between",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              {field.value
+                                ? student?.data.find(
+                                    (st: any) => st.name === field.value
+                                  )?.name
+                                : "Select creator"}
+                              <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="p-0">
+                          <Command>
+                            <CommandInput
+                              placeholder="Search students..."
+                              className="h-9"
+                            />
+                            <CommandList>
+                              <CommandEmpty>No student found.</CommandEmpty>
+                              <CommandGroup>
+                                {student?.data.map((st: any) => (
+                                  <CommandItem
+                                    value={st.name}
+                                    key={st.uuid}
+                                    onSelect={() => {
+                                      form.setValue("creator", st.name);
+                                      setCreatorUuid(st.uuid);
+                                    }}
+                                  >
+                                    {st.name}
+                                    <CheckIcon
+                                      className={cn(
+                                        "ml-auto h-4 w-4",
+                                        st.name === field.value
+                                          ? "opacity-100"
+                                          : "opacity-0"
+                                      )}
+                                    />
+                                  </CommandItem>
+                                ))}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
                       <FormMessage />
                     </div>
                   </FormItem>
@@ -430,7 +477,7 @@ function EbookEditForm({ isEditDialogOpen, setIsEditDialogOpen, values }: any) {
                     <FormLabel>Subjects</FormLabel>
                     <div className="col-span-3 relative">
                       <div className="flex flex-wrap items-center gap-2">
-                        {subjects.map((subject, index) => (
+                        {form.getValues("subjects")?.map((subject, index) => (
                           <div
                             key={index}
                             className="flex items-center bg-blue-500 text-white px-2 py-1 rounded-full"
@@ -504,76 +551,8 @@ function EbookEditForm({ isEditDialogOpen, setIsEditDialogOpen, values }: any) {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="publication"
-                render={({ field }) => (
-                  <FormItem className="grid grid-cols-4 items-center gap-2">
-                    <FormLabel>Publication</FormLabel>
-                    <div className="col-span-3">
-                      <FormControl>
-                        <Input {...field} type="text" />
-                      </FormControl>
-                      <FormMessage />
-                    </div>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="isbn"
-                render={({ field }) => (
-                  <FormItem className="grid grid-cols-4 items-center gap-2">
-                    <FormLabel>ISBN</FormLabel>
-                    <div className="col-span-3">
-                      <FormControl>
-                        <Input {...field} type="text" />
-                      </FormControl>
-                      <FormMessage />
-                    </div>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="release_date"
-                render={({ field }) => (
-                  <FormItem className="grid grid-cols-4 items-center gap-2">
-                    <FormLabel>Release Date</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild className="col-span-3">
-                        <FormControl>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "w-full justify-start text-left font-normal",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {field.value ? (
-                              format(field.value, "PPP")
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
               <DialogFooter>
-                <Button type="submit">Save</Button>
+                <Button type="submit">Update</Button>
               </DialogFooter>
             </form>
           </ScrollArea>
@@ -583,4 +562,4 @@ function EbookEditForm({ isEditDialogOpen, setIsEditDialogOpen, values }: any) {
   );
 }
 
-export default EbookEditForm;
+export default VideoEditForm;

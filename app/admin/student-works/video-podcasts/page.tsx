@@ -13,10 +13,10 @@ import {
 
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
-import { useEbook } from "@/hooks/use-ebook";
+import { useVideo } from "@/hooks/use-video";
 
 export default function EbooksPage() {
-  const { ebooks, isLoading, isError } = useEbook();
+  const { videos, isLoading, isError } = useVideo();
 
   if (isLoading) return <h1>Loading..</h1>;
   if (isError) return <h1>Error</h1>;
@@ -37,14 +37,20 @@ export default function EbooksPage() {
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage>e-Books</BreadcrumbPage>
+            <BreadcrumbLink asChild>
+              <Link href="/student-works">Student Works</Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Audio Podcasts</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
       <div className="w-full py-8">
         <div className=" mx-auto">
-          <div className="flex flex-col gap-4 ">
-            <DataTable columns={columns} data={ebooks} />
+          <div className="flex flex-col gap-10 ">
+            <DataTable columns={columns} data={videos} />
           </div>
         </div>
       </div>

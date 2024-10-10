@@ -33,8 +33,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ChevronDownIcon } from "lucide-react";
-import EbookForm from "@/components/admin-panel/forms/e-book/ebook-form";
+import VideoForm from "@/components/admin-panel/forms/video/video-form";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -77,19 +76,19 @@ export function DataTable<TData, TValue>({
     <div className="bg-white dark:bg-black border rounded-md h-full p-6 aspect-square lg:aspect-auto flex justify-between flex-col">
       <div className="flex flex-col items-start md:items-center md:flex-row justify-between gap-4">
         <div>
-          <p className="font-bold text-4xl">e-Books</p>
+          <p className="font-bold text-4xl">Video Podcasts</p>
           <p className="text-sm">
             Lorem ipsum, dolor sit amet consectetur adipisicing elit.
           </p>
         </div>
-        <EbookForm />
+        <VideoForm />
       </div>
       <div className="flex items-center py-4">
         <Input
-          placeholder="Filter title..."
-          value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
+          placeholder="Filter emails..."
+          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("title")?.setFilterValue(event.target.value)
+            table.getColumn("email")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
@@ -97,7 +96,7 @@ export function DataTable<TData, TValue>({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
-              Columns <ChevronDownIcon className="ml-2 h-4 w-4" />
+              Columns
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
