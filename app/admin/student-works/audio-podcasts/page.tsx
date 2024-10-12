@@ -13,13 +13,8 @@ import {
 
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
-import { useAudio } from "@/hooks/use-audio";
 
-export default function EbooksPage() {
-  const { audios, isLoading, isError } = useAudio();
-
-  if (isLoading) return <h1>Loading..</h1>;
-  if (isError) return <h1>Error</h1>;
+export default function AudiosPage() {
   return (
     <ContentLayout title="Users">
       <Breadcrumb>
@@ -50,7 +45,7 @@ export default function EbooksPage() {
       <div className="w-full py-8">
         <div className=" mx-auto">
           <div className="flex flex-col gap-10 ">
-            <DataTable columns={columns} data={audios} />
+            <DataTable columns={columns} />
           </div>
         </div>
       </div>

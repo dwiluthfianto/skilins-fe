@@ -80,6 +80,11 @@ export const columns: ColumnDef<eBooks>[] = [
         </Button>
       );
     },
+    cell: ({ row }) => {
+      return (
+        <div className=" line-clamp-3 break-words ">{row.original.title}</div>
+      );
+    },
   },
   {
     accessorKey: "description",

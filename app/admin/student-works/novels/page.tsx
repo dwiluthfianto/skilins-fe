@@ -12,13 +12,9 @@ import {
 } from "@/components/ui/breadcrumb";
 
 import { DataTable } from "./data-table";
-import { useNovel } from "@/hooks/use-novel";
 import { columns } from "./columns";
 
 export default function NovelsPage() {
-  const { novels, isLoading, isError } = useNovel();
-  if (isLoading) return <h1>Loading..</h1>;
-  if (isError) return <h1>Error</h1>;
   return (
     <ContentLayout title="Users">
       <Breadcrumb>
@@ -49,7 +45,7 @@ export default function NovelsPage() {
       <div className="w-full py-8">
         <div className=" mx-auto">
           <div className="flex flex-col gap-4 ">
-            <DataTable columns={columns} data={novels} />
+            <DataTable columns={columns} />
           </div>
         </div>
       </div>

@@ -5,7 +5,6 @@ import {
   SortingState,
   flexRender,
   getCoreRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
   ColumnFiltersState,
@@ -34,15 +33,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import AudioForm from "@/components/admin-panel/forms/audio/audio-form";
+import { useAudio } from "@/hooks/use-audio";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
-  data: TData[];
 }
 
 export function DataTable<TData, TValue>({
   columns,
-  data,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -53,25 +51,39 @@ export function DataTable<TData, TValue>({
 
   const [rowSelection, setRowSelection] = React.useState({});
 
+  const [pagination, setPagination] = React.useState({
+    pageIndex: 0, // 0-based index untuk TanStack
+    pageSize: 25, // 25 rows per page
+  });
+  const { audios, isLoading, isError, totalPages } = useAudio(
+    pagination.pageIndex + 1
+  );
+
   const table = useReactTable({
-    data,
+    data: audios || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
-    onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+
+    manualPagination: true,
+    pageCount: totalPages,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
+      pagination,
     },
+    onPaginationChange: setPagination,
   });
 
+  if (isLoading) return <h1>Loading..</h1>;
+  if (isError) return <h1>Error</h1>;
   return (
     <div className="bg-white dark:bg-black border rounded-md h-full p-6 aspect-square lg:aspect-auto flex justify-between flex-col">
       <div className="flex flex-col items-start md:items-center md:flex-row justify-between gap-4">
@@ -172,10 +184,6 @@ export function DataTable<TData, TValue>({
         </Table>
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
         <Button
           variant="outline"
           size="sm"

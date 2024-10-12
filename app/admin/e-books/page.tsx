@@ -16,7 +16,7 @@ import { DataTable } from "./data-table";
 import { useEbook } from "@/hooks/use-ebook";
 
 export default function EbooksPage() {
-  const { ebooks, isLoading, isError } = useEbook();
+  const { ebooks, isLoading, isError } = useEbook(1);
 
   if (isLoading) return <h1>Loading..</h1>;
   if (isError) return <h1>Error</h1>;

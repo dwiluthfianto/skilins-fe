@@ -39,14 +39,14 @@ export function getMenuList(pathname: string): Group[] {
         {
           href: "/",
           label: "Home",
-          active: pathname.includes("/"),
+          active: pathname === "/",
           icon: House,
           submenus: [],
         },
         {
-          href: "/e-books",
+          href: "/ebooks",
           label: "e-Books",
-          active: pathname === "/e-books",
+          active: pathname === "/ebooks",
           icon: BookText,
           submenus: [],
         },
