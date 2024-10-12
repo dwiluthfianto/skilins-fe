@@ -11,3 +11,14 @@ export function useEbook() {
     mutate,
   };
 }
+
+export function useEbookLatest() {
+  const { data, error, mutate } = useSWR(`/contents/ebooks/latest`, fetcher);
+
+  return {
+    ebooks: data?.data,
+    isLoading: !error && !data,
+    isError: error,
+    mutate,
+  };
+}

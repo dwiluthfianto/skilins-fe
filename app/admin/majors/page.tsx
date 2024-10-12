@@ -35,7 +35,7 @@ import { Button } from "@/components/ui/button";
 import DeleteDialog from "@/components/admin-panel/delete-dialog";
 
 function Majors() {
-  const { major, isLoading, isError, mutate } = useMajor();
+  const { major, isLoading, isError } = useMajor();
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
   // eslint-disable-next-line react-hooks/rules-of-hooks

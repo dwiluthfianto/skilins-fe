@@ -33,6 +33,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import ReportForm from "@/components/admin-panel/forms/report/report-form";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -73,12 +74,21 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="bg-white dark:bg-black border rounded-md h-full p-6 aspect-square lg:aspect-auto flex justify-between flex-col">
+      <div className="flex flex-col items-start md:items-center md:flex-row justify-between gap-4">
+        <div>
+          <p className="font-bold text-4xl">PKL Reports</p>
+          <p className="text-sm">
+            Lorem ipsum, dolor sit amet consectetur adipisicing elit.
+          </p>
+        </div>
+        <ReportForm />
+      </div>
       <div className="flex items-center py-4">
         <Input
-          placeholder="Filter emails..."
-          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
+          placeholder="Filter title..."
+          value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("email")?.setFilterValue(event.target.value)
+            table.getColumn("title")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />

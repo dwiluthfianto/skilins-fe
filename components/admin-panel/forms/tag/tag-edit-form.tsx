@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { Button } from "@/components/ui/button";
 
@@ -36,7 +37,7 @@ const TagSchema = z.object({
   avatar: z.instanceof(File).optional(),
 });
 
-function TagEditForm({ isEditDialogOpen, setIsEditDialogOpen, values }) {
+function TagEditForm({ isEditDialogOpen, setIsEditDialogOpen, values }: any) {
   const form = useForm<z.infer<typeof TagSchema>>({
     resolver: zodResolver(TagSchema),
     defaultValues: {

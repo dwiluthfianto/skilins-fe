@@ -208,7 +208,11 @@ function StudentEditForm({
                   <FormLabel>Image</FormLabel>
                   <div className="col-span-3">
                     <FormControl>
-                      <Input type="file" onChange={handleFileChange} />
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                      />
                     </FormControl>
                     <FormMessage />
                   </div>

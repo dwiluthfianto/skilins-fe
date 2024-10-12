@@ -193,6 +193,7 @@ function NovelForm() {
                       <FormControl>
                         <Input
                           type="file"
+                          accept="image/*"
                           onChange={(e) => {
                             if (e.target.files) {
                               setImage(e.target.files[0]);
@@ -216,6 +217,7 @@ function NovelForm() {
                       <FormControl>
                         <Input
                           type="file"
+                          accept=".pdf"
                           onChange={(e) => {
                             if (e.target.files) {
                               setFile(e.target.files[0]);

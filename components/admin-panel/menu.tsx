@@ -139,7 +139,7 @@ export function Menu({ isOpen }: MenuProps) {
           ))}
           <li className="w-full grow flex items-end">
             <DropdownMenu>
-              <DropdownMenuTrigger className="outline-none">
+              <DropdownMenuTrigger className="outline-none w-full ">
                 <div className="grid grid-cols-8 items-center">
                   <div className="flex items-center col-span-7">
                     <span className={cn(isOpen === false ? "" : "mr-4")}>
@@ -167,7 +167,7 @@ export function Menu({ isOpen }: MenuProps) {
                       "whitespace-nowrap",
                       isOpen === false
                         ? "opacity-0 hidden"
-                        : "flex items-center justify-end opacity-100"
+                        : "flex items-center col-span-1 justify-end opacity-100"
                     )}
                   >
                     <ChevronRight width={18} />

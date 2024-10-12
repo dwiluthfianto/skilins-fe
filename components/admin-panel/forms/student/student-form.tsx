@@ -147,6 +147,7 @@ function StudentForm() {
                   <FormControl className="col-span-3">
                     <Input
                       type="file"
+                      accept="image/*"
                       onChange={(e) => {
                         if (e.target.files) {
                           setImage(e.target.files[0]);

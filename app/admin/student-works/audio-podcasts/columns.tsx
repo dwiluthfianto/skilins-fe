@@ -145,9 +145,10 @@ export const columns: ColumnDef<Audio>[] = [
       );
     },
     cell: ({ row }) => {
-      const hours = Math.floor(row.original.duration / 60);
-      const minutes = row.original.duration % 60;
-      return hours > 0 ? `${hours} Hours` : `${minutes} Minutes`;
+      return new Date(1000 * row.original.duration)
+        .toISOString()
+        .substring(11, 19)
+        .replace(/^[0:]+/, "");
     },
   },
   {

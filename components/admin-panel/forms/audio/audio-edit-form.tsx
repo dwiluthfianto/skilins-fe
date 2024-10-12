@@ -157,6 +157,12 @@ function AudioEditForm({ isEditDialogOpen, setIsEditDialogOpen, values }: any) {
         }
       };
       reader.readAsDataURL(file);
+
+      const audio = new Audio(URL.createObjectURL(e.target.files[0]));
+      audio.onloadedmetadata = () => {
+        const duration = audio.duration;
+        form.setValue("duration", duration);
+      };
     }
   };
   const [creatorUuid, setCreatorUuid] = React.useState<string>("");
@@ -279,7 +285,11 @@ function AudioEditForm({ isEditDialogOpen, setIsEditDialogOpen, values }: any) {
                     <FormLabel>Thumbnail</FormLabel>
                     <div className="col-span-3">
                       <FormControl>
-                        <Input type="file" onChange={handleImageChange} />
+                        <Input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageChange}
+                        />
                       </FormControl>
                       <FormMessage />
                     </div>
@@ -302,7 +312,11 @@ function AudioEditForm({ isEditDialogOpen, setIsEditDialogOpen, values }: any) {
                         </div>
                       )}
                       <FormControl>
-                        <Input type="file" onChange={handleFileChange} />
+                        <Input
+                          type="file"
+                          accept="audio/*"
+                          onChange={handleFileChange}
+                        />
                       </FormControl>
                       <FormMessage />
                     </div>
@@ -348,13 +362,12 @@ function AudioEditForm({ isEditDialogOpen, setIsEditDialogOpen, values }: any) {
                     <div className="col-span-2">
                       <FormControl>
                         <Input
-                          {...field}
-                          type="number"
-                          min={0}
-                          onChange={(e) => {
-                            const value = e.target.value;
-                            field.onChange(value ? Number(value) : 0);
-                          }}
+                          value={new Date(1000 * field.value)
+                            .toISOString()
+                            .substring(11, 19)
+                            .replace(/^[0:]+/, "")}
+                          type="text"
+                          readOnly
                         />
                       </FormControl>
                       <FormMessage />

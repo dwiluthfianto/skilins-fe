@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { CheckIcon, CircleX, FileAudio } from "lucide-react";
+import { CalendarIcon, CheckIcon, CircleX, Proportions } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import {
@@ -47,9 +47,13 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import Image from "next/image";
 
-const AudioSchema = z.object({
+const ReportSchema = z.object({
   title: z
     .string()
     .min(5, { message: "title must be longer than or equal to 5 characters" }),
@@ -57,40 +61,116 @@ const AudioSchema = z.object({
   description: z.string().min(1, { message: "Category is required." }),
   subjects: z.array(z.string()).optional(),
   category: z.string().min(1, { message: "Category is required." }),
-  duration: z
+  pages: z
     .number()
-    .min(1, { message: "Duration must be greater than 0." })
+    .min(1, { message: "Pages must be greater than 0." })
     .nonnegative(),
-  file: z.instanceof(File),
-  creator: z.string().min(1, { message: "Creator is required." }),
+  file: z.instanceof(File).optional(),
+  author: z.string().min(1, { message: "Author is required." }),
   tags: z.array(z.object({ name: z.string().min(1) })),
+  published_at: z.date(),
 });
 
-function AudioForm() {
-  const form = useForm<z.infer<typeof AudioSchema>>({
-    resolver: zodResolver(AudioSchema),
+function ReportEditForm({
+  isEditDialogOpen,
+  setIsEditDialogOpen,
+  values,
+}: any) {
+  const form = useForm<z.infer<typeof ReportSchema>>({
+    resolver: zodResolver(ReportSchema),
     defaultValues: {
-      title: "",
+      title: values?.title || "",
       thumbnail: undefined,
-      description: "",
-      subjects: [],
-      category: "",
-      duration: 0,
+      description: values?.description || "",
+      subjects: values?.subjects || [],
+      category: values?.category || "",
+      pages: values?.pages || 0,
       file: undefined,
-      creator: "",
-      tags: [],
+      author: values?.author || "",
+      published_at: new Date(values?.published_at) || new Date(),
+      tags: values?.tags || [],
     },
   });
 
-  const [open, setOpen] = React.useState(false);
+  const { categories } = useCategory();
+  const { student, isLoading, isError } = useStudent();
+  React.useEffect(() => {
+    const initialCreator = values?.author;
+    if (initialCreator) {
+      const foundStudent = student?.data.find(
+        (st: any) => st.name === initialCreator
+      );
+      if (foundStudent) {
+        setAuthorUuid(foundStudent.uuid);
+        form.setValue("author", foundStudent.name);
+      }
+    }
+  }, [values?.creator, student?.data]);
+
+  React.useEffect(() => {
+    if (!isEditDialogOpen) {
+      form.reset({
+        title: values?.title || "",
+        thumbnail: undefined,
+        description: values?.description || "",
+        subjects: values?.subjects || [],
+        category: values?.category || "",
+        pages: values?.pages || 0,
+        file: undefined,
+        author:
+          values?.creator === student?.data.name ? student?.data?.uuid : "",
+        published_at: new Date(values?.published_at) || new Date(),
+        tags: values?.tags || [],
+      });
+      setImageUrl(values?.thumbnail || null); // Reset image URL
+    }
+  }, [isEditDialogOpen, values, form]);
+
   const [inputTag, setInputTag] = React.useState<string>("");
   const [inputSubject, setInputSubject] = React.useState<string>("");
 
   const [image, setImage] = React.useState<File | null>(null);
-  const [file, setFile] = React.useState<File | null>(null);
-  const [creatorUuid, setCreatorUuid] = React.useState<string>("");
-  const { categories } = useCategory();
-  const { student, isLoading, isError } = useStudent();
+  const [imageUrl, setImageUrl] = React.useState<string | null>(
+    values?.thumbnail || null
+  );
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setImage(file);
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          setImageUrl(event.target.result as string);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const [fileMedia, setFileMedia] = React.useState<File | null>(null);
+  const [fileUrl, setFileUrl] = React.useState<string | null>(
+    values?.file_url || null
+  );
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setFileMedia(file);
+      form.setValue("file", file);
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          setFileUrl(event.target.result as string);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  const [authorUuid, setAuthorUuid] = React.useState<string>("");
+
   if (isLoading) return <h1>Loading..</h1>;
   if (isError) return <h1>Error</h1>;
 
@@ -122,21 +202,22 @@ function AudioForm() {
     form.setValue("subjects", updatedSubjects);
   };
 
-  async function onSubmit(data: z.infer<typeof AudioSchema>) {
+  async function onSubmit(data: z.infer<typeof ReportSchema>) {
     const formData = new FormData();
     if (image) formData.append("thumbnail", image);
     formData.append("title", data.title);
     formData.append("description", data.description);
     formData.append("subjects", JSON.stringify(data.subjects));
     formData.append("category_name", data.category);
-    formData.append("duration", String(data.duration));
-    if (file) formData.append("file_url", file);
-    formData.append("creator_uuid", creatorUuid);
+    formData.append("pages", String(data.pages));
+    if (fileMedia) formData.append("file_url", fileMedia);
+    formData.append("author_uuid", authorUuid);
+    formData.append("published_at", String(data.published_at));
     formData.append("tags", JSON.stringify(data.tags));
 
     try {
-      const { data: studentData } = await axios.post(
-        "/contents/audios",
+      const { data: reportData } = await axios.patch(
+        `/contents/reports/${values?.uuid}`,
         formData,
         {
           headers: {
@@ -146,35 +227,33 @@ function AudioForm() {
       );
 
       toast({
-        title: "Student Added Successfully!",
+        title: "Report Updated Successfully!",
         description: (
           <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
             <code className="text-white">
-              {JSON.stringify(studentData.message, null, 2)}
+              {JSON.stringify(reportData.message, null, 2)}
             </code>
           </pre>
         ),
       });
 
-      mutate("/contents/audios");
+      mutate("/contents/reports");
 
-      setOpen(false);
+      setIsEditDialogOpen(false);
     } catch (error) {
       console.log(error);
     }
   }
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button>
-          <FileAudio className="mr-2" width={16} /> Add audio podcast
-        </Button>
-      </DialogTrigger>
+    <Dialog
+      open={isEditDialogOpen}
+      onOpenChange={isEditDialogOpen ? setIsEditDialogOpen : false}
+    >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add audio podcast</DialogTitle>
+          <DialogTitle>Update report</DialogTitle>
           <DialogDescription>
-            {"Add new data audio podcast here. Click save when you're done."}
+            {"Update data report here. Click save when you're done."}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -184,10 +263,24 @@ function AudioForm() {
           >
             <div>
               <ScrollArea className="h-[500px]">
+                {imageUrl && (
+                  <div className="grid grid-cols-4 items-center gap-2">
+                    <div className="col-span-1">
+                      <AspectRatio ratio={1 / 1}>
+                        <Image
+                          src={imageUrl}
+                          alt="Current student image"
+                          className="object-cover"
+                          fill
+                        />
+                      </AspectRatio>
+                    </div>
+                  </div>
+                )}
                 <FormField
                   control={form.control}
                   name="thumbnail"
-                  render={({ field }) => (
+                  render={() => (
                     <FormItem className="grid grid-cols-4 items-center gap-2">
                       <FormLabel>Thumbnail</FormLabel>
                       <div className="col-span-3">
@@ -195,12 +288,7 @@ function AudioForm() {
                           <Input
                             type="file"
                             accept="image/*"
-                            onChange={(e) => {
-                              if (e.target.files) {
-                                setImage(e.target.files[0]);
-                                field.onChange(e.target.files[0]);
-                              }
-                            }}
+                            onChange={handleImageChange}
                           />
                         </FormControl>
                         <FormMessage />
@@ -211,27 +299,15 @@ function AudioForm() {
                 <FormField
                   control={form.control}
                   name="file"
-                  render={({ field }) => (
+                  render={() => (
                     <FormItem className="grid grid-cols-4 items-center gap-2">
-                      <FormLabel>File Audio</FormLabel>
+                      <FormLabel>File Report</FormLabel>
                       <div className="col-span-3">
                         <FormControl>
                           <Input
                             type="file"
-                            accept="audio/*"
-                            onChange={(e) => {
-                              if (e.target.files) {
-                                setFile(e.target.files[0]);
-                                field.onChange(e.target.files[0]);
-                                const audio = new Audio(
-                                  URL.createObjectURL(e.target.files[0])
-                                );
-                                audio.onloadedmetadata = () => {
-                                  const duration = audio.duration;
-                                  form.setValue("duration", duration);
-                                };
-                              }
-                            }}
+                            accept=".pdf"
+                            onChange={handleFileChange}
                           />
                         </FormControl>
                         <FormMessage />
@@ -271,32 +347,30 @@ function AudioForm() {
                 />
                 <FormField
                   control={form.control}
-                  name="duration"
+                  name="pages"
                   render={({ field }) => (
                     <FormItem className="grid grid-cols-4 items-center gap-2">
-                      <FormLabel>Duration</FormLabel>
-                      <div className="col-span-2">
+                      <FormLabel>Pages</FormLabel>
+                      <div className="col-span-3">
                         <FormControl>
                           <Input
-                            value={new Date(1000 * field.value)
-                              .toISOString()
-                              .substring(11, 19)
-                              .replace(/^[0:]+/, "")}
-                            type="text"
-                            readOnly
+                            {...field}
+                            type="number"
+                            min={0}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              field.onChange(value ? Number(value) : 0);
+                            }}
                           />
                         </FormControl>
                         <FormMessage />
-                      </div>
-                      <div className="col-span-1">
-                        <p>Minutes</p>
                       </div>
                     </FormItem>
                   )}
                 />
                 <FormField
                   control={form.control}
-                  name="creator"
+                  name="author"
                   render={({ field }) => (
                     <FormItem className="grid grid-cols-4 items-center gap-2">
                       <FormLabel>Creator</FormLabel>
@@ -335,8 +409,8 @@ function AudioForm() {
                                       value={st.name}
                                       key={st.uuid}
                                       onSelect={() => {
-                                        form.setValue("creator", st.name);
-                                        setCreatorUuid(st.uuid);
+                                        form.setValue("author", st.name);
+                                        setAuthorUuid(st.uuid);
                                       }}
                                     >
                                       {st.name}
@@ -511,7 +585,44 @@ function AudioForm() {
                     </FormItem>
                   )}
                 />
-                <ScrollBar hidden />
+                <FormField
+                  control={form.control}
+                  name="published_at"
+                  render={({ field }) => (
+                    <FormItem className="grid grid-cols-4 items-center gap-2">
+                      <FormLabel>Published At</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild className="col-span-3">
+                          <FormControl>
+                            <Button
+                              variant={"outline"}
+                              className={cn(
+                                "w-full justify-start text-left font-normal",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {field.value ? (
+                                format(field.value, "PPP")
+                              ) : (
+                                <span>Pick a date</span>
+                              )}
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </ScrollArea>
             </div>
             <DialogFooter>
@@ -524,4 +635,4 @@ function AudioForm() {
   );
 }
 
-export default AudioForm;
+export default ReportEditForm;

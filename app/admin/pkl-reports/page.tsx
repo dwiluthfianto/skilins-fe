@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 
 import { ContentLayout } from "@/components/admin-panel/content-layout";
@@ -10,27 +11,15 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 
-import { PKLReport, columns } from "./columns";
+import { columns } from "./columns";
 import { DataTable } from "./data-table";
+import { useReport } from "@/hooks/use-report";
 
-async function getData(): Promise<PKLReport[]> {
-  // Fetch data from your API here.
-  return [
-    {
-      id: "728ed52f",
-      reportFile: "test.pdf",
-      title: "Perancangan Website SMKN 1 Gunungputri",
-      description: "Lorem ipsum dolor met",
-      author: "Jane Doe",
-      major: "Rekayasa Perangkat Lunak",
-      subjects: ["Website", "React", "Javascript"],
-      published_at: "27 Des 2024",
-    },
-  ];
-}
+export default function EbooksPage() {
+  const { reports, isLoading, isError } = useReport();
+  if (isLoading) return <h1>Loading..</h1>;
+  if (isError) return <h1>Error</h1>;
 
-export default async function EbooksPage() {
-  const data = await getData();
   return (
     <ContentLayout title="Users">
       <Breadcrumb>
@@ -61,7 +50,7 @@ export default async function EbooksPage() {
       <div className="w-full py-8">
         <div className=" mx-auto">
           <div className="flex flex-col gap-10 ">
-            <DataTable columns={columns} data={data} />
+            <DataTable columns={columns} data={reports} />
           </div>
         </div>
       </div>
