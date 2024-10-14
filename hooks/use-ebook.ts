@@ -16,11 +16,15 @@ export function useEbook(page: number) {
   };
 }
 
-export function useEbookLatest() {
-  const { data, error, mutate } = useSWR(`/contents/ebooks/latest`, fetcher);
+export function useEbookLatest(page: number, limit: number, week: number) {
+  const { data, error, mutate } = useSWR(
+    `/contents/ebooks/latest?page=${page}&limit=${limit}&week=${week}`,
+    fetcher
+  );
 
   return {
     ebooks: data?.data,
+    totalPages: data?.lastPage || 1,
     isLoading: !error && !data,
     isError: error,
     mutate,

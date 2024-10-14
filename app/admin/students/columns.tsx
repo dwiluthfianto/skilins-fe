@@ -55,7 +55,7 @@ export const columns: ColumnDef<Student>[] = [
     cell: ({ row }) => (
       <AspectRatio ratio={4 / 3} className="h-full relative">
         <Image
-          src={row.original.image_url}
+          src={`${row.original.image_url}?t=${new Date().getTime()}`}
           alt="Image"
           layout="fill"
           objectFit="cover"

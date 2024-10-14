@@ -31,6 +31,7 @@ import {
 import axios from "../../../../utils/axios";
 import { toast } from "@/hooks/use-toast";
 import { mutate } from "swr";
+import Compressor from "compressorjs";
 
 const TagSchema = z.object({
   name: z.string().min(1, { message: "Name is required." }),
@@ -50,11 +51,44 @@ function TagForm() {
 
   const [open, setOpen] = React.useState(false);
 
+  React.useEffect(() => {
+    if (!open) {
+      form.reset({
+        name: "",
+        description: "",
+        avatar: undefined,
+      });
+    }
+  }, [open, form]);
+
   const [avatar, setAvatar] = React.useState<File | null>(null);
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+
+      // Compress image using Compressor.js
+      new Compressor(file, {
+        quality: 0.6, // Set the quality for compression (0.0 to 1.0)
+        maxWidth: 800,
+        maxHeight: 800,
+        success(compressedBlob) {
+          // Convert the Blob back to a File
+          const compressedFile = new File([compressedBlob], file.name, {
+            type: compressedBlob.type,
+            lastModified: Date.now(),
+          });
+          setAvatar(compressedFile);
+        },
+        error(err) {
+          console.error("Compression failed:", err.message);
+        },
+      });
+    }
+  };
 
   async function onSubmit(data: z.infer<typeof TagSchema>) {
     const formData = new FormData();
-    formData.append("name", data.name);
+    formData.append("name", data.name.toLowerCase());
     formData.append("description", data.description);
     if (avatar) formData.append("avatar_url", avatar);
 
@@ -64,7 +98,6 @@ function TagForm() {
           "Content-Type": "multipart/form-data",
         },
       });
-
       toast({
         title: "Major Added Successfully!",
         description: (
@@ -87,6 +120,8 @@ function TagForm() {
           "An error occurred while add the tag.",
         variant: "destructive",
       });
+
+      setOpen(false);
     }
   }
   return (
@@ -111,19 +146,11 @@ function TagForm() {
             <FormField
               control={form.control}
               name="avatar"
-              render={({ field }) => (
+              render={() => (
                 <FormItem className="grid grid-cols-4 items-center gap-2">
                   <FormLabel>Avatar</FormLabel>
                   <FormControl className="col-span-3">
-                    <Input
-                      type="file"
-                      onChange={(e) => {
-                        if (e.target.files) {
-                          setAvatar(e.target.files[0]);
-                          field.onChange(e.target.files[0]);
-                        }
-                      }}
-                    />
+                    <Input type="file" onChange={handleAvatarChange} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

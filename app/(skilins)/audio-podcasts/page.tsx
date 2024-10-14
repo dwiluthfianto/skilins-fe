@@ -1,6 +1,6 @@
 "use client";
 import { ContentLayout } from "@/components/user-panel/content-layout";
-import { Audios } from "@/components/user-panel/ui/Audios";
+import { Audios } from "@/components/user-panel/ui/audios";
 import { useAudio } from "@/hooks/use-audio";
 
 export default function AudioPage() {
@@ -9,7 +9,7 @@ export default function AudioPage() {
   if (isError) return <h1>loading..</h1>;
 
   return (
-    <ContentLayout title="audio">
+    <ContentLayout title="Audio Podcasts">
       <Audios data={audios} />
     </ContentLayout>
   );

@@ -48,6 +48,7 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import Compressor from "compressorjs";
 
 const NovelSchema = z.object({
   title: z
@@ -83,10 +84,52 @@ function NovelForm() {
   });
 
   const [open, setOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!open) {
+      form.reset({
+        title: "",
+        thumbnail: undefined,
+        description: "",
+        subjects: [],
+        category: "",
+        pages: 0,
+        file: undefined,
+        author: "",
+        tags: [],
+      });
+    }
+  }, [open, form]);
+
   const [inputTag, setInputTag] = React.useState<string>("");
   const [inputSubject, setInputSubject] = React.useState<string>("");
 
   const [image, setImage] = React.useState<File | null>(null);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+
+      // Compress image using Compressor.js
+      new Compressor(file, {
+        quality: 0.6, // Set the quality for compression (0.0 to 1.0)
+        maxWidth: 1000,
+        maxHeight: 1200,
+        success(compressedBlob) {
+          // Convert the Blob back to a File
+          const compressedFile = new File([compressedBlob], file.name, {
+            type: compressedBlob.type,
+            lastModified: Date.now(),
+          });
+          setImage(compressedFile);
+        },
+        error(err) {
+          console.error("Compression failed:", err.message);
+        },
+      });
+    }
+  };
+
   const [file, setFile] = React.useState<File | null>(null);
   const [authorUuid, setAuthorUuid] = React.useState<string>("");
   const { categories } = useCategory();
@@ -97,8 +140,12 @@ function NovelForm() {
   const tags = form.watch("tags") || [];
 
   const addTag = () => {
-    if (inputTag.trim() !== "") {
-      form.setValue("tags", [...tags, { name: inputTag }]);
+    const lowerCaseTag = inputTag.trim().toLowerCase();
+    if (
+      lowerCaseTag !== "" &&
+      !tags.some((tag) => tag.name.toLowerCase() === lowerCaseTag)
+    ) {
+      form.setValue("tags", [...tags, { name: lowerCaseTag }]);
       setInputTag("");
     }
   };
@@ -186,7 +233,7 @@ function NovelForm() {
               <FormField
                 control={form.control}
                 name="thumbnail"
-                render={({ field }) => (
+                render={() => (
                   <FormItem className="grid grid-cols-4 items-center gap-2">
                     <FormLabel>Thumbnail</FormLabel>
                     <div className="col-span-3">
@@ -194,12 +241,7 @@ function NovelForm() {
                         <Input
                           type="file"
                           accept="image/*"
-                          onChange={(e) => {
-                            if (e.target.files) {
-                              setImage(e.target.files[0]);
-                              field.onChange(e.target.files[0]);
-                            }
-                          }}
+                          onChange={handleImageChange}
                         />
                       </FormControl>
                       <FormMessage />

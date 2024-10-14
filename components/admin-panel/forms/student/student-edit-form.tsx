@@ -50,6 +50,7 @@ import { toast } from "@/hooks/use-toast";
 import { mutate } from "swr";
 import Image from "next/image";
 import { AspectRatio } from "../../../ui/aspect-ratio";
+import Compressor from "compressorjs";
 
 const StudentSchema = z.object({
   image: z.instanceof(File).optional(),
@@ -101,19 +102,34 @@ function StudentEditForm({
     student?.image_url || null
   );
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      setImage(file); // Simpan file gambar ke state
 
-      // Gunakan FileReader untuk menampilkan preview gambar baru
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        if (event.target?.result) {
-          setImageUrl(event.target.result as string); // Set preview URL gambar baru
-        }
-      };
-      reader.readAsDataURL(file); // Baca file gambar sebagai data URL
+      // Kompresi file gambar
+      new Compressor(file, {
+        quality: 0.6, // Ubah kualitas kompresi
+        maxWidth: 1400, // Resolusi maksimal
+        maxHeight: 1600,
+        success(compressedBlob) {
+          const compressedFile = new File([compressedBlob], file.name, {
+            type: compressedBlob.type,
+            lastModified: Date.now(),
+          });
+          setImage(compressedFile);
+
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            if (event.target?.result) {
+              setImageUrl(event.target.result as string);
+            }
+          };
+          reader.readAsDataURL(compressedFile);
+        },
+        error(err) {
+          console.error("Compression failed:", err.message);
+        },
+      });
     }
   };
 
@@ -211,7 +227,7 @@ function StudentEditForm({
                       <Input
                         type="file"
                         accept="image/*"
-                        onChange={handleFileChange}
+                        onChange={handleImageChange}
                       />
                     </FormControl>
                     <FormMessage />

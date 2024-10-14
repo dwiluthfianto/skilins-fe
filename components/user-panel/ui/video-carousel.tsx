@@ -5,13 +5,10 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel";
-import { useEbookLatest } from "@/hooks/use-ebook";
 import Image from "next/image";
 
-export function Video() {
-  const { ebooks, isLoading, isError } = useEbookLatest();
-  if (isLoading) return <h1>Loading..</h1>;
-  if (isError) return <h1>Error..</h1>;
+export function VideoCarousel({ data }: any) {
+  const videos = data || [];
   return (
     <section className="py-2">
       <div>
@@ -40,7 +37,7 @@ export function Video() {
           }}
         >
           <CarouselContent>
-            {ebooks.map((item: any) => (
+            {videos.map((item: any) => (
               <CarouselItem key={item.uuid} className="pl-[20px] max-w-[352px]">
                 <a href="#" className="group flex flex-col justify-between">
                   <div>

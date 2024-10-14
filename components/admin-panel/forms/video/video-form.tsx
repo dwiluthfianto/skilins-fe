@@ -48,6 +48,7 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import Compressor from "compressorjs";
 
 const AudioSchema = z.object({
   title: z
@@ -83,10 +84,51 @@ function VideoForm() {
   });
 
   const [open, setOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!open) {
+      form.reset({
+        title: "",
+        thumbnail: undefined,
+        description: "",
+        subjects: [],
+        category: "",
+        duration: 0,
+        file: undefined,
+        creator: "",
+        tags: [],
+      });
+    }
+  }, [open, form]);
+
   const [inputTag, setInputTag] = React.useState<string>("");
   const [inputSubject, setInputSubject] = React.useState<string>("");
 
   const [image, setImage] = React.useState<File | null>(null);
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+
+      // Compress image using Compressor.js
+      new Compressor(file, {
+        quality: 0.6, // Set the quality for compression (0.0 to 1.0)
+        maxWidth: 1200,
+        maxHeight: 1000,
+        success(compressedBlob) {
+          // Convert the Blob back to a File
+          const compressedFile = new File([compressedBlob], file.name, {
+            type: compressedBlob.type,
+            lastModified: Date.now(),
+          });
+          setImage(compressedFile);
+        },
+        error(err) {
+          console.error("Compression failed:", err.message);
+        },
+      });
+    }
+  };
+
   const [creatorUuid, setCreatorUuid] = React.useState<string>("");
   const { categories } = useCategory();
   const { student, isLoading, isError } = useStudent();
@@ -94,10 +136,13 @@ function VideoForm() {
   if (isError) return <h1>Error</h1>;
 
   const tags = form.watch("tags") || [];
-
   const addTag = () => {
-    if (inputTag.trim() !== "") {
-      form.setValue("tags", [...tags, { name: inputTag }]);
+    const lowerCaseTag = inputTag.trim().toLowerCase();
+    if (
+      lowerCaseTag !== "" &&
+      !tags.some((tag) => tag.name.toLowerCase() === lowerCaseTag)
+    ) {
+      form.setValue("tags", [...tags, { name: lowerCaseTag }]);
       setInputTag("");
     }
   };
@@ -190,15 +235,7 @@ function VideoForm() {
                     <FormLabel>Thumbnail</FormLabel>
                     <div className="col-span-3">
                       <FormControl>
-                        <Input
-                          type="file"
-                          onChange={(e) => {
-                            if (e.target.files) {
-                              setImage(e.target.files[0]);
-                              field.onChange(e.target.files[0]);
-                            }
-                          }}
-                        />
+                        <Input type="file" onChange={handleImageChange} />
                       </FormControl>
                       <FormMessage />
                     </div>

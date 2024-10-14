@@ -50,6 +50,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import Image from "next/image";
+import Compressor from "compressorjs";
 
 const EbookSchema = z.object({
   title: z
@@ -121,15 +122,31 @@ function EbookEditForm({ isEditDialogOpen, setIsEditDialogOpen, values }: any) {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      setImage(file);
 
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        if (event.target?.result) {
-          setImageUrl(event.target.result as string);
-        }
-      };
-      reader.readAsDataURL(file);
+      // Kompresi file gambar
+      new Compressor(file, {
+        quality: 0.6, // Ubah kualitas kompresi
+        maxWidth: 1400, // Resolusi maksimal
+        maxHeight: 1600,
+        success(compressedBlob) {
+          const compressedFile = new File([compressedBlob], file.name, {
+            type: compressedBlob.type,
+            lastModified: Date.now(),
+          });
+          setImage(compressedFile);
+
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            if (event.target?.result) {
+              setImageUrl(event.target.result as string);
+            }
+          };
+          reader.readAsDataURL(compressedFile);
+        },
+        error(err) {
+          console.error("Compression failed:", err.message);
+        },
+      });
     }
   };
 
@@ -157,8 +174,12 @@ function EbookEditForm({ isEditDialogOpen, setIsEditDialogOpen, values }: any) {
   const tags = form.watch("tags") || [];
 
   const addTag = () => {
-    if (inputTag.trim() !== "") {
-      form.setValue("tags", [...tags, { name: inputTag }]);
+    const lowerCaseTag = inputTag.trim().toLowerCase();
+    if (
+      lowerCaseTag !== "" &&
+      !tags.some((tag) => tag.name.toLowerCase() === lowerCaseTag)
+    ) {
+      form.setValue("tags", [...tags, { name: lowerCaseTag }]);
       setInputTag("");
     }
   };

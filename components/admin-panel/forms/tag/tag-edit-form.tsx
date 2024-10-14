@@ -30,6 +30,7 @@ import { toast } from "@/hooks/use-toast";
 import { mutate } from "swr";
 import { AspectRatio } from "../../../ui/aspect-ratio";
 import Image from "next/image";
+import Compressor from "compressorjs";
 
 const TagSchema = z.object({
   name: z.string().min(1, { message: "Name is required." }),
@@ -63,19 +64,34 @@ function TagEditForm({ isEditDialogOpen, setIsEditDialogOpen, values }: any) {
     values?.avatar_url || null
   );
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      setAvatar(file); // Simpan file gambar ke state
 
-      // Gunakan FileReader untuk menampilkan preview gambar baru
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        if (event.target?.result) {
-          setImageUrl(event.target.result as string); // Set preview URL gambar baru
-        }
-      };
-      reader.readAsDataURL(file); // Baca file gambar sebagai data URL
+      // Kompresi file gambar
+      new Compressor(file, {
+        quality: 0.6, // Ubah kualitas kompresi
+        maxWidth: 800, // Resolusi maksimal
+        maxHeight: 800,
+        success(compressedBlob) {
+          const compressedFile = new File([compressedBlob], file.name, {
+            type: compressedBlob.type,
+            lastModified: Date.now(),
+          });
+          setAvatar(compressedFile);
+
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            if (event.target?.result) {
+              setImageUrl(event.target.result as string);
+            }
+          };
+          reader.readAsDataURL(compressedFile);
+        },
+        error(err) {
+          console.error("Compression failed:", err.message);
+        },
+      });
     }
   };
 
@@ -161,7 +177,7 @@ function TagEditForm({ isEditDialogOpen, setIsEditDialogOpen, values }: any) {
                   <FormLabel>Avatar</FormLabel>
                   <div className="col-span-3">
                     <FormControl>
-                      <Input type="file" onChange={handleFileChange} />
+                      <Input type="file" onChange={handleAvatarChange} />
                     </FormControl>
                     <FormMessage />
                   </div>

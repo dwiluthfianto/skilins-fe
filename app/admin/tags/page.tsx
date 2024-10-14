@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import Link from "next/link";
 
@@ -20,14 +21,12 @@ import Image from "next/image";
 import TagEditForm from "@/components/admin-panel/forms/tag/tag-edit-form";
 
 export default function TagsPage() {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
+  const [editUuid, setEditUuid] = React.useState<string | null>(null);
+  const [deleteUuid, setDeleteUuid] = React.useState<string | null>(null);
   const { tags, isLoading, isError } = useTag();
 
-  if (isLoading) <h1>Loading..</h1>;
-  if (isError) <h1>Error cuy</h1>;
+  if (isLoading) return <h1>Loading..</h1>;
+  if (isError) return <h1>Error cuy</h1>;
   return (
     <ContentLayout title="Tags">
       <Breadcrumb>
@@ -61,7 +60,7 @@ export default function TagsPage() {
           <TagForm />
         </div>
         <div className="z-30 grid gap-6 md:grid-cols-3 lg:grid-cols-4">
-          {tags?.map((tag) => (
+          {tags?.map((tag: any) => (
             <div
               key={tag.uuid}
               className="flex flex-col gap-10 rounded-lg border bg-background p-8"
@@ -82,22 +81,19 @@ export default function TagsPage() {
                 </p>
               </div>
               <div className="w-full grow flex items-end">
-                <Button onClick={() => setIsEditDialogOpen(true)}>Edit</Button>
-                <Button
-                  variant="link"
-                  onClick={() => setIsDeleteDialogOpen(true)}
-                >
+                <Button onClick={() => setEditUuid(tag.uuid)}>Edit</Button>
+                <Button variant="link" onClick={() => setDeleteUuid(tag.uuid)}>
                   Delete
                 </Button>
               </div>
               <TagEditForm
-                isEditDialogOpen={isEditDialogOpen}
-                setIsEditDialogOpen={setIsEditDialogOpen}
+                isEditDialogOpen={editUuid === tag.uuid}
+                setIsEditDialogOpen={() => setEditUuid(null)}
                 values={tag}
               />
               <DeleteDialog
-                isDeleteDialogOpen={isDeleteDialogOpen}
-                setIsDeleteDialogOpen={setIsDeleteDialogOpen}
+                isDeleteDialogOpen={deleteUuid === tag.uuid}
+                setIsDeleteDialogOpen={() => setDeleteUuid(null)}
                 pathApi={`/tags/${tag.uuid}`}
               />
             </div>

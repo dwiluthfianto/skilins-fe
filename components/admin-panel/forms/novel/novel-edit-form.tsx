@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { BookMarked, CheckIcon, CircleX } from "lucide-react";
+import { CheckIcon, CircleX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import {
@@ -10,7 +10,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 
@@ -50,6 +49,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import Image from "next/image";
+import Compressor from "compressorjs";
 
 const NovelSchema = z.object({
   title: z
@@ -98,7 +98,7 @@ function NovelEditForm({ isEditDialogOpen, setIsEditDialogOpen, values }: any) {
         form.setValue("author", foundStudent.name);
       }
     }
-  }, [values?.author, student?.data]);
+  }, [values?.author, student?.data, form]);
 
   React.useEffect(() => {
     if (!isEditDialogOpen) {
@@ -115,7 +115,7 @@ function NovelEditForm({ isEditDialogOpen, setIsEditDialogOpen, values }: any) {
         tags: values?.tags || [],
       });
     }
-  }, [isEditDialogOpen, values, form]);
+  }, [isEditDialogOpen, values, form, student?.data]);
 
   const [inputTag, setInputTag] = React.useState<string>("");
   const [inputSubject, setInputSubject] = React.useState<string>("");
@@ -128,15 +128,31 @@ function NovelEditForm({ isEditDialogOpen, setIsEditDialogOpen, values }: any) {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      setImage(file);
 
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        if (event.target?.result) {
-          setImageUrl(event.target.result as string);
-        }
-      };
-      reader.readAsDataURL(file);
+      // Kompresi file gambar
+      new Compressor(file, {
+        quality: 0.6, // Ubah kualitas kompresi
+        maxWidth: 1400, // Resolusi maksimal
+        maxHeight: 1600,
+        success(compressedBlob) {
+          const compressedFile = new File([compressedBlob], file.name, {
+            type: compressedBlob.type,
+            lastModified: Date.now(),
+          });
+          setImage(compressedFile);
+
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            if (event.target?.result) {
+              setImageUrl(event.target.result as string);
+            }
+          };
+          reader.readAsDataURL(compressedFile);
+        },
+        error(err) {
+          console.error("Compression failed:", err.message);
+        },
+      });
     }
   };
   const [fileMedia, setFileMedia] = React.useState<File | null>(null);
@@ -166,10 +182,13 @@ function NovelEditForm({ isEditDialogOpen, setIsEditDialogOpen, values }: any) {
   if (isError) return <h1>Error</h1>;
 
   const tags = form.watch("tags") || [];
-
   const addTag = () => {
-    if (inputTag.trim() !== "") {
-      form.setValue("tags", [...tags, { name: inputTag }]);
+    const lowerCaseTag = inputTag.trim().toLowerCase();
+    if (
+      lowerCaseTag !== "" &&
+      !tags.some((tag) => tag.name.toLowerCase() === lowerCaseTag)
+    ) {
+      form.setValue("tags", [...tags, { name: lowerCaseTag }]);
       setInputTag("");
     }
   };

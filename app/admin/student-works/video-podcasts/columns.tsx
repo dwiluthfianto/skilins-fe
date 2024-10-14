@@ -52,7 +52,7 @@ export const columns: ColumnDef<Video>[] = [
     cell: ({ row }) => (
       <AspectRatio ratio={4 / 3} className="h-full relative">
         <Image
-          src={row.original.thumbnail}
+          src={`${row.original.thumbnail}?t=${new Date().getTime()}`}
           alt="Image"
           layout="fill"
           objectFit="cover"
@@ -183,7 +183,7 @@ export const columns: ColumnDef<Video>[] = [
     cell: ({ row }) => {
       return (
         <a
-          href={row.original.file_url}
+          href={`${row.original.file_url}?t=${new Date().getTime()}`}
           className="text-pink-600 items-center flex gap-2"
         >
           <Youtube width={16} />

@@ -43,7 +43,7 @@ function DeleteDialog({
       toast({
         title: "Error!",
         description:
-          error.response.data.statusCode === 400
+          error?.response.data.statusCode === 400
             ? "Major cannot be deleted because major is used"
             : "An error occurred while delete the major.",
         variant: "destructive",

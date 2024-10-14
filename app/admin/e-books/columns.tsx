@@ -45,7 +45,7 @@ export const columns: ColumnDef<eBooks>[] = [
     header: "Thumbnail",
     cell: ({ row }) => (
       <Image
-        src={row.original.thumbnail}
+        src={`${row.original.thumbnail}?t=${new Date().getTime()}`}
         alt="Image"
         className=" object-cover"
         width={96}
@@ -213,7 +213,7 @@ export const columns: ColumnDef<eBooks>[] = [
     cell: ({ row }) => {
       return (
         <a
-          href={row.original.file_url}
+          href={`${row.original.file_url}?t=${new Date().getTime()}`}
           className="text-pink-600 items-center flex gap-2"
         >
           <FileText width={16} />

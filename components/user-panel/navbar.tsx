@@ -19,7 +19,11 @@ import { Button } from "../ui/button";
 import { ModeToggle } from "../mode-toggle";
 import { format } from "date-fns";
 
-export function Navbar() {
+interface NavbarProps {
+  title: string;
+}
+
+export function Navbar({ title }: NavbarProps) {
   const { user, isLoading } = useUser();
 
   if (isLoading) return <div>Loading...</div>;
@@ -30,7 +34,7 @@ export function Navbar() {
         <div className="mx-4 sm:mx-8 flex h-14 items-center">
           <div className="flex items-center space-x-4 lg:space-x-0">
             <SheetMenu />
-            <div className="flex items-center"></div>
+            <h1 className="font-bold">{title}</h1>
           </div>
           <div className="flex flex-1 items-center justify-end space-x-4">
             <Button variant="ghost">Sign up</Button>
@@ -46,6 +50,7 @@ export function Navbar() {
       <div className="mx-4 sm:mx-8 flex h-14 items-center">
         <div className="flex items-center space-x-4 lg:space-x-0">
           <SheetMenu />
+          <h1 className="font-bold">{title}</h1>
         </div>
         <div className="flex flex-1 items-center justify-end space-x-4">
           <Button variant={"outline"} className="hidden md:flex">

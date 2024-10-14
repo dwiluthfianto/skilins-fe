@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { CalendarIcon, CheckIcon, CircleX, Proportions } from "lucide-react";
+import { CalendarIcon, CheckIcon, CircleX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import {
@@ -10,7 +10,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 
@@ -52,6 +51,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import Image from "next/image";
+import Compressor from "compressorjs";
 
 const ReportSchema = z.object({
   title: z
@@ -105,7 +105,7 @@ function ReportEditForm({
         form.setValue("author", foundStudent.name);
       }
     }
-  }, [values?.creator, student?.data]);
+  }, [values?.creator, student?.data, form]);
 
   React.useEffect(() => {
     if (!isEditDialogOpen) {
@@ -124,7 +124,7 @@ function ReportEditForm({
       });
       setImageUrl(values?.thumbnail || null); // Reset image URL
     }
-  }, [isEditDialogOpen, values, form]);
+  }, [isEditDialogOpen, values, form, student?.data]);
 
   const [inputTag, setInputTag] = React.useState<string>("");
   const [inputSubject, setInputSubject] = React.useState<string>("");
@@ -137,15 +137,31 @@ function ReportEditForm({
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      setImage(file);
 
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        if (event.target?.result) {
-          setImageUrl(event.target.result as string);
-        }
-      };
-      reader.readAsDataURL(file);
+      // Kompresi file gambar
+      new Compressor(file, {
+        quality: 0.6, // Ubah kualitas kompresi
+        maxWidth: 1400, // Resolusi maksimal
+        maxHeight: 1600,
+        success(compressedBlob) {
+          const compressedFile = new File([compressedBlob], file.name, {
+            type: compressedBlob.type,
+            lastModified: Date.now(),
+          });
+          setImage(compressedFile);
+
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            if (event.target?.result) {
+              setImageUrl(event.target.result as string);
+            }
+          };
+          reader.readAsDataURL(compressedFile);
+        },
+        error(err) {
+          console.error("Compression failed:", err.message);
+        },
+      });
     }
   };
 
@@ -177,8 +193,12 @@ function ReportEditForm({
   const tags = form.watch("tags") || [];
 
   const addTag = () => {
-    if (inputTag.trim() !== "") {
-      form.setValue("tags", [...tags, { name: inputTag }]);
+    const lowerCaseTag = inputTag.trim().toLowerCase();
+    if (
+      lowerCaseTag !== "" &&
+      !tags.some((tag) => tag.name.toLowerCase() === lowerCaseTag)
+    ) {
+      form.setValue("tags", [...tags, { name: lowerCaseTag }]);
       setInputTag("");
     }
   };

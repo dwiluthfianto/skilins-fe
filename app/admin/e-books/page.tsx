@@ -13,13 +13,8 @@ import {
 
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
-import { useEbook } from "@/hooks/use-ebook";
 
 export default function EbooksPage() {
-  const { ebooks, isLoading, isError } = useEbook(1);
-
-  if (isLoading) return <h1>Loading..</h1>;
-  if (isError) return <h1>Error</h1>;
   return (
     <ContentLayout title="Users">
       <Breadcrumb>
@@ -44,7 +39,7 @@ export default function EbooksPage() {
       <div className="w-full py-8">
         <div className=" mx-auto">
           <div className="flex flex-col gap-4 ">
-            <DataTable columns={columns} data={ebooks} />
+            <DataTable columns={columns} />
           </div>
         </div>
       </div>

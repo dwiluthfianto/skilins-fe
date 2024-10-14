@@ -9,7 +9,7 @@ export default function NovelPage() {
   if (isError) return <h1>loading..</h1>;
 
   return (
-    <ContentLayout title="Ebook">
+    <ContentLayout title="Novels">
       <Novels data={novels} />
     </ContentLayout>
   );

@@ -7,19 +7,20 @@ import {
 } from "@/components/ui/carousel";
 import Image from "next/image";
 
-export function Ebook({ data }: any) {
+export function EbookCarousel({ data }: any) {
   const ebooks = data;
+
   return (
     <section className="py-2">
       <div>
         <div className="mb-2 flex flex-col justify-between  md:flex-row md:items-center ">
           <div>
             <h2 className="mb-2 text-xl font-bold md:mb-3 md:text-2xl">
-              Latest e-books
+              eBooks
             </h2>
           </div>
           <a
-            href="#"
+            href="ebooks"
             className="group flex items-center text-xs font-medium md:text-base"
           >
             Show all{" "}
@@ -37,7 +38,7 @@ export function Ebook({ data }: any) {
           }}
         >
           <CarouselContent>
-            {ebooks.map((item: any) => {
+            {ebooks?.map((item: any) => {
               return (
                 <CarouselItem
                   key={item.uuid}

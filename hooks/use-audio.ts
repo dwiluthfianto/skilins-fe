@@ -15,3 +15,18 @@ export function useAudio(page: number) {
     mutate,
   };
 }
+
+export function useAudioLatest(page: number, limit: number, week: number) {
+  const { data, error, mutate } = useSWR(
+    `/contents/audios/latest?page=${page}&limit=${limit}&week=${week}`,
+    fetcher
+  );
+
+  return {
+    audios: data?.data,
+    totalPages: data?.lastPage || 1,
+    isLoading: !error && !data,
+    isError: error,
+    mutate,
+  };
+}
