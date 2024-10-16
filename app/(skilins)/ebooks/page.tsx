@@ -9,7 +9,7 @@ export default function EbookPage() {
   if (isError) return <h1>loading..</h1>;
 
   return (
-    <ContentLayout title="Ebook">
+    <ContentLayout title="Ebooks">
       <Ebooks data={ebooks} />
     </ContentLayout>
   );

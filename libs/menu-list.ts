@@ -8,7 +8,7 @@ import {
   SquareUser,
   Shapes,
   Layers,
-  FileHeart,
+  BookMarked,
 } from "lucide-react";
 
 type Submenu = {
@@ -77,7 +77,7 @@ export function getMenuList(pathname: string): Group[] {
       groupLabel: "Content",
       menus: [
         {
-          href: "",
+          href: "/admin/blogs",
           label: "Blogs",
           active: pathname.includes("/admin/blogs"),
           icon: SquarePen,
@@ -87,7 +87,7 @@ export function getMenuList(pathname: string): Group[] {
           href: "/admin/e-books",
           label: "e-Books",
           active: pathname.includes("/admin/e-books"),
-          icon: FileHeart,
+          icon: BookMarked,
           submenus: [],
         },
         {

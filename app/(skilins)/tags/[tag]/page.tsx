@@ -1,18 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ContentLayout } from "@/components/user-panel/content-layout";
-import Categories from "@/components/user-panel/ui/categories";
+import Tags from "@/components/user-panel/ui/tags";
 import axios from "@/utils/axios";
 
 export default async function Category({
   params,
 }: {
-  params: { category: string };
+  params: { tag: string };
 }) {
-  const { category } = params;
+  const { tag } = params;
 
   return (
-    <ContentLayout title={category.charAt(0).toUpperCase() + category.slice(1)}>
-      <Categories category={category} />
+    <ContentLayout title={tag.charAt(0).toUpperCase() + tag.slice(1)}>
+      <Tags tag={tag} />
     </ContentLayout>
   );
 }
@@ -20,7 +20,7 @@ export default async function Category({
 export async function generateStaticParams() {
   let page = 1;
   const limit = 25;
-  let allEbooks: any[] = [];
+  const allTags: any[] = [];
   let hasMore = true;
 
   // Lakukan fetching hingga tidak ada lagi data yang dikembalikan
@@ -28,15 +28,23 @@ export async function generateStaticParams() {
     const res = await axios.get(`/contents/ebooks?page=${page}&limit=${limit}`);
     const ebooks = res.data?.data || [];
 
-    // Gabungkan data dari halaman saat ini
-    allEbooks = allEbooks.concat(ebooks);
+    // Gabungkan tags dari setiap ebook
+    ebooks.forEach((ebook: any) => {
+      ebook.tags.forEach((tag: any) => {
+        if (
+          !allTags.some(
+            (existingTag: any) => existingTag.tag === tag.name.toLowerCase()
+          )
+        ) {
+          allTags.push({ tag: tag.name.toLowerCase() });
+        }
+      });
+    });
 
     // Cek apakah data masih ada di halaman berikutnya
     hasMore = ebooks.length === limit;
     page++;
   }
 
-  return allEbooks.map((ebook: any) => ({
-    category: ebook.category.toLowerCase(),
-  }));
+  return allTags;
 }

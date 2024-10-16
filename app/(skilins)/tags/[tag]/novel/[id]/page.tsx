@@ -25,15 +25,15 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 
-export default async function EbookDetail({ params }: any) {
+export default async function NovelsDetail({ params }: any) {
   const { id } = params;
 
-  const res = (await axios.get(`/contents/ebooks/${id}`)).data;
+  const res = (await axios.get(`/contents/novels/${id}`)).data;
 
-  const ebook = res.data;
+  const novel = res.data;
 
   return (
-    <ContentLayout title={ebook.title}>
+    <ContentLayout title={novel.title}>
       <section className="py-2">
         <div className="container">
           <Breadcrumb>
@@ -46,18 +46,12 @@ export default async function EbookDetail({ params }: any) {
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="/ebooks">ebooks</Link>
+                  <Link href="/novels">Novels</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link href="/ebooks">ebooks</Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>{ebook.title}</BreadcrumbPage>
+                <BreadcrumbPage>{novel.title}</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -65,7 +59,7 @@ export default async function EbookDetail({ params }: any) {
             <div>
               <AspectRatio ratio={3 / 4}>
                 <Image
-                  src={ebook.thumbnail}
+                  src={novel.thumbnail}
                   alt="placeholder"
                   layout="fill"
                   objectFit="cover"
@@ -78,16 +72,16 @@ export default async function EbookDetail({ params }: any) {
               <Card className=" rounded-lg p-4 lg:p-10">
                 <CardContent>
                   <p className=" text-lg text-muted-foreground">
-                    {ebook.author}
+                    {novel.author}
                   </p>
                   <h2 className="text-balance text-3xl font-medium md:text-5xl">
-                    {ebook.title}
+                    {novel.title}
                   </h2>
                   <p className="mt-1 md:mt-6 text text-lg max-w-xl lg:max-w-xl leading-relaxed tracking-tight font-medium">
                     Description
                   </p>
                   <p className="mt-1 text-muted-foreground line-clamp-3 text-justify">
-                    {ebook.description}
+                    {novel.description}
                   </p>
                   <Dialog>
                     <DialogTrigger asChild>
@@ -106,7 +100,7 @@ export default async function EbookDetail({ params }: any) {
                       </DialogHeader>
                       <ScrollArea className="max-h-[600px] pr-4">
                         <p className="text-justify text-muted-foreground	">
-                          {ebook.description}
+                          {novel.description}
                         </p>
                       </ScrollArea>
                     </DialogContent>
@@ -114,7 +108,7 @@ export default async function EbookDetail({ params }: any) {
                   <div className="flex gap-4 py-4 lg:py-8 flex-col items-start">
                     <div className="flex gap-2 flex-col">
                       <p className="text-lg max-w-xl lg:max-w-xl leading-relaxed tracking-tight font-medium">
-                        Detail Ebook
+                        Detail novel
                       </p>
                     </div>
                     <div className="flex flex-col w-full">
@@ -124,31 +118,16 @@ export default async function EbookDetail({ params }: any) {
                             <p className="text-muted-foreground text-sm">
                               Category
                             </p>
-                            <p>{ebook.category}</p>
+                            <p>{novel.category}</p>
                           </div>
                         </div>
-                        <div className="flex flex-row gap-6 items-start">
-                          <div className="flex flex-col gap-1">
-                            <p className="text-muted-foreground text-sm">
-                              ISBN
-                            </p>
-                            <p>{ebook.isbn} </p>
-                          </div>
-                        </div>
-                        <div className="flex flex-row gap-6 items-start">
-                          <div className="flex flex-col gap-1">
-                            <p className="text-muted-foreground text-sm">
-                              Publication
-                            </p>
-                            <p>{ebook.publication}</p>
-                          </div>
-                        </div>
+
                         <div className="flex flex-row gap-6 w-full items-start">
                           <div className="flex flex-col gap-1">
                             <p className="text-muted-foreground text-sm">
                               Pages
                             </p>
-                            <p>{ebook.pages}</p>
+                            <p>{novel.pages}</p>
                           </div>
                         </div>
                         <div className="flex flex-row gap-6 items-start">
@@ -156,16 +135,33 @@ export default async function EbookDetail({ params }: any) {
                             <p className="text-muted-foreground text-sm">
                               Release Date
                             </p>
-                            <p>{format(ebook.release_date, "dd MMM yyyy")}</p>
+                            <p>{format(novel.created_at, "dd MMM yyyy")}</p>
                           </div>
                         </div>
+                        <div className="flex flex-row gap-6 items-start">
+                          <div className="flex flex-col gap-1">
+                            <p className="text-muted-foreground text-sm">
+                              Subjects
+                            </p>
+                            <p>
+                              {novel.subjects.map(
+                                (subject: any, index: number) => (
+                                  <Badge key={index} className="mr-2">
+                                    {subject}
+                                  </Badge>
+                                )
+                              )}
+                            </p>
+                          </div>
+                        </div>
+
                         <div className="flex flex-row gap-6 items-start">
                           <div className="flex flex-col gap-1">
                             <p className="text-muted-foreground text-sm">
                               Tags
                             </p>
                             <p>
-                              {ebook.tags.map((tag: any, index: number) => (
+                              {novel.tags.map((tag: any, index: number) => (
                                 <Badge key={index} className="mr-2">
                                   {tag.name}
                                 </Badge>
@@ -189,23 +185,23 @@ export default async function EbookDetail({ params }: any) {
 export async function generateStaticParams() {
   let page = 1;
   const limit = 25;
-  let allEbooks: any[] = [];
+  let allNovels: any[] = [];
   let hasMore = true;
 
   // Lakukan fetching hingga tidak ada lagi data yang dikembalikan
   while (hasMore) {
-    const res = await axios.get(`/contents/ebooks?page=${page}&limit=${limit}`);
-    const ebooks = res.data?.data || [];
+    const res = await axios.get(`/contents/novels?page=${page}&limit=${limit}`);
+    const novels = res.data?.data || [];
 
     // Gabungkan data dari halaman saat ini
-    allEbooks = allEbooks.concat(ebooks);
+    allNovels = allNovels.concat(novels);
 
     // Cek apakah data masih ada di halaman berikutnya
-    hasMore = ebooks.length === limit;
+    hasMore = novels.length === limit;
     page++;
   }
 
-  return allEbooks.map((ebook: any) => ({
-    id: ebook.uuid,
+  return allNovels.map((novel: any) => ({
+    id: novel.uuid,
   }));
 }

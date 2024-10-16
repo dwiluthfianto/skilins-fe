@@ -5,17 +5,17 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
-import { useContentByCategory } from "@/hooks/use-content";
-import { useCategoryByName } from "@/hooks/use-category";
+import { useContentByTag } from "@/hooks/use-content";
+import { useTagByName } from "@/hooks/use-tag";
 
-export default function Categories({ category }: { category: string }) {
+export default function Tags({ tag }: { tag: string }) {
   const [page, setPage] = useState(1);
   const [content, setContent] = useState("ebooks");
   const limit = 25;
 
-  const { contents, isError, isLoading } = useContentByCategory(
+  const { contents, isError, isLoading } = useContentByTag(
     content,
-    category,
+    tag,
     page,
     limit
   );
@@ -48,9 +48,7 @@ export default function Categories({ category }: { category: string }) {
     videos: "aspect-[4/3]",
     novels: "aspect-[3/4]",
   };
-  const { category: dataCategory } = useCategoryByName(
-    category.charAt(0).toUpperCase() + category.slice(1)
-  );
+  const { tag: dataTag } = useTagByName(tag);
 
   if (isError) return <div>Error loading contents</div>;
 
@@ -58,8 +56,8 @@ export default function Categories({ category }: { category: string }) {
     <div className="space-y-4">
       <div className="flex flex-col items-start justify-between gap-4 md:items-center md:flex-row">
         <div>
-          <p className="text-4xl font-bold">{dataCategory?.name}</p>
-          <p className="mt-2 text-sm">{dataCategory?.description}</p>
+          <p className="text-4xl font-bold">{dataTag?.name}</p>
+          <p className="mt-2 text-sm">{dataTag?.description}</p>
         </div>
       </div>
       <Tabs defaultValue="ebooks" className="space-y-6">
@@ -91,9 +89,7 @@ export default function Categories({ category }: { category: string }) {
               }`}
             >
               <Link
-                href={`${item.category.toLowerCase()}/${content.slice(0, -1)}/${
-                  item.uuid
-                }`}
+                href={`${tag}/${content.slice(0, -1)}/${item.uuid}`}
                 className="flex flex-col justify-between group"
               >
                 <div className={`flex ${aspectRatios[content]} text-clip`}>

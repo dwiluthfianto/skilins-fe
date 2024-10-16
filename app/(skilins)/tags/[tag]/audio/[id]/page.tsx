@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ContentLayout } from "@/components/user-panel/content-layout";
-import axios from "@/utils/axios";
+import axios from "../../../../../../utils/axios";
 import Image from "next/image";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { format } from "date-fns";
@@ -23,17 +23,31 @@ import {
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { AudioPlayer } from "@/components/user-panel/ui/audio-player";
 import { Card, CardContent } from "@/components/ui/card";
 
-export default async function EbookDetail({ params }: any) {
+export default async function AudioDetail({ params }: any) {
   const { id } = params;
+  const res = (await axios.get(`/contents/audios/${id}`)).data;
 
-  const res = (await axios.get(`/contents/ebooks/${id}`)).data;
+  const audio = res.data;
 
-  const ebook = res.data;
+  const formatTime = (time: number) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+  };
+
+  const track = {
+    src: audio.file_url,
+    title: audio.title,
+    category: audio.category,
+    image: audio.thumbnail,
+    creator: audio.creator,
+  };
 
   return (
-    <ContentLayout title={ebook.title}>
+    <ContentLayout title={audio.title}>
       <section className="py-2">
         <div className="container">
           <Breadcrumb>
@@ -46,26 +60,20 @@ export default async function EbookDetail({ params }: any) {
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="/ebooks">ebooks</Link>
+                  <Link href="/audio-podcasts">audios</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link href="/ebooks">ebooks</Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>{ebook.title}</BreadcrumbPage>
+                <BreadcrumbPage>{audio.title}</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
-          <div className="grid grid-cols-1 md:grid-cols-4 mt-8">
-            <div>
-              <AspectRatio ratio={3 / 4}>
+          <div className="grid grid-cols-1 lg:grid-cols-4 mt-8">
+            <div className="relative">
+              <AspectRatio ratio={1 / 1}>
                 <Image
-                  src={ebook.thumbnail}
+                  src={audio.thumbnail}
                   alt="placeholder"
                   layout="fill"
                   objectFit="cover"
@@ -73,21 +81,22 @@ export default async function EbookDetail({ params }: any) {
                   className=" rounded-lg"
                 />
               </AspectRatio>
+              <AudioPlayer data={track} />
             </div>
-            <div className="lg:px-10  col-span-3">
+            <div className="lg:mx-10 col-span-3 ">
               <Card className=" rounded-lg p-4 lg:p-10">
                 <CardContent>
                   <p className=" text-lg text-muted-foreground">
-                    {ebook.author}
+                    {audio.creator}
                   </p>
                   <h2 className="text-balance text-3xl font-medium md:text-5xl">
-                    {ebook.title}
+                    {audio.title}
                   </h2>
                   <p className="mt-1 md:mt-6 text text-lg max-w-xl lg:max-w-xl leading-relaxed tracking-tight font-medium">
                     Description
                   </p>
                   <p className="mt-1 text-muted-foreground line-clamp-3 text-justify">
-                    {ebook.description}
+                    {audio.description}
                   </p>
                   <Dialog>
                     <DialogTrigger asChild>
@@ -106,7 +115,7 @@ export default async function EbookDetail({ params }: any) {
                       </DialogHeader>
                       <ScrollArea className="max-h-[600px] pr-4">
                         <p className="text-justify text-muted-foreground	">
-                          {ebook.description}
+                          {audio.description}
                         </p>
                       </ScrollArea>
                     </DialogContent>
@@ -114,7 +123,7 @@ export default async function EbookDetail({ params }: any) {
                   <div className="flex gap-4 py-4 lg:py-8 flex-col items-start">
                     <div className="flex gap-2 flex-col">
                       <p className="text-lg max-w-xl lg:max-w-xl leading-relaxed tracking-tight font-medium">
-                        Detail Ebook
+                        Detail Audio
                       </p>
                     </div>
                     <div className="flex flex-col w-full">
@@ -124,31 +133,15 @@ export default async function EbookDetail({ params }: any) {
                             <p className="text-muted-foreground text-sm">
                               Category
                             </p>
-                            <p>{ebook.category}</p>
+                            <p>{audio.category}</p>
                           </div>
                         </div>
                         <div className="flex flex-row gap-6 items-start">
                           <div className="flex flex-col gap-1">
                             <p className="text-muted-foreground text-sm">
-                              ISBN
+                              Duration
                             </p>
-                            <p>{ebook.isbn} </p>
-                          </div>
-                        </div>
-                        <div className="flex flex-row gap-6 items-start">
-                          <div className="flex flex-col gap-1">
-                            <p className="text-muted-foreground text-sm">
-                              Publication
-                            </p>
-                            <p>{ebook.publication}</p>
-                          </div>
-                        </div>
-                        <div className="flex flex-row gap-6 w-full items-start">
-                          <div className="flex flex-col gap-1">
-                            <p className="text-muted-foreground text-sm">
-                              Pages
-                            </p>
-                            <p>{ebook.pages}</p>
+                            <p>{formatTime(audio.duration)} </p>
                           </div>
                         </div>
                         <div className="flex flex-row gap-6 items-start">
@@ -156,7 +149,23 @@ export default async function EbookDetail({ params }: any) {
                             <p className="text-muted-foreground text-sm">
                               Release Date
                             </p>
-                            <p>{format(ebook.release_date, "dd MMM yyyy")}</p>
+                            <p>{format(audio.created_at, "dd MMM yyyy")}</p>
+                          </div>
+                        </div>
+                        <div className="flex flex-row gap-6 items-start">
+                          <div className="flex flex-col gap-1">
+                            <p className="text-muted-foreground text-sm">
+                              Subjects
+                            </p>
+                            <p>
+                              {audio.subjects.map(
+                                (subject: any, index: number) => (
+                                  <Badge key={index} className="mr-2">
+                                    {subject}
+                                  </Badge>
+                                )
+                              )}
+                            </p>
                           </div>
                         </div>
                         <div className="flex flex-row gap-6 items-start">
@@ -165,9 +174,12 @@ export default async function EbookDetail({ params }: any) {
                               Tags
                             </p>
                             <p>
-                              {ebook.tags.map((tag: any, index: number) => (
-                                <Badge key={index} className="mr-2">
-                                  {tag.name}
+                              {audio.tags.map((tag: any, index: number) => (
+                                <Badge
+                                  key={index}
+                                  className="mr-2 items-center"
+                                >
+                                  #{tag.name}
                                 </Badge>
                               ))}
                             </p>
@@ -189,23 +201,23 @@ export default async function EbookDetail({ params }: any) {
 export async function generateStaticParams() {
   let page = 1;
   const limit = 25;
-  let allEbooks: any[] = [];
+  let allAudios: any[] = [];
   let hasMore = true;
 
   // Lakukan fetching hingga tidak ada lagi data yang dikembalikan
   while (hasMore) {
-    const res = await axios.get(`/contents/ebooks?page=${page}&limit=${limit}`);
-    const ebooks = res.data?.data || [];
+    const res = await axios.get(`/contents/audios?page=${page}&limit=${limit}`);
+    const audios = res.data?.data || [];
 
     // Gabungkan data dari halaman saat ini
-    allEbooks = allEbooks.concat(ebooks);
+    allAudios = allAudios.concat(audios);
 
     // Cek apakah data masih ada di halaman berikutnya
-    hasMore = ebooks.length === limit;
+    hasMore = audios.length === limit;
     page++;
   }
 
-  return allEbooks.map((ebook: any) => ({
+  return allAudios.map((ebook: any) => ({
     id: ebook.uuid,
   }));
 }

@@ -11,3 +11,14 @@ export function useTag() {
     mutate,
   };
 }
+
+export function useTagByName(name: string) {
+  const { data, error, mutate } = useSWR(`/tags/${name}`, fetcher);
+
+  return {
+    tag: data?.data,
+    isLoading: !error && !data,
+    isError: error,
+    mutate,
+  };
+}

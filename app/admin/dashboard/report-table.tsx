@@ -23,17 +23,21 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+import { useReport } from "@/hooks/use-report";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import ReportForm from "@/components/admin-panel/forms/report/report-form";
-import { useReport } from "@/hooks/use-report";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -51,13 +55,7 @@ export function DataTable<TData, TValue>({
 
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const [pagination, setPagination] = React.useState({
-    pageIndex: 0, // 0-based index untuk TanStack
-    pageSize: 25, // 25 rows per page
-  });
-  const { reports, isLoading, isError, totalPages } = useReport(
-    pagination.pageIndex + 1
-  );
+  const { reports, isLoading, isError, totalPages } = useReport(1);
 
   const table = useReactTable({
     data: reports || [],
@@ -70,72 +68,56 @@ export function DataTable<TData, TValue>({
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
 
-    manualPagination: true,
     pageCount: totalPages,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
-      pagination,
     },
-    onPaginationChange: setPagination,
   });
 
   if (isLoading) return <h1>Loading..</h1>;
   if (isError) return <h1>Error</h1>;
 
   return (
-    <div className="flex flex-col justify-between h-full p-6 bg-white border rounded-md dark:bg-black aspect-square lg:aspect-auto">
-      <div className="flex flex-col items-start justify-between gap-4 md:items-center md:flex-row">
+    <Card className="flex flex-col h-full overflow-auto rounded-md lg:col-span-2 lg:aspect-auto">
+      <CardHeader className="flex flex-row items-center justify-between">
         <div>
-          <p className="text-4xl font-bold">PKL Reports</p>
-          <p className="text-sm">
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-          </p>
+          <CardTitle>PKL Reports</CardTitle>
+          <CardDescription>Showing the latest PKL Reports.</CardDescription>
         </div>
-        <ReportForm />
-      </div>
-      <div className="flex items-center py-4">
-        <Input
-          placeholder="Filter title..."
-          value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("title")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
-
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Columns
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-
-      <div className="border rounded-md">
-        <Table>
+        <div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="ml-auto">
+                Columns
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {table
+                .getAllColumns()
+                .filter((column) => column.getCanHide())
+                .map((column) => {
+                  return (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(!!value)
+                      }
+                    >
+                      {column.id}
+                    </DropdownMenuCheckboxItem>
+                  );
+                })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <Table className="w-full h-full">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -183,29 +165,7 @@ export function DataTable<TData, TValue>({
             )}
           </TableBody>
         </Table>
-      </div>
-      <div className="flex items-center justify-end py-4 space-x-2">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Next
-        </Button>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }

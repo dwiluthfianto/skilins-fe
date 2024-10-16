@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ContentLayout } from "@/components/user-panel/content-layout";
 import axios from "@/utils/axios";
-import Image from "next/image";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { format } from "date-fns";
 import {
@@ -25,15 +24,33 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 
-export default async function EbookDetail({ params }: any) {
+export default async function VideoDetail({ params }: any) {
   const { id } = params;
+  const res = (await axios.get(`/contents/videos/${id}`)).data;
 
-  const res = (await axios.get(`/contents/ebooks/${id}`)).data;
+  const video = res.data;
 
-  const ebook = res.data;
+  function convertToEmbedLink(youtubeUrl: any) {
+    // Regular expression untuk menangkap video ID dari URL YouTube
+    const regex =
+      /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)|youtu\.be\/([a-zA-Z0-9_-]+)/;
+    const match = youtubeUrl.match(regex);
+
+    if (match && (match[1] || match[2])) {
+      // Ambil video ID dari URL YouTube
+      const videoId = match[1] || match[2];
+
+      // Return embed link
+      return `https://www.youtube.com/embed/${videoId}`;
+    } else {
+      return null; // Jika tidak valid
+    }
+  }
+
+  const embedUrl = convertToEmbedLink(video.file_url);
 
   return (
-    <ContentLayout title={ebook.title}>
+    <ContentLayout title={video.title}>
       <section className="py-2">
         <div className="container">
           <Breadcrumb>
@@ -46,48 +63,43 @@ export default async function EbookDetail({ params }: any) {
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="/ebooks">ebooks</Link>
+                  <Link href="/audio-podcasts">videos</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link href="/ebooks">ebooks</Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>{ebook.title}</BreadcrumbPage>
+                <BreadcrumbPage>{video.title}</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
+          <div className="mt-4">
+            <AspectRatio ratio={16 / 9}>
+              <iframe
+                className="w-full h-full"
+                src={embedUrl || undefined}
+                title="YouTube video player"
+                frameBorder="0"
+                allow="accelerometer; clipboard-write; encrypted-media; gyroscope; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+              ></iframe>
+            </AspectRatio>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-4 mt-8">
-            <div>
-              <AspectRatio ratio={3 / 4}>
-                <Image
-                  src={ebook.thumbnail}
-                  alt="placeholder"
-                  layout="fill"
-                  objectFit="cover"
-                  objectPosition="center"
-                  className=" rounded-lg"
-                />
-              </AspectRatio>
-            </div>
-            <div className="lg:px-10  col-span-3">
+            <div className="  col-span-4">
               <Card className=" rounded-lg p-4 lg:p-10">
                 <CardContent>
                   <p className=" text-lg text-muted-foreground">
-                    {ebook.author}
+                    {video.creator}
                   </p>
                   <h2 className="text-balance text-3xl font-medium md:text-5xl">
-                    {ebook.title}
+                    {video.title}
                   </h2>
                   <p className="mt-1 md:mt-6 text text-lg max-w-xl lg:max-w-xl leading-relaxed tracking-tight font-medium">
                     Description
                   </p>
                   <p className="mt-1 text-muted-foreground line-clamp-3 text-justify">
-                    {ebook.description}
+                    {video.description}
                   </p>
                   <Dialog>
                     <DialogTrigger asChild>
@@ -106,7 +118,7 @@ export default async function EbookDetail({ params }: any) {
                       </DialogHeader>
                       <ScrollArea className="max-h-[600px] pr-4">
                         <p className="text-justify text-muted-foreground	">
-                          {ebook.description}
+                          {video.description}
                         </p>
                       </ScrollArea>
                     </DialogContent>
@@ -114,7 +126,7 @@ export default async function EbookDetail({ params }: any) {
                   <div className="flex gap-4 py-4 lg:py-8 flex-col items-start">
                     <div className="flex gap-2 flex-col">
                       <p className="text-lg max-w-xl lg:max-w-xl leading-relaxed tracking-tight font-medium">
-                        Detail Ebook
+                        Detail Video
                       </p>
                     </div>
                     <div className="flex flex-col w-full">
@@ -124,31 +136,15 @@ export default async function EbookDetail({ params }: any) {
                             <p className="text-muted-foreground text-sm">
                               Category
                             </p>
-                            <p>{ebook.category}</p>
+                            <p>{video.category}</p>
                           </div>
                         </div>
                         <div className="flex flex-row gap-6 items-start">
                           <div className="flex flex-col gap-1">
                             <p className="text-muted-foreground text-sm">
-                              ISBN
+                              Duration
                             </p>
-                            <p>{ebook.isbn} </p>
-                          </div>
-                        </div>
-                        <div className="flex flex-row gap-6 items-start">
-                          <div className="flex flex-col gap-1">
-                            <p className="text-muted-foreground text-sm">
-                              Publication
-                            </p>
-                            <p>{ebook.publication}</p>
-                          </div>
-                        </div>
-                        <div className="flex flex-row gap-6 w-full items-start">
-                          <div className="flex flex-col gap-1">
-                            <p className="text-muted-foreground text-sm">
-                              Pages
-                            </p>
-                            <p>{ebook.pages}</p>
+                            <p>{video.duration} </p>
                           </div>
                         </div>
                         <div className="flex flex-row gap-6 items-start">
@@ -156,7 +152,23 @@ export default async function EbookDetail({ params }: any) {
                             <p className="text-muted-foreground text-sm">
                               Release Date
                             </p>
-                            <p>{format(ebook.release_date, "dd MMM yyyy")}</p>
+                            <p>{format(video.created_at, "dd MMM yyyy")}</p>
+                          </div>
+                        </div>
+                        <div className="flex flex-row gap-6 items-start">
+                          <div className="flex flex-col gap-1">
+                            <p className="text-muted-foreground text-sm">
+                              Subjects
+                            </p>
+                            <p>
+                              {video.subjects.map(
+                                (subject: any, index: number) => (
+                                  <Badge key={index} className="mr-2">
+                                    {subject}
+                                  </Badge>
+                                )
+                              )}
+                            </p>
                           </div>
                         </div>
                         <div className="flex flex-row gap-6 items-start">
@@ -165,9 +177,12 @@ export default async function EbookDetail({ params }: any) {
                               Tags
                             </p>
                             <p>
-                              {ebook.tags.map((tag: any, index: number) => (
-                                <Badge key={index} className="mr-2">
-                                  {tag.name}
+                              {video.tags.map((tag: any, index: number) => (
+                                <Badge
+                                  key={index}
+                                  className="mr-2 items-center"
+                                >
+                                  #{tag.name}
                                 </Badge>
                               ))}
                             </p>
@@ -189,23 +204,23 @@ export default async function EbookDetail({ params }: any) {
 export async function generateStaticParams() {
   let page = 1;
   const limit = 25;
-  let allEbooks: any[] = [];
+  let allVideos: any[] = [];
   let hasMore = true;
 
   // Lakukan fetching hingga tidak ada lagi data yang dikembalikan
   while (hasMore) {
-    const res = await axios.get(`/contents/ebooks?page=${page}&limit=${limit}`);
-    const ebooks = res.data?.data || [];
+    const res = await axios.get(`/contents/videos?page=${page}&limit=${limit}`);
+    const videos = res.data?.data || [];
 
     // Gabungkan data dari halaman saat ini
-    allEbooks = allEbooks.concat(ebooks);
+    allVideos = allVideos.concat(videos);
 
     // Cek apakah data masih ada di halaman berikutnya
-    hasMore = ebooks.length === limit;
+    hasMore = videos.length === limit;
     page++;
   }
 
-  return allEbooks.map((ebook: any) => ({
-    id: ebook.uuid,
+  return allVideos.map((video: any) => ({
+    id: video.uuid,
   }));
 }

@@ -230,7 +230,7 @@ function VideoForm() {
               <FormField
                 control={form.control}
                 name="thumbnail"
-                render={({ field }) => (
+                render={() => (
                   <FormItem className="grid grid-cols-4 items-center gap-2">
                     <FormLabel>Thumbnail</FormLabel>
                     <div className="col-span-3">
