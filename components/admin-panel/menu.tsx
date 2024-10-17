@@ -29,8 +29,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ModeToggle } from "../mode-toggle";
 import { useUser } from "@/hooks/use-user";
-import Cookies from "js-cookie";
-import axios from "../../utils/axios";
+import { logout } from "@/utils/auth-service";
 
 interface MenuProps {
   isOpen: boolean | undefined;
@@ -41,9 +40,7 @@ export function Menu({ isOpen }: MenuProps) {
 
   const handleLogout = async () => {
     try {
-      await axios.post("/auth/logout"); // API untuk logout
-
-      Cookies.remove("accessToken");
+      await logout();
 
       router.push("/auth/admin/login");
     } catch (error) {

@@ -3,8 +3,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import axios from "../../../../utils/axios";
-import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -30,7 +28,7 @@ import { UserRound } from "lucide-react";
 import { CardTitle } from "@/components/ui/card";
 import { ToastAction } from "@/components/ui/toast";
 import { Toaster } from "@/components/ui/toaster";
-import jwt from "jsonwebtoken";
+import { login } from "@/utils/auth-service";
 
 const LoginSchema = z.object({
   email: z
@@ -57,44 +55,20 @@ export default function Login() {
 
   async function onSubmit(data: z.infer<typeof LoginSchema>) {
     try {
-      const { data: userData } = await axios.post("/auth/login", data);
+      await login(data.email, data.password);
 
-      Cookies.set("accessToken", userData.accessToken, { expires: 15 / 1440 });
-
-      const decodedToken = jwt.decode(userData.accessToken) as jwt.JwtPayload;
-
-      // Periksa apakah role adalah admin
-      if (decodedToken && decodedToken.role === "admin") {
-        toast({
-          title: "Login Successful!",
-          description: (
-            <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-              <code className="text-white">
-                {JSON.stringify(userData.message, null, 2)}
-              </code>
-            </pre>
-          ),
-        });
-
-        router.push("/admin/dashboard");
-      } else {
-        toast({
-          title: "Access Denied!",
-          description: "You do not have permission to access this page.",
-          action: <ToastAction altText="Try again">Try again</ToastAction>,
-        });
-      }
-    } catch (error: unknown) {
-      console.log();
+      router.push("/admin/dashboard");
+    } catch (error) {
       toast({
         title: "Login failed!",
         description:
           error.response?.data.statusCode === 401 ? (
-            <p className="text-red-600"> Wrong password! </p>
+            <p> Wrong password! </p>
           ) : (
             "Wrong email!"
           ),
         action: <ToastAction altText="Try again">Try again</ToastAction>,
+        variant: "destructive",
       });
     }
   }

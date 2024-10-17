@@ -18,6 +18,7 @@ import {
 import { Button } from "../ui/button";
 import { ModeToggle } from "../mode-toggle";
 import { format } from "date-fns";
+import { logout } from "@/utils/auth-service";
 
 interface NavbarProps {
   title: string;
@@ -25,6 +26,16 @@ interface NavbarProps {
 
 export function Navbar({ title }: NavbarProps) {
   const { user, isLoading } = useUser();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+
+      window.location.reload();
+    } catch (error) {
+      console.error("Logout failed", error);
+    }
+  };
 
   if (isLoading) return <div>Loading...</div>;
 
@@ -79,8 +90,8 @@ export function Navbar({ title }: NavbarProps) {
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <LogOut width={16} className="mr-2" /> Logout
+              <DropdownMenuItem onClick={() => handleLogout()}>
+                <LogOut width={16} className="mr-2" /> Sign out
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

@@ -127,7 +127,7 @@ export function Blog() {
             },
           }}
         >
-          <CarouselContent className="ml-[calc(theme(container.padding)-20px)] mr-[calc(theme(container.padding))] 2xl:ml-[calc(50vw-700px+theme(container.padding)-20px)] 2xl:mr-[calc(50vw-700px+theme(container.padding))]">
+          <CarouselContent>
             {data.map((item) => (
               <CarouselItem
                 key={item.id}

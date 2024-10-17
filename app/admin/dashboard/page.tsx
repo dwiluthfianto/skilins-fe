@@ -2,7 +2,7 @@
 
 import { ContentLayout } from "@/components/admin-panel/content-layout";
 
-import { MoveDownLeft, MoveUpRight } from "lucide-react";
+import { CircleFadingPlus, MoveDownLeft, MoveUpRight } from "lucide-react";
 import ContentChart from "@/components/admin-panel/charts/content-chart";
 import ChartTwo from "@/components/admin-panel/charts/chart-two";
 import ChartThree from "@/components/admin-panel/charts/chart-three";
@@ -12,6 +12,7 @@ import {
 } from "@/hooks/use-analytics";
 import { DataTable } from "./report-table";
 import { columns } from "./columns";
+import { Card, CardContent } from "@/components/ui/card";
 
 const calculatePercentageChange = (newValue: number, oldValue: number) => {
   if (oldValue === 0) return newValue === 0 ? 0 : 100;
@@ -45,65 +46,73 @@ export default function DashboardPage() {
       <div className="w-full py-4">
         <div className="mx-auto ">
           <div className="grid w-full grid-cols-1 gap-4 text-left sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
-            <div className="flex flex-col justify-between gap-0 p-6 bg-white border rounded-md dark:bg-black">
-              {parseFloat(percentageChangeMonthly.toFixed(2)) <= 0 ? (
-                <MoveDownLeft className="w-4 h-4 mb-10 text-destructive" />
-              ) : (
-                <MoveUpRight className="w-4 h-4 mb-10 text-primary" />
-              )}
-              <h2 className="flex flex-row items-end max-w-xl gap-4 text-4xl tracking-tighter text-left font-regular">
-                {userAnalytics.activeUsersMonthly}
-                <span
-                  className={`text-sm tracking-normal text-muted-foreground`}
-                >
-                  {percentageChangeMonthly.toFixed(2)}%
-                </span>
-              </h2>
-              <p className="max-w-xl text-base leading-relaxed tracking-tight text-left text-muted-foreground">
-                Monthly active users
-              </p>
-            </div>
-            <div className="flex flex-col justify-between gap-0 p-6 bg-white border rounded-md dark:bg-black">
-              {parseFloat(percentageChangeDaily.toFixed(2)) <= 0 ? (
-                <MoveDownLeft className="w-4 h-4 mb-10 text-destructive" />
-              ) : (
-                <MoveUpRight className="w-4 h-4 mb-10 text-primary" />
-              )}
-              <h2 className="flex flex-row items-end max-w-xl gap-4 text-4xl tracking-tighter text-left font-regular">
-                {userAnalytics.activeUsersDaily}
-                <span className="text-sm tracking-normal text-muted-foreground">
-                  {percentageChangeDaily.toFixed(2)}%
-                </span>
-              </h2>
-              <p className="max-w-xl text-base leading-relaxed tracking-tight text-left text-muted-foreground">
-                Daily active users
-              </p>
-            </div>
-            <div className="flex flex-col justify-between gap-0 p-6 bg-white border rounded-md dark:bg-black">
-              {parseFloat(percentageChangeMonthlyContent.toFixed(2)) <= 0 ? (
-                <MoveDownLeft className="w-4 h-4 mb-10 text-destructive" />
-              ) : (
-                <MoveUpRight className="w-4 h-4 mb-10 text-primary" />
-              )}
-              <h2 className="flex flex-row items-end max-w-xl gap-4 text-4xl tracking-tighter text-left font-regular">
-                {monthlyContent.monthlyContentCreate}
-                <span className="text-sm tracking-normal text-muted-foreground">
-                  {percentageChangeMonthlyContent.toFixed(2)}%
-                </span>
-              </h2>
-              <p className="max-w-xl text-base leading-relaxed tracking-tight text-left text-muted-foreground">
-                Monthly contents create
-              </p>
-            </div>
-            <div className="flex flex-col justify-between gap-0 p-6 bg-white border rounded-md dark:bg-black">
-              <MoveUpRight className="w-4 h-4 mb-10 text-primary" />
-              <h2 className="flex flex-row items-end max-w-xl gap-4 text-4xl tracking-tighter text-left font-regular">
-                {totalContents}
-              </h2>
-              <p className="max-w-xl text-base leading-relaxed tracking-tight text-left text-muted-foreground">
-                Total contents
-              </p>
-            </div>
+            <Card className="flex flex-col justify-between  rounded-md ">
+              <CardContent className="p-6">
+                {parseFloat(percentageChangeMonthly.toFixed(2)) <= 0 ? (
+                  <MoveDownLeft className="w-4 h-4 mb-10 text-destructive" />
+                ) : (
+                  <MoveUpRight className="w-4 h-4 mb-10 text-primary" />
+                )}
+                <h2 className="flex flex-row items-end max-w-xl gap-4 text-4xl tracking-tighter text-left font-regular">
+                  {userAnalytics.activeUsersMonthly}
+                  <span
+                    className={`text-sm tracking-normal text-muted-foreground`}
+                  >
+                    {percentageChangeMonthly.toFixed(2)}%
+                  </span>
+                </h2>
+                <p className="max-w-xl text-base leading-relaxed tracking-tight text-left text-muted-foreground">
+                  Monthly active users
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="flex flex-col justify-between  rounded-md">
+              <CardContent className="p-6">
+                {parseFloat(percentageChangeDaily.toFixed(2)) <= 0 ? (
+                  <MoveDownLeft className="w-4 h-4 mb-10 text-destructive" />
+                ) : (
+                  <MoveUpRight className="w-4 h-4 mb-10 text-primary" />
+                )}
+                <h2 className="flex flex-row items-end max-w-xl gap-4 text-4xl tracking-tighter text-left font-regular">
+                  {userAnalytics.activeUsersDaily}
+                  <span className="text-sm tracking-normal text-muted-foreground">
+                    {percentageChangeDaily.toFixed(2)}%
+                  </span>
+                </h2>
+                <p className="max-w-xl text-base leading-relaxed tracking-tight text-left text-muted-foreground">
+                  Daily active users
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="flex flex-col justify-between   rounded-md ">
+              <CardContent className="p-6">
+                {parseFloat(percentageChangeMonthlyContent.toFixed(2)) <= 0 ? (
+                  <MoveDownLeft className="w-4 h-4 mb-10 text-destructive" />
+                ) : (
+                  <MoveUpRight className="w-4 h-4 mb-10 text-primary" />
+                )}
+                <h2 className="flex flex-row items-end max-w-xl gap-4 text-4xl tracking-tighter text-left font-regular">
+                  {monthlyContent.monthlyContentCreate}
+                  <span className="text-sm tracking-normal text-muted-foreground">
+                    {percentageChangeMonthlyContent.toFixed(2)}%
+                  </span>
+                </h2>
+                <p className="max-w-xl text-base leading-relaxed tracking-tight text-left text-muted-foreground">
+                  Monthly contents create
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="flex flex-col justify-between border rounded-md">
+              <CardContent className="p-6">
+                <CircleFadingPlus className="w-4 h-4 mb-10 text-primary" />
+                <h2 className="flex flex-row items-end max-w-xl gap-4 text-4xl tracking-tighter text-left font-regular">
+                  {totalContents}
+                </h2>
+                <p className="max-w-xl text-base leading-relaxed tracking-tight text-left text-muted-foreground">
+                  Total contents
+                </p>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
