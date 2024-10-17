@@ -1,12 +1,28 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
+import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 
 export function Reports({ data }: any) {
   const reports = data;
   return (
     <section className="py-2">
+      <div className="flex flex-col gap-10 mb-8">
+        <div className="flex gap-4 flex-col items-start">
+          <div>
+            <Badge>Contents</Badge>
+          </div>
+          <div className="flex gap-2 flex-col">
+            <h2 className="text-3xl md:text-5xl tracking-tighter max-w-xl font-regular text-left">
+              PKL Reports
+            </h2>
+            <p className="text-lg max-w-xl lg:max-w-lg leading-relaxed tracking-tight text-muted-foreground  text-left">
+              Empowering Insights, Shaping Futures.
+            </p>
+          </div>
+        </div>
+      </div>
       <div className="w-full grid gap-2 grid-cols-2 md:grid-cols-4 lg:grid-cols-6">
         {reports.map((item: any) => {
           return (

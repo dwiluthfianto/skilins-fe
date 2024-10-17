@@ -6,6 +6,7 @@ import { ContentLayout } from "@/components/user-panel/content-layout";
 import React from "react";
 import Image from "next/image";
 import { useCategory } from "@/hooks/use-category";
+import { Badge } from "@/components/ui/badge";
 
 export default function CategoriesPage() {
   const { categories, isLoading, isError } = useCategory();
@@ -13,14 +14,21 @@ export default function CategoriesPage() {
   if (isLoading) return <h1>Loading..</h1>;
   if (isError) return <h1>Error cuy</h1>;
   return (
-    <ContentLayout title="categories">
+    <ContentLayout title="">
       <section className="py-4 space-y-8">
-        <div className="flex flex-col items-start md:items-center md:flex-row justify-between gap-4">
-          <div>
-            <p className="font-bold text-4xl">Categories</p>
-            <p className="text-sm mt-2">
-              Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-            </p>
+        <div className="flex flex-col gap-10 mb-8">
+          <div className="flex gap-4 flex-col items-start">
+            <div>
+              <Badge>Groups</Badge>
+            </div>
+            <div className="flex gap-2 flex-col">
+              <h2 className="text-3xl md:text-5xl tracking-tighter max-w-xl font-regular text-left">
+                Categories
+              </h2>
+              <p className="text-lg max-w-xl lg:max-w-lg leading-relaxed tracking-tight text-muted-foreground  text-left">
+                Categorizing Knowledge, Finding Your Passion.
+              </p>
+            </div>
           </div>
         </div>
         <div className="z-30 grid gap-6 md:grid-cols-3 lg:grid-cols-4">

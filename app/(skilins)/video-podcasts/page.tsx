@@ -9,7 +9,7 @@ export default function VideoPage() {
   if (isError) return <h1>loading..</h1>;
 
   return (
-    <ContentLayout title="Video Podcasts">
+    <ContentLayout title="">
       <Videos data={videos} />
     </ContentLayout>
   );

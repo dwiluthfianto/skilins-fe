@@ -9,7 +9,7 @@ export default function AudioPage() {
   if (isError) return <h1>loading..</h1>;
 
   return (
-    <ContentLayout title="Audio Podcasts">
+    <ContentLayout title="">
       <Audios data={audios} />
     </ContentLayout>
   );
