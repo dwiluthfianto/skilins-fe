@@ -23,6 +23,8 @@ import {
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import LikeComponent from "@/components/user-panel/ui/like";
+import CommentComponent from "@/components/user-panel/ui/comment";
 
 export default async function VideoDetail({ params }: any) {
   const { slug } = params;
@@ -51,8 +53,8 @@ export default async function VideoDetail({ params }: any) {
 
   return (
     <ContentLayout title={video.title}>
-      <section className="py-2">
-        <div className="container">
+      <section className="md:py-2">
+        <div className="md:container">
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
@@ -87,8 +89,8 @@ export default async function VideoDetail({ params }: any) {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 mt-8">
             <div className="  col-span-4">
-              <Card className=" rounded-lg p-4 lg:p-10">
-                <CardContent>
+              <Card className=" rounded-lg ">
+                <CardContent className="p-6">
                   <p className=" text-lg text-muted-foreground">
                     {video.creator}
                   </p>
@@ -195,6 +197,12 @@ export default async function VideoDetail({ params }: any) {
               </Card>
             </div>
           </div>
+          <Card className=" py-8 lg:py-16 antialiased mt-10">
+            <CardContent className="space-y-4">
+              <LikeComponent likes={video.likes} contentUuid={slug} />
+              <CommentComponent comment={video.comments} contentUuid={slug} />
+            </CardContent>
+          </Card>
         </div>
       </section>
     </ContentLayout>

@@ -38,11 +38,11 @@ export default function ContentChart() {
       color: "hsl(var(--chart-1))",
     },
     audioPodcast: {
-      label: "Audio Podcast",
+      label: "Audio",
       color: "hsl(var(--chart-1))",
     },
     videoPodcast: {
-      label: "Video Podcast",
+      label: "Video",
       color: "hsl(var(--chart-1))",
     },
     blog: {

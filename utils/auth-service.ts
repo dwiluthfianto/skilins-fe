@@ -11,7 +11,9 @@ export const login = async (email: string, password: string) => {
   const userRole = decodedToken.role; // Assuming 'role' is the key in your JWT
 
   // Store tokens and role in cookies
-  Cookies.set("accessToken", accessToken);
+  Cookies.set("accessToken", accessToken, {
+    expires: new Date().setTime(new Date().getTime() + 15 * 60 * 1000), // 15 minutes expire
+  });
   Cookies.set("userRole", userRole); // Store user role
 
   return response.data;

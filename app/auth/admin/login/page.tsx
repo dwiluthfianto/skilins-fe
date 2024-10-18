@@ -29,6 +29,8 @@ import { CardTitle } from "@/components/ui/card";
 import { ToastAction } from "@/components/ui/toast";
 import { Toaster } from "@/components/ui/toaster";
 import { login } from "@/utils/auth-service";
+import { useEffect } from "react";
+import Cookies from "js-cookie";
 
 const LoginSchema = z.object({
   email: z
@@ -52,6 +54,16 @@ export default function Login() {
       password: "",
     },
   });
+
+  const hasAccessToken = () => {
+    return !!Cookies.get("accessToken");
+  };
+
+  useEffect(() => {
+    if (hasAccessToken()) {
+      router.push("/admin/dashboard");
+    }
+  }, [router]);
 
   async function onSubmit(data: z.infer<typeof LoginSchema>) {
     try {

@@ -89,9 +89,7 @@ export function DataTable<TData, TValue>({
       <div className="flex flex-col items-start md:items-center md:flex-row justify-between gap-4">
         <div>
           <p className="font-bold text-4xl">Audio Podcasts</p>
-          <p className="text-sm">
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-          </p>
+          <p className="text-sm">Voices that Inspire, Stories that Connect.</p>
         </div>
         <AudioForm />
       </div>

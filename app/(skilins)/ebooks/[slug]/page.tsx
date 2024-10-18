@@ -24,10 +24,12 @@ import {
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import CommentComponent from "@/components/user-panel/ui/comment";
+import { BookText } from "lucide-react";
+import LikeComponent from "@/components/user-panel/ui/like";
 
 export default async function EbookDetail({ params }: any) {
   const { slug } = params;
-  console.log(slug);
 
   const res = (await axios.get(`/contents/ebooks/${slug}`)).data;
 
@@ -35,8 +37,8 @@ export default async function EbookDetail({ params }: any) {
 
   return (
     <ContentLayout title={ebook.title}>
-      <section className="py-2">
-        <div className="container">
+      <section className="md:py-2">
+        <div className="md:container">
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
@@ -56,7 +58,7 @@ export default async function EbookDetail({ params }: any) {
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
-          <div className="grid grid-cols-1 md:grid-cols-4 mt-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 mt-8 gap-y-6 md:gap-8 lg:gap-10">
             <div>
               <AspectRatio ratio={3 / 4}>
                 <Image
@@ -69,15 +71,23 @@ export default async function EbookDetail({ params }: any) {
                 />
               </AspectRatio>
             </div>
-            <div className="lg:px-10  col-span-3">
-              <Card className=" rounded-lg p-4 lg:p-10">
-                <CardContent>
-                  <p className=" text-lg text-muted-foreground">
-                    {ebook.author}
-                  </p>
-                  <h2 className="text-balance text-3xl font-medium md:text-5xl">
-                    {ebook.title}
-                  </h2>
+            <div className="col-span-3">
+              <Card className=" rounded-lg ">
+                <CardContent className="p-6">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <p className=" text-lg text-muted-foreground">
+                        {ebook.author}
+                      </p>
+                      <h2 className="text-balance text-3xl font-medium md:text-5xl">
+                        {ebook.title}
+                      </h2>
+                    </div>
+                    <Button variant={"default"}>
+                      <BookText width={16} className="mr-2" />
+                      <Link href={ebook.file_url}>Read book</Link>
+                    </Button>
+                  </div>
                   <p className="mt-1 md:mt-6 text text-lg max-w-xl lg:max-w-xl leading-relaxed tracking-tight font-medium">
                     Description
                   </p>
@@ -175,6 +185,12 @@ export default async function EbookDetail({ params }: any) {
               </Card>
             </div>
           </div>
+          <Card className=" py-8 lg:py-16 antialiased mt-10">
+            <CardContent className="space-y-4">
+              <LikeComponent likes={ebook.likes} contentUuid={slug} />
+              <CommentComponent comment={ebook.comments} contentUuid={slug} />
+            </CardContent>
+          </Card>
         </div>
       </section>
     </ContentLayout>

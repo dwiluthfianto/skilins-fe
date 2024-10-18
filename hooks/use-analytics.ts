@@ -26,6 +26,17 @@ export function useAnalyticsCountContent() {
   };
 }
 
+export function useFeedbackStats() {
+  const { data, error, mutate } = useSWR("/analytics/feedback-stats", fetcher);
+
+  return {
+    data,
+    isLoading: !error && !data,
+    isError: error,
+    mutate,
+  };
+}
+
 export function useAnalyticsPklReportStats() {
   const { data, error, mutate } = useSWR(`/analytics/pkl-reports`, fetcher);
 

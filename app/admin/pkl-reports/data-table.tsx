@@ -90,9 +90,7 @@ export function DataTable<TData, TValue>({
       <div className="flex flex-col items-start justify-between gap-4 md:items-center md:flex-row">
         <div>
           <p className="text-4xl font-bold">PKL Reports</p>
-          <p className="text-sm">
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-          </p>
+          <p className="text-sm">Empowering Insights, Shaping Futures.</p>
         </div>
         <ReportForm />
       </div>

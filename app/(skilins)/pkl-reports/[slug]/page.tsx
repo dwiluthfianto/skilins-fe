@@ -24,6 +24,9 @@ import {
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { BookText } from "lucide-react";
+import LikeComponent from "@/components/user-panel/ui/like";
+import CommentComponent from "@/components/user-panel/ui/comment";
 
 export default async function ReportDetail({ params }: any) {
   const { slug } = params;
@@ -33,9 +36,9 @@ export default async function ReportDetail({ params }: any) {
   const report = res.data;
 
   return (
-    <ContentLayout title={slug}>
-      <section className="py-2">
-        <div className="container">
+    <ContentLayout title={report.title}>
+      <section className="md:py-2">
+        <div className="md:container">
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
@@ -55,7 +58,7 @@ export default async function ReportDetail({ params }: any) {
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
-          <div className="grid grid-cols-1 md:grid-cols-4 mt-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 mt-8 gap-y-6 md:gap-8 lg:gap-10">
             <div>
               <AspectRatio ratio={3 / 4}>
                 <Image
@@ -68,15 +71,23 @@ export default async function ReportDetail({ params }: any) {
                 />
               </AspectRatio>
             </div>
-            <div className="lg:px-10  col-span-3">
-              <Card className=" rounded-lg p-4 lg:p-10">
-                <CardContent>
-                  <p className=" text-lg text-muted-foreground">
-                    {report.author}
-                  </p>
-                  <h2 className="text-balance text-3xl font-medium md:text-5xl">
-                    {report.title}
-                  </h2>
+            <div className="col-span-3">
+              <Card className=" rounded-lg ">
+                <CardContent className="p-6">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <p className=" text-lg text-muted-foreground">
+                        {report.author}
+                      </p>
+                      <h2 className="text-balance text-3xl font-medium md:text-5xl">
+                        {report.title}
+                      </h2>
+                    </div>
+                    <Button variant={"default"}>
+                      <BookText width={16} className="mr-2" />
+                      <Link href={report.file_url}>Read book</Link>
+                    </Button>
+                  </div>
                   <p className="mt-1 md:mt-6 text text-lg max-w-xl lg:max-w-xl leading-relaxed tracking-tight font-medium">
                     Description
                   </p>
@@ -176,6 +187,12 @@ export default async function ReportDetail({ params }: any) {
               </Card>
             </div>
           </div>
+          <Card className=" py-8 lg:py-16 antialiased mt-10">
+            <CardContent className="space-y-4">
+              <LikeComponent likes={report.likes} contentUuid={slug} />
+              <CommentComponent comment={report.comments} contentUuid={slug} />
+            </CardContent>
+          </Card>
         </div>
       </section>
     </ContentLayout>

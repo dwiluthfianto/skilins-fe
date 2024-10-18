@@ -59,7 +59,7 @@ export default function CategoriesPage() {
           <div>
             <p className="font-bold text-4xl">Categories</p>
             <p className="text-sm">
-              Lorem ipsum, dolor sit amet consectetur adipisicing elit.
+              Categorizing Knowledge, Finding Your Passion.
             </p>
           </div>
           <CategoryForm />

@@ -91,7 +91,7 @@ export function DataTable<TData, TValue>({
         <div>
           <p className="font-bold text-4xl">Video Podcasts</p>
           <p className="text-sm">
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit.
+            Navigating the Challenges, One Story at a Time.
           </p>
         </div>
         <VideoForm />

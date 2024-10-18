@@ -25,6 +25,8 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { AudioPlayer } from "@/components/user-panel/ui/audio-player";
 import { Card, CardContent } from "@/components/ui/card";
+import LikeComponent from "@/components/user-panel/ui/like";
+import CommentComponent from "@/components/user-panel/ui/comment";
 
 export default async function AudioDetail({ params }: any) {
   const { slug } = params;
@@ -48,8 +50,8 @@ export default async function AudioDetail({ params }: any) {
 
   return (
     <ContentLayout title={audio.title}>
-      <section className="py-2">
-        <div className="container">
+      <section className="md:py-2">
+        <div className="md:container">
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
@@ -69,7 +71,7 @@ export default async function AudioDetail({ params }: any) {
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
-          <div className="grid grid-cols-1 mt-8 lg:grid-cols-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 mt-8 gap-y-6 md:gap-8 lg:gap-10">
             <div className="relative">
               <AspectRatio ratio={1 / 1}>
                 <Image
@@ -83,9 +85,9 @@ export default async function AudioDetail({ params }: any) {
               </AspectRatio>
               <AudioPlayer data={track} />
             </div>
-            <div className="col-span-3 lg:mx-10 ">
-              <Card className="p-4 rounded-lg lg:p-10">
-                <CardContent>
+            <div className="col-span-3 ">
+              <Card className="rounded-lg ">
+                <CardContent className="p-6">
                   <p className="text-lg text-muted-foreground">
                     {audio.creator}
                   </p>
@@ -192,6 +194,12 @@ export default async function AudioDetail({ params }: any) {
               </Card>
             </div>
           </div>
+          <Card className=" py-8 lg:py-16 antialiased mt-10">
+            <CardContent className="space-y-4">
+              <LikeComponent likes={audio.likes} contentUuid={slug} />
+              <CommentComponent comment={audio.comments} contentUuid={slug} />
+            </CardContent>
+          </Card>
         </div>
       </section>
     </ContentLayout>

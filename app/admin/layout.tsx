@@ -5,10 +5,10 @@ import withRole from "@/utils/with-role";
 
 function DemoLayout({ children }: { children: React.ReactNode }) {
   return (
-    <>
+    <div>
       <AdminPanelLayout>{children}</AdminPanelLayout>
       <Toaster />
-    </>
+    </div>
   );
 }
 
