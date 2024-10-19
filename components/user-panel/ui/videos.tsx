@@ -2,10 +2,13 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { useVideo } from "@/hooks/use-video";
 import Image from "next/image";
+import { LoadingContent2 } from "./skeletons/skeleton-card";
 
-export function Videos({ data }: any) {
-  const videos = data;
+export function Videos() {
+  const { videos, isLoading } = useVideo(1);
+  if (isLoading) return <LoadingContent2 />;
   return (
     <section className="py-2">
       <div className="flex flex-col gap-10 mb-8">

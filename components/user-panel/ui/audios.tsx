@@ -2,10 +2,13 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { useAudio } from "@/hooks/use-audio";
 import Image from "next/image";
+import { LoadingContent3 } from "./skeletons/skeleton-card";
 
-export function Audios({ data }: any) {
-  const audios = data;
+export function Audios() {
+  const { audios, isLoading } = useAudio(1);
+  if (isLoading) return <LoadingContent3 />;
   return (
     <section className="py-2">
       <div className="flex flex-col gap-10 mb-8">

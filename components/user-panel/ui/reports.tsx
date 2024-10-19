@@ -2,10 +2,14 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { useReport } from "@/hooks/use-report";
 import Image from "next/image";
+import { LoadingContent } from "./skeletons/skeleton-card";
 
-export function Reports({ data }: any) {
-  const reports = data;
+export function Reports() {
+  const { reports, isLoading } = useReport(1);
+  if (isLoading) return <LoadingContent />;
+
   return (
     <section className="py-2">
       <div className="flex flex-col gap-10 mb-8">

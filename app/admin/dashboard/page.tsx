@@ -35,10 +35,9 @@ export default function DashboardPage() {
     userAnalytics.lastDailyActiveUsers
   );
 
-  const { monthlyContent, totalContents } = data;
   const percentageChangeMonthlyContent = calculatePercentageChange(
-    monthlyContent.monthlyContentCreate,
-    monthlyContent.lastMonthContentCreate
+    data?.monthlyContent.monthlyContentCreate,
+    data?.monthlyContent.lastMonthContentCreate
   );
 
   return (
@@ -92,7 +91,7 @@ export default function DashboardPage() {
                   <MoveUpRight className="w-4 h-4 mb-10 text-primary" />
                 )}
                 <h2 className="flex flex-row items-end max-w-xl gap-4 text-4xl tracking-tighter text-left font-regular">
-                  {monthlyContent.monthlyContentCreate}
+                  {data?.monthlyContent.monthlyContentCreate}
                   <span className="text-sm tracking-normal text-muted-foreground">
                     {percentageChangeMonthlyContent.toFixed(2)}%
                   </span>
@@ -106,7 +105,7 @@ export default function DashboardPage() {
               <CardContent className="p-6">
                 <CircleFadingPlus className="w-4 h-4 mb-10 text-primary" />
                 <h2 className="flex flex-row items-end max-w-xl gap-4 text-4xl tracking-tighter text-left font-regular">
-                  {totalContents}
+                  {data?.totalContents}
                 </h2>
                 <p className="max-w-xl text-base leading-relaxed tracking-tight text-left text-muted-foreground">
                   Total contents

@@ -19,6 +19,7 @@ import { Button } from "../ui/button";
 import { ModeToggle } from "../mode-toggle";
 import { format } from "date-fns";
 import { logout } from "@/utils/auth-service";
+import Link from "next/link";
 
 interface NavbarProps {
   title: string;
@@ -48,8 +49,12 @@ export function Navbar({ title }: NavbarProps) {
             <h1 className="font-bold">{title}</h1>
           </div>
           <div className="flex flex-1 items-center justify-end space-x-4">
-            <Button variant="ghost">Sign up</Button>
-            <Button variant="default">Log in</Button>
+            <Button variant="ghost">
+              <Link href={"/auth/user/register"}>Sign up</Link>
+            </Button>
+            <Button variant="default">
+              <Link href={"/auth/user/login"}>Log in</Link>
+            </Button>
           </div>
         </div>
       </header>

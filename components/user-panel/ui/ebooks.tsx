@@ -2,10 +2,14 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { useEbook } from "@/hooks/use-ebook";
 import Image from "next/image";
+import { LoadingContent } from "./skeletons/skeleton-card";
 
-export function Ebooks({ data }: any) {
-  const ebooks = data;
+export function Ebooks() {
+  const { ebooks, isLoading } = useEbook(1);
+
+  if (isLoading) return <LoadingContent />;
   return (
     <section className="py-2">
       <div className="flex flex-col gap-10 mb-8">
@@ -24,7 +28,7 @@ export function Ebooks({ data }: any) {
         </div>
       </div>
       <div className="w-full grid gap-2 grid-cols-2 md:grid-cols-4 lg:grid-cols-6">
-        {ebooks.map((item: any) => {
+        {ebooks?.map((item: any) => {
           return (
             <div key={item.uuid} className="pl-[20px] max-w-[250px]">
               <a

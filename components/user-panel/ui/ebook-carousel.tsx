@@ -8,15 +8,18 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel";
+import { useEbookLatest } from "@/hooks/use-ebook";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { LoadingCarousel } from "./skeletons/skeleton-card";
 
-export function EbookCarousel({ data }: any) {
-  const ebooks = data;
+export function EbookCarousel() {
+  const { ebooks, isLoading } = useEbookLatest(1, 10, 12);
   const [carouselApi, setCarouselApi] = useState<CarouselApi>();
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(false);
+
   useEffect(() => {
     if (!carouselApi) {
       return;
@@ -31,6 +34,9 @@ export function EbookCarousel({ data }: any) {
       carouselApi.off("select", updateSelection);
     };
   }, [carouselApi]);
+
+  if (isLoading) return <LoadingCarousel />;
+
   return (
     <section className="py-2">
       <div>

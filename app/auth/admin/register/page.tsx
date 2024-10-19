@@ -28,9 +28,7 @@ import { UserRound } from "lucide-react";
 import { CardTitle } from "@/components/ui/card";
 import { ToastAction } from "@/components/ui/toast";
 import { Toaster } from "@/components/ui/toaster";
-import { login } from "@/utils/auth-service";
-import { useEffect } from "react";
-import { useUser } from "@/hooks/use-user";
+import { register } from "@/utils/auth-service";
 
 const LoginSchema = z.object({
   email: z
@@ -42,9 +40,12 @@ const LoginSchema = z.object({
   password: z.string().min(6, {
     message: "Password must be at least 6 characters.",
   }),
+  fullName: z.string().min(4, {
+    message: "Full name must be at least 4 characters.",
+  }),
 });
 
-export default function Login() {
+export default function Register() {
   const { toast } = useToast();
   const router = useRouter();
   const form = useForm<z.infer<typeof LoginSchema>>({
@@ -52,31 +53,19 @@ export default function Login() {
     defaultValues: {
       email: "",
       password: "",
+      fullName: "",
     },
   });
 
-  const { user } = useUser();
-
-  useEffect(() => {
-    if (user) {
-      router.push("/"); // Redirect to dashboard or home page
-    }
-  }, [user, router]);
-
   async function onSubmit(data: z.infer<typeof LoginSchema>) {
     try {
-      await login(data.email, data.password);
+      await register(data, "admin");
 
-      router.push("/");
+      router.push("/auth/verify-email");
     } catch (error) {
       toast({
-        title: "Login failed!",
-        description:
-          error.response?.data.statusCode === 401 ? (
-            <p> Wrong password! </p>
-          ) : (
-            "Wrong email!"
-          ),
+        title: "Failed!",
+        description: "Register fail!",
         action: <ToastAction altText="Try again">Try again</ToastAction>,
         variant: "destructive",
       });
@@ -91,9 +80,9 @@ export default function Login() {
             <Card className="mx-auto w-full max-w-md">
               <CardHeader className="items-center">
                 <UserRound className="size-10 rounded-full bg-accent p-2.5 text-muted-foreground" />
-                <CardTitle className="text-xl">Sign In</CardTitle>
+                <CardTitle className="text-xl">Sign up</CardTitle>
                 <CardDescription>
-                  Enter your information to sign in
+                  Enter your information to register
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -102,6 +91,23 @@ export default function Login() {
                     onSubmit={form.handleSubmit(onSubmit)}
                     className="grid gap-4"
                   >
+                    <FormField
+                      control={form.control}
+                      name="fullName"
+                      render={({ field }) => (
+                        <FormItem className="grid gap-2">
+                          <FormLabel>Full name</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Enter your Full name"
+                              {...field}
+                              type="text"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                     <FormField
                       control={form.control}
                       name="email"
@@ -119,6 +125,7 @@ export default function Login() {
                         </FormItem>
                       )}
                     />
+
                     <FormField
                       control={form.control}
                       name="password"
@@ -139,15 +146,15 @@ export default function Login() {
                         </FormItem>
                       )}
                     />
-                    <Button type="submit">Login</Button>
+                    <Button type="submit">Register</Button>
                   </form>
                 </Form>
               </CardContent>
             </Card>
             <div className="mx-auto flex gap-1 text-sm">
-              <p>{`Don't have an account?`}</p>
-              <a href="/auth/user/register" className="underline">
-                Sign up
+              <p>{`Already have an account?`}</p>
+              <a href="/auth/admin/login" className="underline">
+                Log in
               </a>
             </div>
           </div>

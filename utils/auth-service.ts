@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Cookies from "js-cookie";
 import axios from "@/utils/axios";
 import jwt from "jsonwebtoken";
@@ -15,6 +16,21 @@ export const login = async (email: string, password: string) => {
     expires: new Date().setTime(new Date().getTime() + 15 * 60 * 1000), // 15 minutes expire
   });
   Cookies.set("userRole", userRole); // Store user role
+
+  return response.data;
+};
+
+export const register = async (
+  data: { email: string; password: string; fullName: string },
+  role: string
+) => {
+  const { email, password, fullName } = data;
+  const response = await axios.post("/auth/register", {
+    email,
+    password,
+    full_name: fullName,
+    role,
+  });
 
   return response.data;
 };

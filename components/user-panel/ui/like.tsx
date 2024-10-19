@@ -25,9 +25,7 @@ export default function LikeComponent(props: { likes: any; contentUuid: any }) {
           `/likes/${contentUuid}/check/${user?.data.uuid}`
         );
         setLiked(response?.data?.data.liked); // Set the initial liked state based on the API response
-      } catch (error) {
-        console.log(error);
-      }
+      } catch (error) {}
     };
 
     checkIfLiked();
