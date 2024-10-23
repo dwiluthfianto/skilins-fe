@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -29,8 +28,10 @@ import { CardTitle } from "@/components/ui/card";
 import { ToastAction } from "@/components/ui/toast";
 import { Toaster } from "@/components/ui/toaster";
 import { login } from "@/utils/auth-service";
-import { useEffect } from "react";
 import { useUser } from "@/hooks/use-user";
+import Link from "next/link";
+import { AxiosError } from "axios";
+import { useEffect } from "react";
 
 const LoginSchema = z.object({
   email: z
@@ -55,33 +56,43 @@ export default function Login() {
     },
   });
 
-  const { user } = useUser();
-
-  useEffect(() => {
-    if (user) {
-      router.push("/"); // Redirect to dashboard or home page
-    }
-  }, [user, router]);
-
   async function onSubmit(data: z.infer<typeof LoginSchema>) {
     try {
       await login(data.email, data.password);
 
       router.push("/");
     } catch (error) {
-      toast({
-        title: "Login failed!",
-        description:
-          error.response?.data.statusCode === 401 ? (
-            <p> Wrong password! </p>
-          ) : (
-            "Wrong email!"
-          ),
-        action: <ToastAction altText="Try again">Try again</ToastAction>,
-        variant: "destructive",
-      });
+      if (error instanceof AxiosError) {
+        toast({
+          title: "Login failed!",
+          description:
+            error.response?.data.statusCode === 401 ? (
+              <p> Wrong password! </p>
+            ) : (
+              "Wrong email!"
+            ),
+          action: <ToastAction altText="Try again">Try again</ToastAction>,
+          variant: "destructive",
+        });
+      }
     }
   }
+
+  const { user, isLoading } = useUser();
+
+  useEffect(() => {
+    if (!isLoading && user) {
+      // Redirect sesuai dengan role user hanya ketika data user sudah di-fetch
+      if (user?.data?.role === "admin") {
+        router.push("/admin/dashboard");
+      } else if (user?.data?.role === "user") {
+        router.push("/");
+      }
+    }
+  }, [user, isLoading, router]);
+
+  // Jangan render form login jika user sudah ada (sedang redirect)
+  if (isLoading || user) return <p>Redirecting...</p>;
 
   return (
     <div>
@@ -132,13 +143,16 @@ export default function Login() {
                               {...field}
                             />
                           </FormControl>
-                          <FormDescription>
-                            Your password must be at least 6 characters long.
-                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
+                    <Link
+                      className="flex items-end w-full justify-end text-sm text-blue-400 hover:underline"
+                      href={"/auth/user/reset-password"}
+                    >
+                      Forgot password ?
+                    </Link>
                     <Button type="submit">Login</Button>
                   </form>
                 </Form>

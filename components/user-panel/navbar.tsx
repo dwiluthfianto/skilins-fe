@@ -1,9 +1,9 @@
 "use client";
 import { SheetMenu } from "@/components/user-panel/sheet-menu";
-import { cn } from "@/libs/utils";
+import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-import { CalendarDays, LogOut, Settings, UserRound } from "lucide-react";
+import { CalendarDays, LogOut, User } from "lucide-react";
 
 import { useUser } from "@/hooks/use-user";
 import {
@@ -26,19 +26,17 @@ interface NavbarProps {
 }
 
 export function Navbar({ title }: NavbarProps) {
-  const { user, isLoading } = useUser();
+  const { user, isLoading, mutate } = useUser();
 
   const handleLogout = async () => {
     try {
       await logout();
 
-      window.location.reload();
+      mutate(null, false);
     } catch (error) {
       console.error("Logout failed", error);
     }
   };
-
-  if (isLoading) return <div>Loading...</div>;
 
   if (!user) {
     return (
@@ -73,33 +71,53 @@ export function Navbar({ title }: NavbarProps) {
             <CalendarDays className="mr-2" width={18} />{" "}
             {format(new Date(), "dd MMM yy")}
           </Button>
-          <ModeToggle />
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <span className={cn("mr-3")}>
-                <Avatar>
-                  <AvatarImage src="https://github.com/shadcn.png" />
-                  <AvatarFallback>CN</AvatarFallback>
-                </Avatar>
-              </span>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56" side="bottom" align="end">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuGroup>
-                <DropdownMenuItem>
-                  <UserRound width={16} className="mr-2" /> Profile
+          {isLoading ? (
+            "loading..."
+          ) : (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <span className={cn("mr-3")}>
+                  <Avatar>
+                    <AvatarImage src="https://github.com/shadcn.png" />
+                    <AvatarFallback>CN</AvatarFallback>
+                  </Avatar>
+                </span>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" side="bottom" align="end">
+                <DropdownMenuLabel className="font-normal grid grid-cols-6 items-center justify-between">
+                  <div className="flex flex-col space-y-1 col-span-5">
+                    <p className="text-sm font-medium leading-none truncate">
+                      {user?.data.full_name}
+                    </p>
+                    <p className="text-xs leading-none text-muted-foreground truncate">
+                      {user?.data.email}
+                    </p>
+                  </div>
+                  <ModeToggle />
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <DropdownMenuItem className="hover:cursor-pointer" asChild>
+                    <Link href="/account" className="flex items-center">
+                      <User className="w-4 h-4 mr-3 text-muted-foreground" />
+                      Account
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  className="hover:cursor-pointer"
+                  onClick={() => {
+                    handleLogout();
+                    mutate(null);
+                  }}
+                >
+                  <LogOut className="w-4 h-4 mr-3 text-muted-foreground" />
+                  Sign out
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Settings width={16} className="mr-2" /> Settings
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => handleLogout()}>
-                <LogOut width={16} className="mr-2" /> Sign out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
       </div>
     </header>

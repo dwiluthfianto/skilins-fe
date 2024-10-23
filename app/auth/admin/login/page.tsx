@@ -29,6 +29,9 @@ import { CardTitle } from "@/components/ui/card";
 import { ToastAction } from "@/components/ui/toast";
 import { Toaster } from "@/components/ui/toaster";
 import { login } from "@/utils/auth-service";
+import { useUser } from "@/hooks/use-user";
+import { useEffect } from "react";
+import { AxiosError } from "axios";
 
 const LoginSchema = z.object({
   email: z
@@ -53,30 +56,48 @@ export default function Login() {
     },
   });
 
+  const { user, isLoading, mutate } = useUser();
+
   async function onSubmit(data: z.infer<typeof LoginSchema>) {
     try {
       await login(data.email, data.password);
 
+      mutate();
       router.push("/admin/dashboard");
     } catch (error) {
-      toast({
-        title: "Login failed!",
-        description:
-          error.response?.data.statusCode === 401 ? (
-            <p> Wrong password! </p>
-          ) : (
-            "Wrong email!"
-          ),
-        action: <ToastAction altText="Try again">Try again</ToastAction>,
-        variant: "destructive",
-      });
+      if (error instanceof AxiosError && error.response) {
+        toast({
+          title: "Login failed!",
+          description:
+            error.response?.data.statusCode === 401 ? (
+              <p> Wrong password! </p>
+            ) : (
+              "Wrong email!"
+            ),
+          action: <ToastAction altText="Try again">Try again</ToastAction>,
+          variant: "destructive",
+        });
+      }
     }
   }
 
+  useEffect(() => {
+    if (!isLoading && user) {
+      // Redirect sesuai dengan role user hanya ketika data user sudah di-fetch
+      if (user?.data?.role === "admin") {
+        router.push("/admin/dashboard");
+      } else if (user?.data?.role === "user") {
+        router.push("/");
+      }
+    }
+  }, [user, isLoading, router]);
+
+  // Jangan render form login jika user sudah ada (sedang redirect)
+  if (isLoading || user) return <p>Redirecting...</p>;
   return (
     <div>
       <section className="py-32">
-        <div className="container">
+        <div className="md:container">
           <div className="flex flex-col gap-4">
             <Card className="mx-auto w-full max-w-md">
               <CardHeader className="items-center">

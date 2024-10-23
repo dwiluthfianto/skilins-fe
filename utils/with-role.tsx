@@ -21,7 +21,7 @@ const withRole = <P extends object>(
         if (userRole === "admin") {
           router.push("/admin/dashboard");
         } else {
-          router.push("/403");
+          router.push("/");
         }
       } else {
         setLoading(false); // Set loading to false if the user has the correct role

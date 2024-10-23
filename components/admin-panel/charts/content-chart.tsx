@@ -149,7 +149,7 @@ export default function ContentChart() {
           )}
         </div>
         <div className="leading-none text-muted-foreground">
-          Showing total counts for the last 6 months
+          Showing total of contents for the last 6 months
         </div>
       </CardFooter>
     </Card>

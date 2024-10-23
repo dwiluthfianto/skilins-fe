@@ -4,8 +4,8 @@ import Link from "next/link";
 import { ChevronRight, Ellipsis, LogOut, User } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 
-import { cn } from "@/libs/utils";
-import { getMenuList } from "@/libs/menu-list";
+import { cn } from "@/lib/utils";
+import { getMenuList } from "@/lib/menu-list";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { CollapseMenuButton } from "@/components/admin-panel/collapse-menu-button";
@@ -37,11 +37,13 @@ interface MenuProps {
 
 export function Menu({ isOpen }: MenuProps) {
   const router = useRouter();
+  const { user, isLoading, mutate } = useUser();
 
   const handleLogout = async () => {
     try {
       await logout();
 
+      mutate(null, false);
       router.push("/auth/admin/login");
     } catch (error) {
       console.error("Logout failed", error);
@@ -50,10 +52,6 @@ export function Menu({ isOpen }: MenuProps) {
 
   const pathname = usePathname();
   const menuList = getMenuList(pathname);
-  const { user, isLoading, isError } = useUser();
-
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error loading user</div>;
 
   return (
     <ScrollArea className="[&>div>div[style]]:!block">
@@ -134,75 +132,81 @@ export function Menu({ isOpen }: MenuProps) {
               )}
             </li>
           ))}
-          <li className="w-full grow flex items-end">
-            <DropdownMenu>
-              <DropdownMenuTrigger className="outline-none w-full ">
-                <div className="grid grid-cols-8 items-center">
-                  <div className="flex items-center col-span-7">
-                    <span className={cn(isOpen === false ? "" : "mr-4")}>
-                      <Avatar>
-                        <AvatarImage src="https://github.com/shadcn.png" />
-                        <AvatarFallback>CN</AvatarFallback>
-                      </Avatar>
-                    </span>
+          {isLoading ? (
+            ""
+          ) : (
+            <li className="w-full grow flex items-end">
+              <DropdownMenu>
+                <DropdownMenuTrigger className="outline-none w-full ">
+                  <div className="grid grid-cols-8 items-center">
+                    <div className="flex items-center col-span-7">
+                      <span className={cn(isOpen === false ? "" : "mr-4")}>
+                        <Avatar>
+                          <AvatarImage src={user?.data?.profile_url} />
+                          <AvatarFallback>CN</AvatarFallback>
+                        </Avatar>
+                      </span>
+                      <div
+                        className={cn(
+                          "whitespace-nowrap",
+                          isOpen === false
+                            ? "opacity-0 hidden"
+                            : "overflow-hidden text-start opacity-100"
+                        )}
+                      >
+                        <p className="font-bold truncate">
+                          {user?.data?.full_name}
+                        </p>
+                        <p className="text-sm truncate ">{user?.data?.email}</p>
+                      </div>
+                    </div>
                     <div
                       className={cn(
                         "whitespace-nowrap",
                         isOpen === false
                           ? "opacity-0 hidden"
-                          : "overflow-hidden text-start opacity-100"
+                          : "flex items-center col-span-1 justify-end opacity-100"
                       )}
                     >
-                      <p className="font-bold truncate">
-                        {user.data?.full_name}
-                      </p>
-                      <p className="text-sm truncate ">{user.data?.email}</p>
+                      <ChevronRight width={18} />
                     </div>
                   </div>
-                  <div
-                    className={cn(
-                      "whitespace-nowrap",
-                      isOpen === false
-                        ? "opacity-0 hidden"
-                        : "flex items-center col-span-1 justify-end opacity-100"
-                    )}
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" align="end" side="right">
+                  <DropdownMenuLabel className="font-normal grid grid-cols-6 items-center justify-between">
+                    <div className="flex flex-col space-y-1 col-span-5">
+                      <p className="text-sm font-medium leading-none truncate">
+                        {user?.data?.full_name}
+                      </p>
+                      <p className="text-xs leading-none text-muted-foreground truncate">
+                        {user?.data?.email}
+                      </p>
+                    </div>
+                    <ModeToggle />
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem className="hover:cursor-pointer" asChild>
+                      <Link href="/account" className="flex items-center">
+                        <User className="w-4 h-4 mr-3 text-muted-foreground" />
+                        Account
+                      </Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    className="hover:cursor-pointer"
+                    onClick={() => {
+                      handleLogout();
+                    }}
                   >
-                    <ChevronRight width={18} />
-                  </div>
-                </div>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" side="right">
-                <DropdownMenuLabel className="font-normal grid grid-cols-6 items-center justify-between">
-                  <div className="flex flex-col space-y-1 col-span-5">
-                    <p className="text-sm font-medium leading-none truncate">
-                      {user.data?.full_name}
-                    </p>
-                    <p className="text-xs leading-none text-muted-foreground truncate">
-                      {user.data?.email}
-                    </p>
-                  </div>
-                  <ModeToggle />
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                  <DropdownMenuItem className="hover:cursor-pointer" asChild>
-                    <Link href="/account" className="flex items-center">
-                      <User className="w-4 h-4 mr-3 text-muted-foreground" />
-                      Account
-                    </Link>
+                    <LogOut className="w-4 h-4 mr-3 text-muted-foreground" />
+                    Sign out
                   </DropdownMenuItem>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  className="hover:cursor-pointer"
-                  onClick={() => handleLogout()}
-                >
-                  <LogOut className="w-4 h-4 mr-3 text-muted-foreground" />
-                  Sign out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </li>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </li>
+          )}
         </ul>
       </nav>
     </ScrollArea>

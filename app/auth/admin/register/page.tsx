@@ -29,6 +29,8 @@ import { CardTitle } from "@/components/ui/card";
 import { ToastAction } from "@/components/ui/toast";
 import { Toaster } from "@/components/ui/toaster";
 import { register } from "@/utils/auth-service";
+import { useUser } from "@/hooks/use-user";
+import { useEffect } from "react";
 
 const LoginSchema = z.object({
   email: z
@@ -71,6 +73,21 @@ export default function Register() {
       });
     }
   }
+  const { user, isLoading } = useUser();
+
+  useEffect(() => {
+    if (!isLoading && user) {
+      // Redirect sesuai dengan role user hanya ketika data user sudah di-fetch
+      if (user?.data?.role === "admin") {
+        router.push("/admin/dashboard");
+      } else if (user?.data?.role === "user") {
+        router.push("/");
+      }
+    }
+  }, [user, isLoading, router]);
+
+  // Jangan render form login jika user sudah ada (sedang redirect)
+  if (isLoading || user) return <p>Redirecting...</p>;
 
   return (
     <div>

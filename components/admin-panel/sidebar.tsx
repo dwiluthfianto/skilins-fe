@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Library } from "lucide-react";
 
-import { cn } from "@/libs/utils";
+import { cn } from "@/lib/utils";
 import { useStore } from "@/hooks/use-store";
 import { Button } from "@/components/ui/button";
 import { Menu } from "@/components/admin-panel/menu";

@@ -2,20 +2,28 @@
 import Cookies from "js-cookie";
 import axios from "@/utils/axios";
 import jwt from "jsonwebtoken";
-
 export const login = async (email: string, password: string) => {
   const response = await axios.post("/auth/login", { email, password });
+
   const { accessToken } = response.data;
+  if (response.status === 200) {
+    const decodedToken = jwt.decode(accessToken) as jwt.JwtPayload;
 
-  // Decode the JWT to get user role
-  const decodedToken = jwt.decode(accessToken) as jwt.JwtPayload;
-  const userRole = decodedToken.role; // Assuming 'role' is the key in your JWT
+    if (decodedToken && decodedToken.role) {
+      const userRole = decodedToken.role;
+      console.log("Decoded userRole:", userRole);
 
-  // Store tokens and role in cookies
-  Cookies.set("accessToken", accessToken, {
-    expires: new Date().setTime(new Date().getTime() + 15 * 60 * 1000), // 15 minutes expire
-  });
-  Cookies.set("userRole", userRole); // Store user role
+      Cookies.set("userRole", userRole, {
+        expires: 7,
+      });
+
+      Cookies.set("accessToken", accessToken, {
+        expires: 15 / 1440,
+      });
+    } else {
+      console.error("Failed to decode JWT or missing role.");
+    }
+  }
 
   return response.data;
 };
@@ -31,6 +39,12 @@ export const register = async (
     full_name: fullName,
     role,
   });
+
+  return response.data;
+};
+
+export const resetPassword = async (email: string) => {
+  const response = await axios.post("/auth/forgot-password", { email });
 
   return response.data;
 };

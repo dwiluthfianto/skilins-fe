@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/libs/utils";
+import { cn } from "@/lib/utils";
 import { useStore } from "@/hooks/use-store";
 import { Footer } from "@/components/user-panel/footer";
 import { Sidebar } from "@/components/user-panel/sidebar";
