@@ -3,12 +3,12 @@ import {
   Bookmark,
   LucideIcon,
   Proportions,
-  Shapes,
+  // Shapes,
   AudioLines,
   Clapperboard,
   SquareLibrary,
   BookText,
-  Rss,
+  // Rss,
   House,
 } from "lucide-react";
 
@@ -50,25 +50,25 @@ export function getMenuList(pathname: string): Group[] {
           icon: BookText,
           submenus: [],
         },
-        {
-          href: "/blogs",
-          label: "Blogs",
-          active: pathname === "/blogs",
-          icon: Rss,
-          submenus: [],
-        },
+        // {
+        //   href: "/blogs",
+        //   label: "Blogs",
+        //   active: pathname === "/blogs",
+        //   icon: Rss,
+        //   submenus: [],
+        // },
       ],
     },
     {
       groupLabel: "Groups",
       menus: [
-        {
-          href: "/majors",
-          label: "Majors",
-          active: pathname.includes("/majors"),
-          icon: Shapes,
-          submenus: [],
-        },
+        // {
+        //   href: "/majors",
+        //   label: "Majors",
+        //   active: pathname.includes("/majors"),
+        //   icon: Shapes,
+        //   submenus: [],
+        // },
         {
           href: "/categories",
           label: "Categories",

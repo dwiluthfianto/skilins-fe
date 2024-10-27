@@ -12,7 +12,6 @@ import { useEbookLatest } from "@/hooks/use-ebook";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { LoadingCarousel } from "./skeletons/skeleton-card";
 
 export function EbookCarousel() {
   const { ebooks, isLoading } = useEbookLatest(1, 10, 12);
@@ -34,8 +33,6 @@ export function EbookCarousel() {
       carouselApi.off("select", updateSelection);
     };
   }, [carouselApi]);
-
-  if (isLoading) return <LoadingCarousel />;
 
   return (
     <section className="py-2">
@@ -94,38 +91,40 @@ export function EbookCarousel() {
           }}
         >
           <CarouselContent>
-            {ebooks?.map((item: any) => {
-              return (
-                <CarouselItem
-                  key={item.uuid}
-                  className="pl-[20px] max-w-[250px]"
-                >
-                  <a
-                    href={`ebooks/${item.uuid}`}
-                    className="group flex flex-col justify-between"
-                  >
-                    <div>
-                      <div className="flex aspect-[3/4] text-clip">
-                        <div className="flex-1">
-                          <div className="relative size-full origin-bottom transition duration-300 group-hover:scale-105">
-                            <Image
-                              src={item.thumbnail}
-                              alt={item.title}
-                              layout="fill"
-                              objectFit="cover"
-                              objectPosition="center"
-                            />
+            {isLoading
+              ? "loading..."
+              : ebooks?.map((item: any) => {
+                  return (
+                    <CarouselItem
+                      key={item.uuid}
+                      className="pl-[20px] max-w-[250px]"
+                    >
+                      <a
+                        href={`ebooks/${item.uuid}`}
+                        className="group flex flex-col justify-between"
+                      >
+                        <div>
+                          <div className="flex aspect-[3/4] text-clip">
+                            <div className="flex-1">
+                              <div className="relative size-full origin-bottom transition duration-300 group-hover:scale-105">
+                                <Image
+                                  src={item.thumbnail}
+                                  alt={item.title}
+                                  layout="fill"
+                                  objectFit="cover"
+                                  objectPosition="center"
+                                />
+                              </div>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                    <div className="mb-2 line-clamp-3 break-words pt-4 text-base font-semibold md:mb-3 md:pt-4 lg:pt-4 lg:text-md">
-                      {item.title}
-                    </div>
-                  </a>
-                </CarouselItem>
-              );
-            })}
+                        <div className="mb-2 line-clamp-3 break-words pt-4 text-base font-semibold md:mb-3 md:pt-4 lg:pt-4 lg:text-md">
+                          {item.title}
+                        </div>
+                      </a>
+                    </CarouselItem>
+                  );
+                })}
           </CarouselContent>
         </Carousel>
       </div>

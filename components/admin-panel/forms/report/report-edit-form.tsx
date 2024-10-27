@@ -52,6 +52,7 @@ import { format } from "date-fns";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import Image from "next/image";
 import Compressor from "compressorjs";
+import { AxiosError } from "axios";
 
 const ReportSchema = z.object({
   title: z
@@ -105,7 +106,7 @@ function ReportEditForm({
         form.setValue("author", foundStudent.name);
       }
     }
-  }, [values?.creator, student?.data, form]);
+  }, [values?.creator, student?.data, form, values?.author]);
 
   React.useEffect(() => {
     if (!isEditDialogOpen) {
@@ -166,6 +167,7 @@ function ReportEditForm({
   };
 
   const [fileMedia, setFileMedia] = React.useState<File | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [fileUrl, setFileUrl] = React.useState<string | null>(
     values?.file_url || null
   );
@@ -261,7 +263,15 @@ function ReportEditForm({
 
       setIsEditDialogOpen(false);
     } catch (error) {
-      console.log(error);
+      if (error instanceof AxiosError && error.response) {
+        toast({
+          title: "Error!",
+          description:
+            JSON.stringify(error?.message) ||
+            "An error occurred while edit the report.",
+          variant: "destructive",
+        });
+      }
     }
   }
   return (

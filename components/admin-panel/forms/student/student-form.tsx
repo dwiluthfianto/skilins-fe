@@ -47,10 +47,11 @@ import {
   FormMessage,
 } from "../../../ui/form";
 
-import axios from "../../../../utils/axios";
+import axios from "@/utils/axios";
 import { toast } from "@/hooks/use-toast";
 import { mutate } from "swr";
 import Compressor from "compressorjs";
+import { AxiosError } from "axios";
 
 const StudentSchema = z.object({
   image: z.instanceof(File).optional(),
@@ -156,7 +157,17 @@ function StudentForm() {
       mutate("/students");
 
       setOpen(false);
-    } catch (error) {}
+    } catch (error) {
+      if (error instanceof AxiosError && error.response) {
+        toast({
+          title: "Error!",
+          description:
+            JSON.stringify(error?.message) ||
+            "An error occurred while add the student.",
+          variant: "destructive",
+        });
+      }
+    }
   }
   return (
     <Dialog open={open} onOpenChange={setOpen}>

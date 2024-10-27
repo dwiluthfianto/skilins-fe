@@ -11,14 +11,15 @@ export const login = async (email: string, password: string) => {
 
     if (decodedToken && decodedToken.role) {
       const userRole = decodedToken.role;
-      console.log("Decoded userRole:", userRole);
 
       Cookies.set("userRole", userRole, {
         expires: 7,
+        sameSite: "Lax",
       });
 
       Cookies.set("accessToken", accessToken, {
         expires: 15 / 1440,
+        sameSite: "Lax",
       });
     } else {
       console.error("Failed to decode JWT or missing role.");

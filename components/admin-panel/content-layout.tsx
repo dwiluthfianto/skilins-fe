@@ -5,7 +5,7 @@ interface ContentLayoutProps {
   children: React.ReactNode;
 }
 
-export function ContentLayout({ title, children }: ContentLayoutProps) {
+export function ContentLayout({ children }: ContentLayoutProps) {
   return (
     <div>
       <Navbar />

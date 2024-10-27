@@ -28,7 +28,7 @@ import {
   FormMessage,
 } from "../../../ui/form";
 
-import axios from "../../../../utils/axios";
+import axios from "@/utils/axios";
 import { toast } from "@/hooks/use-toast";
 import { mutate } from "swr";
 import {
@@ -51,6 +51,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { Textarea } from "@/components/ui/textarea";
 import Compressor from "compressorjs";
+import { AxiosError } from "axios";
 
 const EbookSchema = z.object({
   title: z
@@ -215,7 +216,15 @@ function EbookForm() {
 
       setOpen(false);
     } catch (error) {
-      console.log(error);
+      if (error instanceof AxiosError && error.response) {
+        toast({
+          title: "Error!",
+          description:
+            JSON.stringify(error?.message) ||
+            "An error occurred while add the book.",
+          variant: "destructive",
+        });
+      }
     }
   }
   return (

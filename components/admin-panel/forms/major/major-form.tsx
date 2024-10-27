@@ -28,10 +28,11 @@ import {
   FormMessage,
 } from "../../../ui/form";
 
-import axios from "../../../../utils/axios";
+import axios from "@/utils/axios";
 import { toast } from "@/hooks/use-toast";
 import { mutate } from "swr";
 import Compressor from "compressorjs";
+import { AxiosError } from "axios";
 
 const MajorSchema = z.object({
   image: z.instanceof(File).optional(),
@@ -144,11 +145,15 @@ function MajorForm() {
 
       setOpen(false);
     } catch (error) {
-      toast({
-        title: "Error!",
-        description: "An error occurred while add the major.",
-        variant: "destructive",
-      });
+      if (error instanceof AxiosError && error.response) {
+        toast({
+          title: "Error!",
+          description:
+            JSON.stringify(error?.message) ||
+            "An error occurred while add the major.",
+          variant: "destructive",
+        });
+      }
     }
   }
   return (

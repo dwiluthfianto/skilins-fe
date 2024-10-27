@@ -27,7 +27,7 @@ import {
   FormMessage,
 } from "../../../ui/form";
 
-import axios from "../../../../utils/axios";
+import axios from "@/utils/axios";
 import { toast } from "@/hooks/use-toast";
 import { mutate } from "swr";
 import {
@@ -51,6 +51,7 @@ import { format } from "date-fns";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import Image from "next/image";
 import Compressor from "compressorjs";
+import { AxiosError } from "axios";
 
 const EbookSchema = z.object({
   title: z
@@ -151,6 +152,7 @@ function EbookEditForm({ isEditDialogOpen, setIsEditDialogOpen, values }: any) {
   };
 
   const [fileMedia, setFileMedia] = React.useState<File | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [fileUrl, setFileUrl] = React.useState<string | null>(
     values?.file_url || null
   );
@@ -244,7 +246,15 @@ function EbookEditForm({ isEditDialogOpen, setIsEditDialogOpen, values }: any) {
 
       setIsEditDialogOpen(false);
     } catch (error) {
-      console.log(error);
+      if (error instanceof AxiosError && error.response) {
+        toast({
+          title: "Error!",
+          description:
+            JSON.stringify(error?.message) ||
+            "An error occurred while edit the ebook.",
+          variant: "destructive",
+        });
+      }
     }
   }
   return (

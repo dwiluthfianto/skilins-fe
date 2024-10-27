@@ -28,7 +28,7 @@ import {
   FormMessage,
 } from "../../../ui/form";
 
-import axios from "../../../../utils/axios";
+import axios from "@/utils/axios";
 import { toast } from "@/hooks/use-toast";
 import { mutate } from "swr";
 import { useStudent } from "@/hooks/use-student";
@@ -51,6 +51,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import Compressor from "compressorjs";
+import { AxiosError } from "axios";
 
 const ReportSchema = z.object({
   title: z
@@ -211,7 +212,15 @@ function ReportForm() {
 
       setOpen(false);
     } catch (error) {
-      console.log(error);
+      if (error instanceof AxiosError && error.response) {
+        toast({
+          title: "Error!",
+          description:
+            JSON.stringify(error?.message) ||
+            "An error occurred while edit the report.",
+          variant: "destructive",
+        });
+      }
     }
   }
   return (

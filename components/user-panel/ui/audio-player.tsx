@@ -2,7 +2,7 @@
 "use client";
 import { Pause, Play, RotateCcw, SkipBack, Volume2 } from "lucide-react";
 import Image from "next/image";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 
 export function AudioPlayer({ data }: any) {
   const src = data?.src;
@@ -11,6 +11,7 @@ export function AudioPlayer({ data }: any) {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(1);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isDragging, setIsDragging] = useState(false);
 
   // Play/Pause button handler
@@ -92,18 +93,21 @@ export function AudioPlayer({ data }: any) {
   const progressPercentage = duration ? (currentTime / duration) * 100 : 0;
 
   // Handle mouse move to update the current time
-  const handleMouseMove = (e: MouseEvent) => {
-    if (isDragging && audioRef.current) {
-      const progressBar = document.querySelector(
-        ".progress-bar"
-      ) as HTMLDivElement;
-      const width = progressBar.clientWidth;
-      const clickX = e.clientX - progressBar.getBoundingClientRect().left;
-      const newTime = (clickX / width) * duration;
-      audioRef.current.currentTime = newTime;
-      setCurrentTime(newTime);
-    }
-  };
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (isDragging && audioRef.current) {
+        const progressBar = document.querySelector(
+          ".progress-bar"
+        ) as HTMLDivElement;
+        const width = progressBar.clientWidth;
+        const clickX = e.clientX - progressBar.getBoundingClientRect().left;
+        const newTime = (clickX / width) * duration;
+        audioRef.current.currentTime = newTime;
+        setCurrentTime(newTime);
+      }
+    },
+    [isDragging, duration]
+  );
 
   // Attach mouse move and mouse up events
   useEffect(() => {
@@ -116,7 +120,7 @@ export function AudioPlayer({ data }: any) {
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
     };
-  }, [isDragging]);
+  }, [handleMouseMove, isDragging]);
 
   return (
     <div>

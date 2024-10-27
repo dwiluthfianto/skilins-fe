@@ -49,6 +49,7 @@ import {
 } from "@/components/ui/command";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import Compressor from "compressorjs";
+import { AxiosError } from "axios";
 
 const AudioSchema = z.object({
   title: z
@@ -206,7 +207,15 @@ function AudioForm() {
 
       setOpen(false);
     } catch (error) {
-      console.log(error);
+      if (error instanceof AxiosError && error.response) {
+        toast({
+          title: "Error!",
+          description:
+            JSON.stringify(error?.message) ||
+            "An error occurred while add the audio.",
+          variant: "destructive",
+        });
+      }
     }
   }
   return (

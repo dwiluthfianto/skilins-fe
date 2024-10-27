@@ -25,12 +25,13 @@ import {
   FormMessage,
 } from "../../../ui/form";
 
-import axios from "../../../../utils/axios";
+import axios from "@/utils/axios";
 import { toast } from "@/hooks/use-toast";
 import { mutate } from "swr";
 import { AspectRatio } from "../../../ui/aspect-ratio";
 import Image from "next/image";
 import Compressor from "compressorjs";
+import { AxiosError } from "axios";
 
 const MajorSchema = z.object({
   name: z.string().min(1, { message: "Name is required." }),
@@ -178,13 +179,15 @@ function MajorEditForm({ isEditDialogOpen, setIsEditDialogOpen, values }: any) {
 
       setIsEditDialogOpen(false);
     } catch (error) {
-      console.log(error);
-
-      toast({
-        title: "Error!",
-        description: "An error occurred while update the tag.",
-        variant: "destructive",
-      });
+      if (error instanceof AxiosError && error.response) {
+        toast({
+          title: "Error!",
+          description:
+            JSON.stringify(error?.message) ||
+            "An error occurred while edit the major.",
+          variant: "destructive",
+        });
+      }
       setIsEditDialogOpen(false);
     }
   }

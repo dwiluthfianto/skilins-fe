@@ -9,6 +9,7 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel";
+import Image from "next/image";
 const data = [
   {
     id: "item-1",
@@ -141,10 +142,12 @@ export function Blog() {
                     <div className="flex aspect-[3/2] text-clip rounded-xl">
                       <div className="flex-1">
                         <div className="relative size-full origin-bottom transition duration-300 group-hover:scale-105">
-                          <img
+                          <Image
+                            layout="fill"
+                            objectFit="cover"
+                            objectPosition="center"
                             src={item.image}
                             alt={item.title}
-                            className="size-full object-cover object-center"
                           />
                         </div>
                       </div>

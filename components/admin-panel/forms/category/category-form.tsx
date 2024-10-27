@@ -28,10 +28,11 @@ import {
   FormMessage,
 } from "../../../ui/form";
 
-import axios from "../../../../utils/axios";
+import axios from "@/utils/axios";
 import { toast } from "@/hooks/use-toast";
 import { mutate } from "swr";
 import Compressor from "compressorjs";
+import { AxiosError } from "axios";
 
 const CategorySchema = z.object({
   name: z.string().min(1, { message: "Name is required." }),
@@ -116,14 +117,15 @@ function CategoryForm() {
 
       setOpen(false);
     } catch (error) {
-      toast({
-        title: "Error!",
-        description:
-          JSON.stringify(error?.message) ||
-          "An error occurred while add the tag.",
-        variant: "destructive",
-      });
-
+      if (error instanceof AxiosError && error.response) {
+        toast({
+          title: "Error!",
+          description:
+            JSON.stringify(error?.message) ||
+            "An error occurred while add the category.",
+          variant: "destructive",
+        });
+      }
       setOpen(false);
     }
   }

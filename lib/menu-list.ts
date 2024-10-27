@@ -1,7 +1,7 @@
 import {
   Tag,
   Bookmark,
-  SquarePen,
+  // SquarePen,
   LayoutGrid,
   LucideIcon,
   Proportions,
@@ -76,13 +76,13 @@ export function getMenuList(pathname: string): Group[] {
     {
       groupLabel: "Content",
       menus: [
-        {
-          href: "/admin/blogs",
-          label: "Blogs",
-          active: pathname.includes("/admin/blogs"),
-          icon: SquarePen,
-          submenus: [],
-        },
+        // {
+        //   href: "/admin/blogs",
+        //   label: "Blogs",
+        //   active: pathname.includes("/admin/blogs"),
+        //   icon: SquarePen,
+        //   submenus: [],
+        // },
         {
           href: "/admin/e-books",
           label: "e-Books",

@@ -12,6 +12,7 @@ import {
 import { toast } from "@/hooks/use-toast";
 import { mutate } from "swr";
 import axios from "../../utils/axios";
+import { AxiosError } from "axios";
 
 function DeleteDialog({
   isDeleteDialogOpen,
@@ -40,14 +41,16 @@ function DeleteDialog({
       mutate(path);
       setIsDeleteDialogOpen(false);
     } catch (error) {
-      toast({
-        title: "Error!",
-        description:
-          error?.response.data.statusCode === 400
-            ? "Major cannot be deleted because major is used"
-            : "An error occurred while delete the major.",
-        variant: "destructive",
-      });
+      if (error instanceof AxiosError && error.response) {
+        toast({
+          title: "Error!",
+          description:
+            error?.response.data.statusCode === 400
+              ? "cannot be deleted because content is used"
+              : "An error occurred while delete the content.",
+          variant: "destructive",
+        });
+      }
       setIsDeleteDialogOpen(false);
     }
   };

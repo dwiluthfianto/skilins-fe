@@ -50,6 +50,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import Image from "next/image";
 import Compressor from "compressorjs";
+import { AxiosError } from "axios";
 
 const NovelSchema = z.object({
   title: z
@@ -156,6 +157,7 @@ function NovelEditForm({ isEditDialogOpen, setIsEditDialogOpen, values }: any) {
     }
   };
   const [fileMedia, setFileMedia] = React.useState<File | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [fileUrl, setFileUrl] = React.useState<string | null>(
     values?.file_url || null
   );
@@ -250,7 +252,15 @@ function NovelEditForm({ isEditDialogOpen, setIsEditDialogOpen, values }: any) {
 
       setIsEditDialogOpen(false);
     } catch (error) {
-      console.log(error);
+      if (error instanceof AxiosError && error.response) {
+        toast({
+          title: "Error!",
+          description:
+            JSON.stringify(error?.message) ||
+            "An error occurred while edit the novel.",
+          variant: "destructive",
+        });
+      }
     }
   }
   return (

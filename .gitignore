@@ -16,6 +16,9 @@
 # production
 /build
 
+# kubenetes configuration
+k8s/
+
 # misc
 .DS_Store
 *.pem

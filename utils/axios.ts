@@ -3,7 +3,7 @@ import Cookies from "js-cookie";
 
 // Buat instance axios
 const api = axios.create({
-  baseURL: "http://localhost:8000/api/v1",
+  baseURL: `${process.env.NEXT_PUBLIC_API_URL}`,
   withCredentials: true,
 });
 
@@ -22,7 +22,7 @@ api.interceptors.response.use(
     const originalRequest = error.config;
 
     // Cek apakah status error adalah 401 dan permintaan belum diulang
-    if (error.response.status === 401 && !originalRequest._retry) {
+    if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true; // Tandai permintaan ini sebagai sudah diulang
 
       // Cek apakah refresh token sedang diproses
@@ -31,12 +31,16 @@ api.interceptors.response.use(
 
         try {
           const { data } = await axios.post(
-            "http://localhost:8000/api/v1/auth/refresh",
+            `${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`,
             {},
             { withCredentials: true }
           );
 
-          Cookies.set("accessToken", data.accessToken);
+          Cookies.set("accessToken", data.accessToken, {
+            expires: 15 / 1440,
+          });
+          console.log("New accessToken set in cookies:", data.accessToken);
+
           originalRequest.headers[
             "Authorization"
           ] = `Bearer ${data.accessToken}`;
@@ -46,6 +50,9 @@ api.interceptors.response.use(
         } catch (refreshError) {
           console.error("Refresh token failed", refreshError);
           // Redirect ke login jika refresh token gagal
+          if (typeof window !== "undefined") {
+            window.location.href = "/";
+          }
         } finally {
           // Reset status refreshing setelah proses selesai
           originalRequest._refreshing = false;

@@ -28,7 +28,7 @@ import {
   FormMessage,
 } from "../../../ui/form";
 
-import axios from "../../../../utils/axios";
+import axios from "@/utils/axios";
 import { toast } from "@/hooks/use-toast";
 import { mutate } from "swr";
 import { useStudent } from "@/hooks/use-student";
@@ -49,6 +49,7 @@ import {
 } from "@/components/ui/command";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Compressor from "compressorjs";
+import { AxiosError } from "axios";
 
 const AudioSchema = z.object({
   title: z
@@ -204,7 +205,15 @@ function VideoForm() {
 
       setOpen(false);
     } catch (error) {
-      console.log(error);
+      if (error instanceof AxiosError && error.response) {
+        toast({
+          title: "Error!",
+          description:
+            JSON.stringify(error?.message) ||
+            "An error occurred while add the video.",
+          variant: "destructive",
+        });
+      }
     }
   }
   return (

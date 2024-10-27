@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ContentLayout } from "@/components/user-panel/content-layout";
 import Categories from "@/components/user-panel/ui/categories";
-import axios from "@/utils/axios";
 
 export default async function Category({
   params,
@@ -25,8 +24,11 @@ export async function generateStaticParams() {
 
   // Lakukan fetching hingga tidak ada lagi data yang dikembalikan
   while (hasMore) {
-    const res = await axios.get(`/contents/ebooks?page=${page}&limit=${limit}`);
-    const ebooks = res.data?.data || [];
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/contents/ebooks?page=${page}&limit=${limit}`
+    );
+    const data = await res.json();
+    const ebooks = data?.data || [];
 
     // Gabungkan data dari halaman saat ini
     allEbooks = allEbooks.concat(ebooks);

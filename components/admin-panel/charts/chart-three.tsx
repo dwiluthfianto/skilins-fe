@@ -58,7 +58,7 @@ export default function ChartThree() {
         0
       ),
     }),
-    []
+    [chartData]
   );
 
   if (isLoading) return <p>Loading...</p>;

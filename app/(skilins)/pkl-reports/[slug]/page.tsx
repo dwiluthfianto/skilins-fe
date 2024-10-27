@@ -207,10 +207,11 @@ export async function generateStaticParams() {
 
   // Lakukan fetching hingga tidak ada lagi data yang dikembalikan
   while (hasMore) {
-    const res = await axios.get(
-      `/contents/reports?page=${page}&limit=${limit}`
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/contents/reports?page=${page}&limit=${limit}`
     );
-    const reports = res.data?.data || [];
+    const data = await res.json();
+    const reports = data?.data || [];
 
     // Gabungkan data dari halaman saat ini
     allreports = allreports.concat(reports);

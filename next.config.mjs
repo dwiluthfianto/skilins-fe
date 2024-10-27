@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: "standalone",
   images: {
     remotePatterns: [
       {
@@ -17,14 +18,6 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "lqknukzebespbggnowdh.supabase.co",
-      },
-      {
-        protocol: "https",
-        hostname: "example.com",
-      },
-      {
-        protocol: "https",
-        hostname: "flowbite.com",
       },
     ],
   },

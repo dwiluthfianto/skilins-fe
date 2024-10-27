@@ -86,7 +86,7 @@ export function DataTable<TData, TValue>({
   if (isError) return <h1>Error</h1>;
 
   return (
-    <div className="flex flex-col justify-between h-full p-6 bg-white border rounded-md dark:bg-black aspect-square lg:aspect-auto">
+    <div className="flex flex-col justify-between p-6 bg-white border rounded-md dark:bg-black aspect-square lg:aspect-auto">
       <div className="flex flex-col items-start justify-between gap-4 md:items-center md:flex-row">
         <div>
           <p className="text-4xl font-bold">PKL Reports</p>

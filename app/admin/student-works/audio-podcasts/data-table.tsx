@@ -85,7 +85,7 @@ export function DataTable<TData, TValue>({
   if (isLoading) return <h1>Loading..</h1>;
   if (isError) return <h1>Error</h1>;
   return (
-    <div className="bg-white dark:bg-black border rounded-md h-full p-6 aspect-square lg:aspect-auto flex justify-between flex-col">
+    <div className="bg-white dark:bg-black border rounded-md p-6 aspect-square lg:aspect-auto flex justify-between flex-col">
       <div className="flex flex-col items-start md:items-center md:flex-row justify-between gap-4">
         <div>
           <p className="font-bold text-4xl">Audio Podcasts</p>
