@@ -6,6 +6,7 @@ import axios from "@/utils/axios";
 import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
 import { useUser } from "@/hooks/use-user";
+import { GetFirstLetterStr } from "@/utils/get-first-letter-str";
 
 export default function LikeComponent(props: { likes: any; contentUuid: any }) {
   const { likes, contentUuid } = props;
@@ -75,8 +76,15 @@ export default function LikeComponent(props: { likes: any; contentUuid: any }) {
           {likes.length > 0
             ? likes?.slice(0, 5).map((like: any, index: number) => (
                 <Avatar key={index} className=" border">
-                  <AvatarImage src={like.profile_url} alt="placeholder" />
-                  <AvatarFallback>CN</AvatarFallback>
+                  <AvatarImage
+                    key={like.profile}
+                    src={`${like.profile}`}
+                    alt="placeholder"
+                    className="object-cover object-center"
+                  />
+                  <AvatarFallback>
+                    {GetFirstLetterStr(like.full_name)}
+                  </AvatarFallback>
                 </Avatar>
               ))
             : ""}

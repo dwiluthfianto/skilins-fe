@@ -13,14 +13,11 @@ export const useUser = () => {
       // Never retry for a specific key.
       if (key === "auth/user") return;
 
-      // Only retry up to 10 times.
       if (retryCount >= 2) return;
 
       // Retry after 5 seconds.
       setTimeout(() => revalidate({ retryCount }), 5000);
     },
-    revalidateOnFocus: false, // Jangan refetch ketika pengguna kembali fokus
-    revalidateOnReconnect: false,
   });
 
   const loggedOut = error && error.status === 403;

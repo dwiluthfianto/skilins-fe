@@ -21,16 +21,14 @@ export function SheetMenu() {
       </SheetTrigger>
       <SheetContent className="sm:w-72 px-3 h-full flex flex-col" side="left">
         <SheetHeader>
-          <Button
-            className="flex justify-center items-center pb-2 pt-1"
-            variant="link"
-            asChild
-          >
-            <Link href="/" className="flex items-center gap-2">
-              <Library className="w-6 h-6 mr-1" />
-              <SheetTitle className="font-bold text-lg">Skilins.</SheetTitle>
-            </Link>
-          </Button>
+          <Link href="/" className="flex justify-center items-center pt-1">
+            <div className=" flex justify-center items-center  p-[1px] rounded-md border-2 dark:border-white border-black mr-2">
+              <Library width={24} height={24} />
+            </div>
+            <SheetTitle className="font-bold text-xl md:text-2xl">
+              skilins.
+            </SheetTitle>
+          </Link>
         </SheetHeader>
         <Menu isOpen />
       </SheetContent>

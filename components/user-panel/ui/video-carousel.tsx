@@ -43,7 +43,7 @@ export function VideoCarousel({ data }: any) {
               Video Podcasts
             </h2>
             <a
-              href="/video-podcasts"
+              href="/videos"
               className="group flex items-center text-xs font-medium md:text-base lg:text-lg"
             >
               See all{" "}
@@ -91,7 +91,7 @@ export function VideoCarousel({ data }: any) {
             {videos.map((item: any) => (
               <CarouselItem key={item.uuid} className="pl-[20px] max-w-[352px]">
                 <a
-                  href={`/video-podcasts/${item.uuid}`}
+                  href={`/video/${item.uuid}`}
                   className="group flex flex-col justify-between"
                 >
                   <div>

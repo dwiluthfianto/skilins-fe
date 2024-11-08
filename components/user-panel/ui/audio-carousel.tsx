@@ -43,7 +43,7 @@ export function AudioCarousel({ data }: any) {
               Audio Podcasts
             </h2>
             <a
-              href="/audio-podcasts"
+              href="/audios"
               className="group flex items-center text-xs font-medium md:text-base lg:text-lg"
             >
               See all{" "}
@@ -91,7 +91,7 @@ export function AudioCarousel({ data }: any) {
             {audios.map((item: any) => (
               <CarouselItem key={item.uuid} className="pl-[20px] max-w-[250px]">
                 <a
-                  href={`audio-podcasts/${item.uuid}`}
+                  href={`audios/${item.uuid}`}
                   className="group flex flex-col justify-between"
                 >
                   <div>

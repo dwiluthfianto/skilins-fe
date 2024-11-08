@@ -29,16 +29,16 @@ export const login = async (email: string, password: string) => {
   return response.data;
 };
 
-export const register = async (
-  data: { email: string; password: string; fullName: string },
-  role: string
-) => {
+export const register = async (data: {
+  email: string;
+  password: string;
+  fullName: string;
+}) => {
   const { email, password, fullName } = data;
   const response = await axios.post("/auth/register", {
     email,
     password,
     full_name: fullName,
-    role,
   });
 
   return response.data;

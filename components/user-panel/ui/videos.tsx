@@ -31,7 +31,7 @@ export function Videos() {
           return (
             <div key={item.uuid} className="pl-[20px] max-w-[352px]">
               <a
-                href={`video-podcasts/${item.uuid}`}
+                href={`videos/${item.uuid}`}
                 className="group flex flex-col justify-between"
               >
                 <div>

@@ -89,7 +89,7 @@ export default function Tags({ tag }: { tag: string }) {
               }`}
             >
               <Link
-                href={`${tag}/${content.slice(0, -1)}/${item.uuid}`}
+                href={`/${content}/${item.uuid}`}
                 className="flex flex-col justify-between group"
               >
                 <div className={`flex ${aspectRatios[content]} text-clip`}>

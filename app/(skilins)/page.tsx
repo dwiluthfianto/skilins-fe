@@ -1,7 +1,7 @@
 "use client";
 import { ContentLayout } from "@/components/user-panel/content-layout";
 import { AudioCarousel } from "@/components/user-panel/ui/audio-carousel";
-// import { Blog } from "@/components/user-panel/ui/blog";
+import { BlogCarousel } from "@/components/user-panel/ui/blog-carousel";
 import { EbookCarousel } from "@/components/user-panel/ui/ebook-carousel";
 import { NovelCarousel } from "@/components/user-panel/ui/novel-carousel";
 import { VideoCarousel } from "@/components/user-panel/ui/video-carousel";
@@ -20,7 +20,7 @@ export default function Home() {
       <NovelCarousel data={novels} />
       <AudioCarousel data={audios} />
       <VideoCarousel data={videos} />
-      {/* <Blog /> */}
+      <BlogCarousel />
     </ContentLayout>
   );
 }

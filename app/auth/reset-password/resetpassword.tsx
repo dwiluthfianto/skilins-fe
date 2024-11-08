@@ -24,7 +24,7 @@ import {
   CardDescription,
   CardHeader,
 } from "@/components/ui/card";
-import { UserRound } from "lucide-react";
+import { Library, UserRound } from "lucide-react";
 import { CardTitle } from "@/components/ui/card";
 import { ToastAction } from "@/components/ui/toast";
 import { Toaster } from "@/components/ui/toaster";
@@ -150,7 +150,13 @@ export default function ResetPassword() {
         <section className="py-32">
           <div className="container">
             <div className="flex flex-col gap-4">
-              <Card className="mx-auto w-full max-w-md">
+              <Link href="/" className="flex justify-center items-center pt-1">
+                <div className=" flex justify-center items-center  p-[1px] rounded-md border-2 border-black mr-2">
+                  <Library width={24} height={24} />
+                </div>
+                <h1 className="font-bold text-xl md:text-2xl">skilins.</h1>
+              </Link>
+              <Card className="mx-auto w-full max-w-sm">
                 <CardHeader className="items-center">
                   <UserRound className="size-10 rounded-full bg-accent p-2.5 text-muted-foreground" />
                   <CardTitle className="text-xl">Change Password</CardTitle>
@@ -228,7 +234,13 @@ export default function ResetPassword() {
         <section className="py-32">
           <div className="container">
             <div className="flex flex-col gap-4">
-              <Card className="mx-auto w-full max-w-md">
+              <Link href="/" className="flex justify-center items-center pt-1">
+                <div className=" flex justify-center items-center  p-[1px] rounded-md border-2 border-black mr-2">
+                  <Library width={24} height={24} />
+                </div>
+                <h1 className="font-bold text-xl md:text-2xl">skilins.</h1>
+              </Link>
+              <Card className="mx-auto w-full max-w-sm">
                 <CardHeader className="items-center">
                   <UserRound className="size-10 rounded-full bg-accent p-2.5 text-muted-foreground" />
                   <CardTitle className="text-xl">Forgot Password?</CardTitle>

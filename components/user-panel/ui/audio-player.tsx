@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { Pause, Play, RotateCcw, SkipBack, Volume2 } from "lucide-react";
-import Image from "next/image";
 import { useState, useRef, useEffect, useCallback } from "react";
 
 export function AudioPlayer({ data }: any) {
@@ -126,27 +125,6 @@ export function AudioPlayer({ data }: any) {
     <div>
       <audio ref={audioRef} src={src} />
       <div className="mt-4 bg-white border-slate-100 dark:bg-slate-800 dark:border-slate-500 border-b rounded-t-xl p-4 pb-6 sm:p-10 sm:pb-8 lg:p-6 xl:p-6 xl:pb-8 space-y-6 sm:space-y-8 lg:space-y-6 xl:space-y-8  items-center">
-        <div className="flex items-center space-x-4">
-          <Image
-            src={data?.image}
-            alt=""
-            width="88"
-            height="88"
-            className="flex-none rounded-lg bg-slate-100"
-            loading="lazy"
-          />
-          <div className="min-w-0 flex-auto space-y-1 font-semibold">
-            <p className="text-cyan-500 dark:text-cyan-400 text-sm leading-6">
-              <abbr title="Track">{data?.category}</abbr>
-            </p>
-            <h2 className="text-slate-500 dark:text-slate-400 text-sm leading-6 truncate">
-              {data?.creator}
-            </h2>
-            <p className="text-slate-900 dark:text-slate-50 text-lg">
-              {data.title}
-            </p>
-          </div>
-        </div>
         <div className="space-y-2">
           <div className="relative">
             <div

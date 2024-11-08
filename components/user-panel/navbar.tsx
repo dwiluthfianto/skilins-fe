@@ -20,6 +20,8 @@ import { ModeToggle } from "../mode-toggle";
 import { format } from "date-fns";
 import { logout } from "@/utils/auth-service";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { GetFirstLetterStr } from "@/utils/get-first-letter-str";
 
 interface NavbarProps {
   title: string;
@@ -27,11 +29,13 @@ interface NavbarProps {
 
 export function Navbar({ title }: NavbarProps) {
   const { user, isLoading, mutate } = useUser();
+  const router = useRouter();
 
   const handleLogout = async () => {
     try {
       await logout();
 
+      router.push("/");
       mutate(null, false);
     } catch (error) {
       console.error("Logout failed", error);
@@ -44,7 +48,7 @@ export function Navbar({ title }: NavbarProps) {
         <div className="mx-4 sm:mx-8 flex h-14 items-center">
           <div className="flex items-center space-x-4 lg:space-x-0">
             <SheetMenu />
-            <h1 className="font-bold">{title}</h1>
+            <h1 className="font-bold line-clamp-1">{title}</h1>
           </div>
           <div className="flex flex-1 items-center justify-end space-x-4">
             <Button variant="ghost">
@@ -64,7 +68,7 @@ export function Navbar({ title }: NavbarProps) {
       <div className="mx-4 sm:mx-8 flex h-14 items-center">
         <div className="flex items-center space-x-4 lg:space-x-0">
           <SheetMenu />
-          <h1 className="font-bold">{title}</h1>
+          <h1 className="font-bold line-clamp-1">{title}</h1>
         </div>
         <div className="flex flex-1 items-center justify-end space-x-4">
           <Button variant={"outline"} className="hidden md:flex">
@@ -76,10 +80,18 @@ export function Navbar({ title }: NavbarProps) {
           ) : (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <span className={cn("mr-3")}>
+                <span className={cn("mr-3 hover:cursor-pointer")}>
                   <Avatar>
-                    <AvatarImage src="https://github.com/shadcn.png" />
-                    <AvatarFallback>CN</AvatarFallback>
+                    <AvatarImage
+                      key={user?.data?.profile}
+                      src={
+                        user?.data?.profile ? `${user.data.profile}` : undefined
+                      }
+                      className="object-cover object-center"
+                    />
+                    <AvatarFallback>
+                      {GetFirstLetterStr(user?.data?.full_name)}
+                    </AvatarFallback>
                   </Avatar>
                 </span>
               </DropdownMenuTrigger>

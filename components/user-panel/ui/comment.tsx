@@ -37,6 +37,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { GetFirstLetterStr } from "@/utils/get-first-letter-str";
 
 const CommentSchema = z.object({
   content: z
@@ -145,8 +146,14 @@ export default function CommentComponent(props: {
                     <footer className="flex justify-between items-center mb-2">
                       <div className="flex items-center space-x-2">
                         <Avatar>
-                          <AvatarImage src={comment.profile} />
-                          <AvatarFallback>CN</AvatarFallback>
+                          <AvatarImage
+                            key={comment?.profile}
+                            src={`${comment?.profile}`}
+                            className="object-cover object-center"
+                          />
+                          <AvatarFallback>
+                            {GetFirstLetterStr(comment?.commented_by)}
+                          </AvatarFallback>
                         </Avatar>
                         <p className="text-gray-900 dark:text-white font-semibold">
                           {comment.commented_by}

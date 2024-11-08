@@ -39,7 +39,6 @@ api.interceptors.response.use(
           Cookies.set("accessToken", data.accessToken, {
             expires: 15 / 1440,
           });
-          console.log("New accessToken set in cookies:", data.accessToken);
 
           originalRequest.headers[
             "Authorization"
@@ -49,10 +48,6 @@ api.interceptors.response.use(
           return axios(originalRequest);
         } catch (refreshError) {
           console.error("Refresh token failed", refreshError);
-          // Redirect ke login jika refresh token gagal
-          if (typeof window !== "undefined") {
-            window.location.href = "/";
-          }
         } finally {
           // Reset status refreshing setelah proses selesai
           originalRequest._refreshing = false;

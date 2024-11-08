@@ -31,7 +31,7 @@ export function Audios() {
           return (
             <div key={item.uuid} className="pl-[20px] max-w-[250px]">
               <a
-                href={`audio-podcasts/${item.uuid}`}
+                href={`audios/${item.uuid}`}
                 className="group flex flex-col justify-between"
               >
                 <div>

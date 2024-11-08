@@ -18,8 +18,8 @@ const withRole = <P extends object>(
       if (!userRole) {
         router.push(loginRedirectPath);
       } else if (!allowedRoles.includes(userRole)) {
-        if (userRole === "admin") {
-          router.push("/admin/dashboard");
+        if (userRole === "Staff") {
+          router.push("/staff/dashboard");
         } else {
           router.push("/");
         }

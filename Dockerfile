@@ -33,7 +33,6 @@ RUN mkdir -p .next && chown -R nextjs:nodejs .next
 # Copy only necessary files for production
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
-COPY --from=builder /app/public ./public
 
 # Run as a non-root user for security
 USER nextjs

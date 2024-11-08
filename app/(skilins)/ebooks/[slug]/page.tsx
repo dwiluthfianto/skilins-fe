@@ -27,6 +27,31 @@ import { Card, CardContent } from "@/components/ui/card";
 import CommentComponent from "@/components/user-panel/ui/comment";
 import { BookText } from "lucide-react";
 import LikeComponent from "@/components/user-panel/ui/like";
+import { Metadata } from "next";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string };
+}): Promise<Metadata> {
+  const res = await axios.get(`/contents/ebooks/${params.slug}`);
+  const ebook = res.data.data;
+
+  return {
+    title: ebook.title,
+    description: ebook.description,
+    openGraph: {
+      title: ebook.title,
+      description: ebook.description,
+      images: [
+        {
+          url: ebook.thumbnail,
+        },
+      ],
+      url: `${process.env.NEXT_PUBLIC_FRONTEND_URL}/ebooks/${ebook.uuid}`,
+    },
+  };
+}
 
 export default async function EbookDetail({ params }: any) {
   const { slug } = params;
@@ -74,7 +99,7 @@ export default async function EbookDetail({ params }: any) {
             <div className="col-span-3">
               <Card className=" rounded-lg ">
                 <CardContent className="p-6">
-                  <div className="flex justify-between items-center">
+                  <div className="flex flex-col gap-2 md:flex-row md:justify-between md:items-center">
                     <div>
                       <p className=" text-lg text-muted-foreground">
                         {ebook.author}
@@ -87,6 +112,10 @@ export default async function EbookDetail({ params }: any) {
                       <BookText width={16} className="mr-2" />
                       <Link href={ebook.file_url}>Read book</Link>
                     </Button>
+                    {/* <ShareButton
+                      title={ebook.title}
+                      url={`${process.env.NEXT_PUBLIC_FRONTEND_URL}/ebooks/${ebook.uuid}`}
+                    /> */}
                   </div>
                   <p className="mt-1 md:mt-6 text text-lg max-w-xl lg:max-w-xl leading-relaxed tracking-tight font-medium">
                     Description

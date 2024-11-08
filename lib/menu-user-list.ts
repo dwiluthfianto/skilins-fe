@@ -1,5 +1,4 @@
 import {
-  Tag,
   Bookmark,
   LucideIcon,
   Proportions,
@@ -10,6 +9,9 @@ import {
   BookText,
   // Rss,
   House,
+  Medal,
+  Bird,
+  Newspaper,
 } from "lucide-react";
 
 type Submenu = {
@@ -50,13 +52,20 @@ export function getMenuList(pathname: string): Group[] {
           icon: BookText,
           submenus: [],
         },
-        // {
-        //   href: "/blogs",
-        //   label: "Blogs",
-        //   active: pathname === "/blogs",
-        //   icon: Rss,
-        //   submenus: [],
-        // },
+        {
+          href: "/competitions",
+          label: "Competitions",
+          active: pathname === "/competitions",
+          icon: Medal,
+          submenus: [],
+        },
+        {
+          href: "/blogs",
+          label: "Blogs",
+          active: pathname === "/blogs",
+          icon: Newspaper,
+          submenus: [],
+        },
       ],
     },
     {
@@ -77,21 +86,21 @@ export function getMenuList(pathname: string): Group[] {
           submenus: [],
         },
         {
-          href: "/tags",
-          label: "Tags",
-          active: pathname.includes("/tags"),
-          icon: Tag,
+          href: "/genres",
+          label: "Genres",
+          active: pathname.includes("/genres"),
+          icon: Bird,
           submenus: [],
         },
       ],
     },
     {
-      groupLabel: "Explore",
+      groupLabel: "Student Work",
       menus: [
         {
-          href: "/novels",
-          label: "Novels",
-          active: pathname === "/novels",
+          href: "/stories",
+          label: "Stories",
+          active: pathname === "/stories",
           icon: SquareLibrary,
           submenus: [],
         },
@@ -110,9 +119,9 @@ export function getMenuList(pathname: string): Group[] {
           submenus: [],
         },
         {
-          href: "/pkl-reports",
-          label: "PKL Reports",
-          active: pathname.includes("/pkl-reports"),
+          href: "/prakerin",
+          label: "Prakerin",
+          active: pathname.includes("/prakerin"),
           icon: Proportions,
           submenus: [],
         },
