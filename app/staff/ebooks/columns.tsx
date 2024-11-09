@@ -16,10 +16,10 @@ import {
 import { ArrowUpDown } from "lucide-react";
 import Image from "next/image";
 import * as React from "react";
-import EbookEditForm from "@/components/staff-panel/forms/e-book/ebook-edit-form";
 import { Button } from "@/components/ui/button";
 import DeleteDialog from "@/components/staff-panel/delete-dialog";
 import { format } from "date-fns";
+import Link from "next/link";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -28,12 +28,13 @@ export type eBooks = {
   thumbnail: string;
   author: string;
   title: string;
+  slug: string;
   description: string;
   category: string;
   pages: number;
   publication: string;
   isbn: string;
-  release_date: string;
+  release_date: Date;
   genres: string[];
   tags: string[];
   file_url: string;
@@ -224,8 +225,6 @@ export const columns: ColumnDef<eBooks>[] = [
     id: "actions",
     cell: ({ row }) => {
       // eslint-disable-next-line react-hooks/rules-of-hooks
-      const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
-      // eslint-disable-next-line react-hooks/rules-of-hooks
       const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
       return (
         <div>
@@ -238,19 +237,20 @@ export const columns: ColumnDef<eBooks>[] = [
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => setIsEditDialogOpen(true)}>
-                <PencilRuler className="mr-2" width={16} /> Edit
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setIsDeleteDialogOpen(true)}>
+              <Link href={`ebooks/update?slug=${row.original.slug}`}>
+                <DropdownMenuItem className="cursor-pointer">
+                  <PencilRuler className="mr-2" width={16} /> Edit
+                </DropdownMenuItem>
+              </Link>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => setIsDeleteDialogOpen(true)}
+              >
                 <Trash2 className="mr-2" width={16} /> Delete
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <EbookEditForm
-            isEditDialogOpen={isEditDialogOpen}
-            setIsEditDialogOpen={setIsEditDialogOpen}
-            values={row.original}
-          />
+
           <DeleteDialog
             isDeleteDialogOpen={isDeleteDialogOpen}
             setIsDeleteDialogOpen={setIsDeleteDialogOpen}

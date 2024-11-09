@@ -30,3 +30,15 @@ export function useEbookLatest(page: number, limit: number, week: number) {
     mutate,
   };
 }
+
+export function useEbookBySlug(slug: string) {
+  const { data, error, mutate } = useSWR(`/contents/ebooks/${slug}`, fetcher);
+
+  return {
+    ebook: data?.data,
+    totalPages: data?.lastPage || 1,
+    isLoading: !error && !data,
+    isError: error,
+    mutate,
+  };
+}

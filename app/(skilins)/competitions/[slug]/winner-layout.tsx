@@ -8,8 +8,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { FC } from "react";
 
-export default function WinnerLayout() {
+interface WinnerProps {
+  Winners: [];
+}
+
+const WinnerLayout: FC<WinnerProps> = ({ Winners }) => {
   return (
     <section className="w-full py-6">
       <div className="container mx-auto">
@@ -201,4 +206,6 @@ export default function WinnerLayout() {
       </div>
     </section>
   );
-}
+};
+
+export default WinnerLayout;

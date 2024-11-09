@@ -1,7 +1,13 @@
+import MinimalTiptapPreview from "@/components/minimal-tiptap/minimal-tiptap-preview";
 import { Badge } from "@/components/ui/badge";
 import { FileSpreadsheet } from "lucide-react";
+import { FC } from "react";
 
-export default function GuideLayout() {
+interface GuideProps {
+  guide: string;
+}
+
+const GuideLayout: FC<GuideProps> = ({ guide = "" }) => {
   return (
     <section className="w-full py-6">
       <div className="container mx-auto">
@@ -20,7 +26,9 @@ export default function GuideLayout() {
             </p>
           </div>
         </div>
+        <MinimalTiptapPreview value={guide} editable={false} />
       </div>
     </section>
   );
-}
+};
+export default GuideLayout;

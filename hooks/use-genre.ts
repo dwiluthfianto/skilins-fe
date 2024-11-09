@@ -4,7 +4,7 @@ import useSWR from "swr";
 export function useGenre() {
   const { data, error, mutate } = useSWR(`/genres`, fetcher);
 
-  const autocompleteTags = data?.data?.map(
+  const autocompleteGenres = data?.data?.map(
     (genre: { id: string; text: string }) => ({
       id: genre.id,
       text: genre.text,
@@ -13,7 +13,7 @@ export function useGenre() {
 
   return {
     genres: data?.data,
-    autocompleteTags,
+    autocompleteGenres,
     isLoading: !error && !data,
     isError: error,
     mutate,

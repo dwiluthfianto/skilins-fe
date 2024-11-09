@@ -12,6 +12,7 @@ import {
   Medal,
   Bird,
   Newspaper,
+  Hash,
 } from "lucide-react";
 
 type Submenu = {
@@ -71,13 +72,6 @@ export function getMenuList(pathname: string): Group[] {
     {
       groupLabel: "Groups",
       menus: [
-        // {
-        //   href: "/majors",
-        //   label: "Majors",
-        //   active: pathname.includes("/majors"),
-        //   icon: Shapes,
-        //   submenus: [],
-        // },
         {
           href: "/categories",
           label: "Categories",
@@ -90,6 +84,13 @@ export function getMenuList(pathname: string): Group[] {
           label: "Genres",
           active: pathname.includes("/genres"),
           icon: Bird,
+          submenus: [],
+        },
+        {
+          href: "/tags",
+          label: "Tags",
+          active: pathname.includes("/tags"),
+          icon: Hash,
           submenus: [],
         },
       ],

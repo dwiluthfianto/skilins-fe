@@ -1,7 +1,6 @@
 "use client";
 
-import { MinimalTiptapEditor } from "@/components/minimal-tiptap";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tag, TagInput } from "emblor";
 import { Button } from "@/components/ui/button";
@@ -16,19 +15,24 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import ImageUploader from "@/components/imageUploader";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { ContentLayout } from "@/components/staff-panel/content-layout";
-import { useBlogBySlug } from "@/hooks/use-blog";
 import { useTag } from "@/hooks/use-tag";
 import { AutoComplete } from "@/components/autocomplete";
 import { useCategorySearch } from "@/hooks/use-category";
+import { Input } from "@/components/ui/input";
 import { AutosizeTextarea } from "@/components/autosize-textarea";
-const BlogSchema = z.object({
+import { useGenre } from "@/hooks/use-genre";
+import MinimalTiptapOne from "@/components/minimal-tiptap/minimal-tiptap-one";
+import FileUploader from "@/components/file-uploader";
+import { useUser } from "@/hooks/use-user";
+const ContentSchema = z.object({
   title: z
     .string()
     .min(5, { message: "Title must be longer than or equal to 5 characters" }),
@@ -43,60 +47,69 @@ const BlogSchema = z.object({
     )
     .optional(),
   category: z.string().min(1, { message: "Category is required." }),
+  author: z.string().min(1, { message: "Author is required." }),
+  duration: z
+    .number()
+    .min(1, { message: "Duration must be greater than 0." })
+    .nonnegative(),
+  file: z.instanceof(File),
+  creator: z.string().min(1, { message: "Creator is required." }),
+  genres: z
+    .array(
+      z.object({
+        id: z.string(),
+        text: z.string(),
+      })
+    )
+    .optional(),
 });
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default function UpdateBlogs() {
-  const searchParams = useSearchParams();
-
-  const slug = searchParams.get("slug") || "";
-  const { blog, isLoading: blogLoading, mutate } = useBlogBySlug(slug);
-
-  const form = useForm<z.infer<typeof BlogSchema>>({
-    resolver: zodResolver(BlogSchema),
+export default function AudioSubmission() {
+  const form = useForm<z.infer<typeof ContentSchema>>({
+    resolver: zodResolver(ContentSchema),
     defaultValues: {
-      title: blog?.title || "",
+      title: "",
       thumbnail: undefined,
-      description: blog?.description || "",
-      tags: blog?.tags || [],
-      category: blog?.category || "",
+      description: "",
+      genres: [],
+      category: "",
+      duration: 0,
+      file: undefined,
+      creator: "",
+      tags: [],
     },
   });
-
-  useEffect(() => {
-    if (blog) {
-      form.reset({
-        title: blog.title,
-        thumbnail: undefined,
-        description: blog.description,
-        tags: blog.tags || [],
-        category: blog.category,
-      });
-    }
-
-    setTags(blog?.tags || []);
-  }, [blog, form]);
-
   const { autocompleteTags } = useTag();
-  const [tags, setTags] = useState<Tag[]>(blog?.tags || []);
+  const { autocompleteGenres } = useGenre();
+  const [tags, setTags] = useState<Tag[]>([]);
   const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
-  const [loading, setLoading] = useState(false); // New loading state
+  const [genres, setGenres] = useState<Tag[]>([]);
+  const [activeGenreIndex, setActiveGenreIndex] = useState<number | null>(null);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const [file, setFile] = useState<File | null>(null);
 
   const { categories, isLoading } = useCategorySearch(form.watch("category"));
 
-  async function onSubmit(data: z.infer<typeof BlogSchema>) {
+  const { user } = useUser();
+
+  async function onSubmit(data: z.infer<typeof ContentSchema>) {
     setLoading(true);
+
     const formData = new FormData();
     if (data.thumbnail) formData.append("thumbnail", data.thumbnail);
     formData.append("title", data.title);
     formData.append("description", data.description);
-    formData.append("tags", JSON.stringify(data.tags));
+    formData.append("genres", JSON.stringify(data.genres));
     formData.append("category_name", data.category);
+    formData.append("duration", String(data.duration));
+    if (file) formData.append("file_url", file);
+    if (user) formData.append("creator_uuid", user.uuid);
+    formData.append("tags", JSON.stringify(data.tags));
 
     try {
-      const { data: blogData } = await axios.patch(
-        `/contents/blogs/${blog?.uuid}`,
+      const { data: ebookData } = await axios.post(
+        "/competitions/submit",
         formData,
         {
           headers: {
@@ -107,19 +120,18 @@ export default function UpdateBlogs() {
 
       toast({
         title: "Success!",
-        description: blogData.message,
+        description: ebookData.message,
       });
 
-      mutate();
-      router.push("/staff/blogs");
+      router.push("/staff/ebooks");
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
         toast({
           title: "Error!",
           description:
-            error?.response.data.error ||
             error?.response.data.message ||
-            "An error occurred while add the blog.",
+            error?.response.data.error ||
+            "An error occurred while add the ebook.",
           variant: "destructive",
         });
       }
@@ -128,12 +140,10 @@ export default function UpdateBlogs() {
     }
   }
 
-  if (blogLoading || !blog) return <h1>loading...</h1>;
-
   return (
     <ContentLayout title="">
-      <div className="md:container">
-        <h1 className="font-semibold mb-4">Update Blog</h1>
+      <div className="max-w-4xl mx-auto">
+        <h1 className="font-semibold mb-4">Create Submission</h1>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <Card>
@@ -145,8 +155,7 @@ export default function UpdateBlogs() {
                     render={() => (
                       <ImageUploader
                         onChange={(file) => form.setValue("thumbnail", file)}
-                        initialImage={blog?.thumbnail}
-                        ratioImage={16 / 9}
+                        ratioImage={3 / 4}
                       />
                     )}
                   />
@@ -158,7 +167,7 @@ export default function UpdateBlogs() {
                         <FormControl>
                           <AutosizeTextarea
                             {...field}
-                            placeholder="New blog title here..."
+                            placeholder="New ebook title here..."
                             className="outline-none w-full text-4xl p-0 border-none  shadow-none focus-visible:ring-0  font-bold placeholder:text-slate-700 h-full resize-none overflow-hidden "
                           />
                         </FormControl>
@@ -166,6 +175,7 @@ export default function UpdateBlogs() {
                       </FormItem>
                     )}
                   />
+
                   <Separator />
                   <FormField
                     control={form.control}
@@ -216,11 +226,11 @@ export default function UpdateBlogs() {
                                 commandGroup: "font-bold",
                               },
                             }}
+                            activeTagIndex={activeTagIndex}
+                            setActiveTagIndex={setActiveTagIndex}
                             enableAutocomplete={true}
                             autocompleteOptions={autocompleteTags}
                             restrictTagsToAutocompleteOptions={true}
-                            activeTagIndex={activeTagIndex}
-                            setActiveTagIndex={setActiveTagIndex}
                             maxTags={4}
                           />
                         </FormControl>
@@ -235,7 +245,7 @@ export default function UpdateBlogs() {
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
-                        <MinimalTiptapEditor
+                        <MinimalTiptapOne
                           {...field}
                           className="w-full"
                           editorContentClassName="px-8 py-4 shadow-none"
@@ -249,15 +259,103 @@ export default function UpdateBlogs() {
                     </FormItem>
                   )}
                 />
+                <div className="m-8 space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="tags"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <TagInput
+                            {...field}
+                            tags={genres}
+                            setTags={(newTags) => {
+                              setGenres(newTags);
+                              form.setValue(
+                                "genres",
+                                newTags as [Tag, ...Tag[]]
+                              );
+                            }}
+                            placeholder="Add up to 4 genres..."
+                            styleClasses={{
+                              input:
+                                "w-full h-fit outline-none border-none shadow-none  text-base p-0",
+                              inlineTagsContainer: "border-none p-0",
+                              autoComplete: {
+                                command: "[&>div]:border-none",
+                                popoverContent: "p-4",
+                                commandList: "list-none",
+                                commandGroup: "font-bold",
+                              },
+                            }}
+                            activeTagIndex={activeGenreIndex}
+                            setActiveTagIndex={setActiveGenreIndex}
+                            enableAutocomplete={true}
+                            autocompleteOptions={autocompleteGenres}
+                            restrictTagsToAutocompleteOptions={true}
+                            maxTags={4}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Separator />
+                  <FormField
+                    control={form.control}
+                    name="file"
+                    render={({ field }) => (
+                      <FileUploader
+                        onChange={(file) => {
+                          field.onChange(file);
+                          setFile(file);
+                        }}
+                        accept="audio/mp3"
+                        onDurationChange={(duration) =>
+                          form.setValue("duration", duration ?? 0)
+                        }
+                        label="Add an Audio file"
+                        initialFileName={field.value ? field.value.name : ""}
+                        initialFileUrl={
+                          field.value ? URL.createObjectURL(field.value) : ""
+                        }
+                      />
+                    )}
+                  />
+                  <Separator />
+                  <FormField
+                    control={form.control}
+                    name="duration"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="font-normal text-base text-muted-foreground">
+                          Duration
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            value={new Date(1000 * field.value)
+                              .toISOString()
+                              .substring(11, 19)
+                              .replace(/^[0:]+/, "")}
+                            type="text"
+                            readOnly
+                            className="border-none outline-none shadow-none text-base p-0 focus-visible:ring-0 focus:border-none "
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
               </CardContent>
             </Card>
             <Button className="mt-6" disabled={loading}>
               {loading ? (
                 <>
-                  <Loader2 className="animate-spin" /> {`Updating...`}
+                  <Loader2 className="animate-spin" /> {`Publishing...`}
                 </>
               ) : (
-                "Update"
+                "Publish"
               )}
             </Button>
           </form>

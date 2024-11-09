@@ -38,6 +38,7 @@ import { CustomCalendar } from "@/components/ui/custom-calendar";
 import { cn } from "@/lib/utils";
 import { useGenre } from "@/hooks/use-genre";
 import MinimalTiptapOne from "@/components/minimal-tiptap/minimal-tiptap-one";
+import FileUploader from "@/components/file-uploader";
 const ContentSchema = z.object({
   title: z
     .string()
@@ -437,24 +438,18 @@ export default function CreateEbooks() {
                     control={form.control}
                     name="file"
                     render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="font-normal text-base text-muted-foreground">
-                          File
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            type="file"
-                            accept=".pdf"
-                            onChange={(e) => {
-                              if (e.target.files) {
-                                setFile(e.target.files[0]);
-                                field.onChange(e.target.files[0]);
-                              }
-                            }}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
+                      <FileUploader
+                        onChange={(file) => {
+                          field.onChange(file);
+                          setFile(file);
+                        }}
+                        accept="application/pdf"
+                        label="Add an Ebook file"
+                        initialFileName={field.value ? field.value.name : ""}
+                        initialFileUrl={
+                          field.value ? URL.createObjectURL(field.value) : ""
+                        }
+                      />
                     )}
                   />
                 </div>

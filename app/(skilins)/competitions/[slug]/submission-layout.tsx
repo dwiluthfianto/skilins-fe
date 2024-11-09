@@ -1,7 +1,12 @@
 import { Badge } from "@/components/ui/badge";
 import { Send } from "lucide-react";
+import { FC } from "react";
 
-export default function SubmissionLayout() {
+interface SubmissionProps {
+  Submissions: [];
+}
+
+const SubmissionLayout: FC<SubmissionProps> = ({ Submissions }) => {
   return (
     <section className="w-full py-6">
       <div className="container mx-auto">
@@ -22,4 +27,6 @@ export default function SubmissionLayout() {
       </div>
     </section>
   );
-}
+};
+
+export default SubmissionLayout;
