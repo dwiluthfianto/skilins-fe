@@ -62,7 +62,7 @@ const ContentSchema = z.object({
     .optional(),
 });
 
-export default function AudioSubmission() {
+export default function VideoSubmission() {
   const form = useForm<z.infer<typeof ContentSchema>>({
     resolver: zodResolver(ContentSchema),
     defaultValues: {
@@ -126,6 +126,8 @@ export default function AudioSubmission() {
 
       router.push(`/competitions/${params.type}/${params.slug}`);
     } catch (error) {
+      console.log(error);
+
       if (error instanceof AxiosError && error.response) {
         toast({
           title: "Error!",

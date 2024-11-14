@@ -198,7 +198,7 @@ export function Menu({ isOpen }: MenuProps) {
                   <DropdownMenuSeparator />
                   <DropdownMenuGroup>
                     <DropdownMenuItem className="hover:cursor-pointer" asChild>
-                      <Link href="/admin/account" className="flex items-center">
+                      <Link href="/staff/account" className="flex items-center">
                         <User className="w-4 h-4 mr-3 text-muted-foreground" />
                         Account
                       </Link>

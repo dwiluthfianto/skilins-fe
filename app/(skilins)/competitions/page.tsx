@@ -34,7 +34,7 @@ export default function CompetitionPage() {
               return (
                 <a
                   key={item.uuid}
-                  href={`competitions/${item.slug}`}
+                  href={`competitions/${item.type.toLowerCase()}/${item.slug}`}
                   className="group flex flex-col justify-between"
                 >
                   <div>
@@ -55,7 +55,7 @@ export default function CompetitionPage() {
                     </div>
                   </div>
                   <div className=" mb-2  pt-4  md:mb-3 md:pt-4 lg:pt-4 ">
-                    {new Date(item.submission_deadline) > new Date() ? (
+                    {new Date(item.end_date) > new Date() ? (
                       <Badge variant={"default"}>Ongoing</Badge>
                     ) : (
                       <Badge variant={"destructive"}>Completed</Badge>

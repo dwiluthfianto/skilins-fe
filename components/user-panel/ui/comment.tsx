@@ -2,7 +2,7 @@
 "use client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -38,6 +38,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { GetFirstLetterStr } from "@/utils/get-first-letter-str";
+import { FC } from "react";
+import { cn } from "@/lib/utils";
 
 const CommentSchema = z.object({
   content: z
@@ -50,11 +52,17 @@ const CommentSchema = z.object({
     }),
 });
 
-export default function CommentComponent(props: {
-  comment: any;
-  contentUuid: any;
-}) {
-  const { comment: comments, contentUuid } = props;
+interface CommentProps {
+  comments: [];
+  contentId: string;
+  className?: string;
+}
+
+const CommentComponent: FC<CommentProps> = ({
+  comments,
+  contentId,
+  className,
+}) => {
   const form = useForm<z.infer<typeof CommentSchema>>({
     resolver: zodResolver(CommentSchema),
     defaultValues: {
@@ -70,7 +78,7 @@ export default function CommentComponent(props: {
     formData.append("comment_content", data.content);
 
     try {
-      await axios.post(`/comments/${contentUuid}/create`, formData, {
+      await axios.post(`/comments/${contentId}/create`, formData, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -79,10 +87,11 @@ export default function CommentComponent(props: {
     } catch (error) {}
   }
 
-  async function handleDeleteComment(userUuid: string) {
+  async function handleDeleteComment(userUuid: string, commentUuid: string) {
     try {
-      await axios.post(`/comments/${contentUuid}/remove`, {
-        commented_by: userUuid,
+      await axios.post(`/comments/${contentId}/remove`, {
+        commentBy: userUuid,
+        commentUuid: commentUuid,
       });
 
       window.location.reload();
@@ -91,52 +100,56 @@ export default function CommentComponent(props: {
     }
   }
   return (
-    <div className="max-w-2xl mx-auto px-4">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-lg lg:text-2xl font-bold text-gray-900 dark:text-white">
-          Comments {`(${comments.length})`}
-        </h2>
-      </div>
-      <Form {...form}>
-        <form className="mb-6" onSubmit={form.handleSubmit(onSubmit)}>
-          <FormField
-            control={form.control}
-            name="content"
-            render={({ field }) => (
-              <FormItem className="mb-4">
-                <FormLabel htmlFor="comment" className="sr-only">
-                  Your comment
-                </FormLabel>
-                <FormControl>
-                  <Textarea
-                    id="comment"
-                    rows={6}
-                    {...field}
-                    className=" w-full text-sm text-gray-900  focus:ring-0 focus:outline-none dark:text-white dark:placeholder-gray-400 dark:bg-gray-800 border"
-                    placeholder="Write a comment..."
-                    required
-                  ></Textarea>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          {!user || user?.data.role === "admin" ? (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger disabled>
-                  <Button disabled>Post comment</Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>You need to log in to post a comment.</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          ) : (
-            <Button type="submit">Post comment</Button>
-          )}
-        </form>
-      </Form>
+    <div className={cn("space-y-4", className)}>
+      <Card>
+        <CardContent>
+          <CardHeader className="px-0 pt-6 pb-2">
+            <CardTitle className="text-lg lg:text-2xl font-bold text-gray-900 dark:text-white">
+              Comments {`(${comments.length})`}
+            </CardTitle>
+          </CardHeader>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              <FormField
+                control={form.control}
+                name="content"
+                render={({ field }) => (
+                  <FormItem className="mb-4">
+                    <FormLabel htmlFor="comment" className="sr-only">
+                      Your comment
+                    </FormLabel>
+                    <FormControl>
+                      <Textarea
+                        id="comment"
+                        rows={6}
+                        {...field}
+                        className=" w-full text-sm text-gray-900  focus:ring-0 focus:outline-none dark:text-white dark:placeholder-gray-400 dark:bg-gray-800 border"
+                        placeholder="Write a comment..."
+                        required
+                      ></Textarea>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {!user ? (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger disabled>
+                      <Button disabled>Post comment</Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>You need to log in to post a comment.</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              ) : (
+                <Button type="submit">Post comment</Button>
+              )}
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
       <div className="space-y-4">
         {comments
           ? comments?.map((comment: any, index: number) => {
@@ -172,12 +185,16 @@ export default function CommentComponent(props: {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem className="cursor-pointer">
                               <PencilRuler className="mr-2" width={16} /> Edit
                             </DropdownMenuItem>
                             <DropdownMenuItem
+                              className="cursor-pointer"
                               onClick={() =>
-                                handleDeleteComment(user?.data.uuid)
+                                handleDeleteComment(
+                                  user?.data.uuid,
+                                  comment.uuid
+                                )
                               }
                             >
                               <Trash2 className="mr-2" width={16} /> Delete
@@ -194,7 +211,7 @@ export default function CommentComponent(props: {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem className="cursor-pointer">
                               <MessageSquareWarning
                                 className="mr-2"
                                 width={16}
@@ -216,4 +233,6 @@ export default function CommentComponent(props: {
       </div>
     </div>
   );
-}
+};
+
+export default CommentComponent;

@@ -59,19 +59,32 @@ const languages = [
   { label: "Chinese", value: "zh" },
 ] as const;
 
+const allowedDomains = ["@gmail.com", "@skilins.com"];
+
 const StudentSchema = z.object({
   email: z
     .string()
-    .min(1, {
-      message: "This field has to be filled.",
-    })
-    .email("This is not valid email"),
-  password: z.string().min(6, {
-    message: "Password must be at least 6 characters.",
-  }),
-  fullName: z.string().min(4, {
-    message: "Full name must be at least 4 characters.",
-  }),
+    .email("This is not valid email")
+    .min(1, "Email must be filled")
+    .refine(
+      (email) => allowedDomains.some((domain) => email.endsWith(domain)),
+      {
+        message: `Email must use one of the following domains: ${allowedDomains.join(
+          ", "
+        )}`,
+      }
+    ),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters.")
+    .regex(/[A-Z]/, "Passwords must have at least one uppercase letter")
+    .regex(/[a-z]/, "Passwords must have at least one lowercase letter")
+    .regex(/[0-9]/, "Password must have at least one number")
+    .regex(
+      /[@$!%*?&]/,
+      "Password must have at least 1 special symbol (@$!%*?&)"
+    ),
+  fullName: z.string().min(4, "Full name must be at least 4 characters."),
   nis: z.coerce.number().min(1, {
     message: "This field has to be filled.",
   }),

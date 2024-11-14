@@ -3,9 +3,9 @@ import { FormControl, FormItem } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import * as pdfjsLib from "pdfjs-dist";
+import { pdfjs } from "react-pdf";
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.js`;
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 interface FileUploaderProps {
   onChange: (file: File | null) => void;
@@ -54,7 +54,7 @@ const FileUploader: FC<FileUploaderProps> = ({
       }
       if (selectedFile.type === "application/pdf" && onPageCountChange) {
         // Load PDF and get page count
-        const pdf = await pdfjsLib.getDocument(fileUrl).promise;
+        const pdf = await pdfjs.getDocument(fileUrl).promise;
         onPageCountChange(pdf.numPages); // Pass page count back to parent component
       }
     }

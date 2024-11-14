@@ -26,9 +26,31 @@ import {
 } from "@/components/ui/card";
 import { UserRound } from "lucide-react";
 
+const allowedDomains = ["@gmail.com", "@skilins.com"];
+
 const LoginSchema = z.object({
-  email: z.string().email("This is not valid email").nonempty("Required"),
-  password: z.string().min(6, "Password must be at least 6 characters."),
+  email: z
+    .string()
+    .email("This is not valid email")
+    .min(1, "Email must be filled")
+    .refine(
+      (email) => allowedDomains.some((domain) => email.endsWith(domain)),
+      {
+        message: `Email must use one of the following domains: ${allowedDomains.join(
+          ", "
+        )}`,
+      }
+    ),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters.")
+    .regex(/[A-Z]/, "Passwords must have at least one uppercase letter")
+    .regex(/[a-z]/, "Passwords must have at least one lowercase letter")
+    .regex(/[0-9]/, "Password must have at least one number")
+    .regex(
+      /[@$!%*?&]/,
+      "Password must have at least 1 special symbol (@$!%*?&)"
+    ),
   fullName: z.string().min(4, "Full name must be at least 4 characters."),
 });
 

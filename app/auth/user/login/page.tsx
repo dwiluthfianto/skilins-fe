@@ -33,16 +33,31 @@ import Link from "next/link";
 import { AxiosError } from "axios";
 import { useEffect } from "react";
 
+const allowedDomains = ["@gmail.com", "@skilins.com"];
+
 const LoginSchema = z.object({
   email: z
     .string()
-    .min(1, {
-      message: "This field has to be filled.",
-    })
-    .email("This is not valid email"),
-  password: z.string().min(6, {
-    message: "Password must be at least 6 characters.",
-  }),
+    .email("This is not valid email")
+    .min(1, "Email must be filled")
+    .refine(
+      (email) => allowedDomains.some((domain) => email.endsWith(domain)),
+      {
+        message: `Email must use one of the following domains: ${allowedDomains.join(
+          ", "
+        )}`,
+      }
+    ),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters.")
+    .regex(/[A-Z]/, "Passwords must have at least one uppercase letter")
+    .regex(/[a-z]/, "Passwords must have at least one lowercase letter")
+    .regex(/[0-9]/, "Password must have at least one number")
+    .regex(
+      /[@$!%*?&]/,
+      "Password must have at least 1 special symbol (@$!%*?&)"
+    ),
 });
 
 export default function Login() {

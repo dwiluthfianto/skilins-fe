@@ -27,7 +27,6 @@ import { AutoComplete } from "@/components/autocomplete";
 import { useCategorySearch } from "@/hooks/use-category";
 import { Input } from "@/components/ui/input";
 import { AutosizeTextarea } from "@/components/autosize-textarea";
-import { useGenre } from "@/hooks/use-genre";
 import MinimalTiptapOne from "@/components/minimal-tiptap/minimal-tiptap-one";
 import FileUploader from "@/components/file-uploader";
 import { useUser } from "@/hooks/use-user";
@@ -47,41 +46,31 @@ const ContentSchema = z.object({
     )
     .optional(),
   category: z.string().min(1, { message: "Category is required." }),
-  duration: z
+  pages: z
     .number()
     .min(1, { message: "Duration must be greater than 0." })
     .nonnegative(),
   file: z.instanceof(File),
-  genres: z
-    .array(
-      z.object({
-        id: z.string(),
-        text: z.string(),
-      })
-    )
-    .optional(),
 });
 
-export default function AudioSubmission() {
+export default function PrakerinSubmission() {
   const form = useForm<z.infer<typeof ContentSchema>>({
     resolver: zodResolver(ContentSchema),
     defaultValues: {
       title: "",
       thumbnail: undefined,
       description: "",
-      genres: [],
       category: "",
-      duration: 0,
+      pages: 0,
       file: undefined,
       tags: [],
     },
   });
   const { autocompleteTags } = useTag();
-  const { autocompleteGenres } = useGenre();
+
   const [tags, setTags] = useState<Tag[]>([]);
   const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
-  const [genres, setGenres] = useState<Tag[]>([]);
-  const [activeGenreIndex, setActiveGenreIndex] = useState<number | null>(null);
+
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
@@ -99,14 +88,13 @@ export default function AudioSubmission() {
     formData.append("type", params.type.toUpperCase());
 
     if (data.thumbnail) formData.append("thumbnail", data.thumbnail);
-    formData.append("audioData[title]", data.title);
-    formData.append("audioData[description]", data.description);
-    formData.append("audioData[genres]", JSON.stringify(data.genres));
-    formData.append("audioData[category_name]", data.category);
-    formData.append("audioData[duration]", String(data.duration));
+    formData.append("prakerinData[title]", data.title);
+    formData.append("prakerinData[description]", data.description);
+    formData.append("prakerinData[category_name]", data.category);
+    formData.append("prakerinData[pages]", String(data.pages));
     if (file) formData.append("file_url", file);
-    if (user) formData.append("audioData[creator_uuid]", user?.data.uuid);
-    formData.append("audioData[tags]", JSON.stringify(data.tags));
+    if (user) formData.append("prakerinData[author_uuid]", user?.data.uuid);
+    formData.append("prakerinData[tags]", JSON.stringify(data.tags));
 
     try {
       const { data: contentData } = await axios.post(
@@ -156,7 +144,7 @@ export default function AudioSubmission() {
                     render={() => (
                       <ImageUploader
                         onChange={(file) => form.setValue("thumbnail", file)}
-                        ratioImage={1 / 1}
+                        ratioImage={3 / 4}
                       />
                     )}
                   />
@@ -168,7 +156,7 @@ export default function AudioSubmission() {
                         <FormControl>
                           <AutosizeTextarea
                             {...field}
-                            placeholder="New audio title here..."
+                            placeholder="New prakerin title here..."
                             className="outline-none w-full text-4xl p-0 border-none  shadow-none focus-visible:ring-0  font-bold placeholder:text-slate-700 h-full resize-none overflow-hidden "
                           />
                         </FormControl>
@@ -262,47 +250,6 @@ export default function AudioSubmission() {
                 <div className="m-8 space-y-4">
                   <FormField
                     control={form.control}
-                    name="tags"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <TagInput
-                            {...field}
-                            tags={genres}
-                            setTags={(newTags) => {
-                              setGenres(newTags);
-                              form.setValue(
-                                "genres",
-                                newTags as [Tag, ...Tag[]]
-                              );
-                            }}
-                            placeholder="Add up to 4 genres..."
-                            styleClasses={{
-                              input:
-                                "w-full h-fit outline-none border-none shadow-none  text-base p-0",
-                              inlineTagsContainer: "border-none p-0",
-                              autoComplete: {
-                                command: "[&>div]:border-none",
-                                popoverContent: "p-4",
-                                commandList: "list-none",
-                                commandGroup: "font-bold",
-                              },
-                            }}
-                            activeTagIndex={activeGenreIndex}
-                            setActiveTagIndex={setActiveGenreIndex}
-                            enableAutocomplete={true}
-                            autocompleteOptions={autocompleteGenres}
-                            restrictTagsToAutocompleteOptions={true}
-                            maxTags={4}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Separator />
-                  <FormField
-                    control={form.control}
                     name="file"
                     render={({ field }) => (
                       <FileUploader
@@ -310,11 +257,11 @@ export default function AudioSubmission() {
                           field.onChange(file);
                           setFile(file);
                         }}
-                        accept="audio/mp3"
-                        onDurationChange={(duration) =>
-                          form.setValue("duration", duration ?? 0)
+                        accept="application/pdf"
+                        onPageCountChange={(page) =>
+                          form.setValue("pages", page ?? 0)
                         }
-                        label="Add an Audio file"
+                        label="Add an Prakerin file"
                         initialFileName={field.value ? field.value.name : ""}
                         initialFileUrl={
                           field.value ? URL.createObjectURL(field.value) : ""
@@ -325,18 +272,15 @@ export default function AudioSubmission() {
                   <Separator />
                   <FormField
                     control={form.control}
-                    name="duration"
+                    name="pages"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="font-normal text-base text-muted-foreground">
-                          Duration
+                          Pages
                         </FormLabel>
                         <FormControl>
                           <Input
-                            value={new Date(1000 * field.value)
-                              .toISOString()
-                              .substring(11, 19)
-                              .replace(/^[0:]+/, "")}
+                            value={field.value}
                             type="text"
                             readOnly
                             className="border-none outline-none shadow-none text-base p-0 focus-visible:ring-0 focus:border-none "

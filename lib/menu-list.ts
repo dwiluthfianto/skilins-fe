@@ -46,13 +46,28 @@ export function getMenuList(pathname: string): Group[] {
           icon: LayoutGrid,
           submenus: [],
         },
-
         {
-          href: "/staff/competitions",
+          href: "",
           label: "Competitions",
-          active: pathname.includes("/competitions"),
           icon: Medal,
-          submenus: [],
+          active: false,
+          submenus: [
+            {
+              href: "/staff/competitions/new",
+              label: "New",
+              active: pathname.includes("/new"),
+            },
+            {
+              href: "/staff/competitions/list",
+              label: "List",
+              active: pathname.includes("/list"),
+            },
+            {
+              href: "/staff/competitions/judges",
+              label: "Judges",
+              active: pathname.includes("/judges"),
+            },
+          ],
         },
         {
           href: "/staff/students",

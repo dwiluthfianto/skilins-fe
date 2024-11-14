@@ -56,7 +56,7 @@ export default function CreateCompetition() {
     defaultValues: {
       title: "",
       thumbnail: undefined,
-      type_competition: "AudioPodcast",
+      type_competition: "AUDIO",
       description: "",
       guide: "",
       start_date: new Date(),
@@ -164,13 +164,10 @@ export default function CreateCompetition() {
                             <FormItem>
                               <FormControl>
                                 <Label
-                                  htmlFor="video"
+                                  htmlFor="audio"
                                   className="border cursor-pointer rounded-md p-2 flex items-center gap-2 [&:has(:checked)]:bg-zinc-100 dark:[&:has(:checked)]:bg-zinc-800"
                                 >
-                                  <RadioGroupItem
-                                    id="audio"
-                                    value="AudioPodcast"
-                                  />
+                                  <RadioGroupItem id="audio" value="AUDIO" />
                                   Audio
                                 </Label>
                               </FormControl>
@@ -178,13 +175,10 @@ export default function CreateCompetition() {
                             <FormItem>
                               <FormControl>
                                 <Label
-                                  htmlFor="audio"
+                                  htmlFor="video"
                                   className="border cursor-pointer rounded-md p-2 flex items-center gap-2 [&:has(:checked)]:bg-zinc-100 dark:[&:has(:checked)]:bg-zinc-800"
                                 >
-                                  <RadioGroupItem
-                                    id="video"
-                                    value="VideoPodcast"
-                                  />
+                                  <RadioGroupItem id="video" value="VIDEO" />
                                   Video
                                 </Label>
                               </FormControl>
@@ -197,7 +191,7 @@ export default function CreateCompetition() {
                                 >
                                   <RadioGroupItem
                                     id="prakerin"
-                                    value="Prakerin"
+                                    value="PRAKERIN"
                                   />
                                   Prakerin
                                 </Label>
