@@ -48,16 +48,7 @@ const LoginSchema = z.object({
         )}`,
       }
     ),
-  password: z
-    .string()
-    .min(8, "Password must be at least 8 characters.")
-    .regex(/[A-Z]/, "Passwords must have at least one uppercase letter")
-    .regex(/[a-z]/, "Passwords must have at least one lowercase letter")
-    .regex(/[0-9]/, "Password must have at least one number")
-    .regex(
-      /[@$!%*?&]/,
-      "Password must have at least 1 special symbol (@$!%*?&)"
-    ),
+  password: z.string().min(8, "Password must be at least 8 characters."),
 });
 
 export default function Login() {

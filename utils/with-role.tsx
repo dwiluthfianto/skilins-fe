@@ -29,7 +29,7 @@ const withRole = <P extends object>(
     }, [userRole, allowedRoles, router, loginRedirectPath]);
 
     if (loading) {
-      return <div>Loading...</div>; // Show a loading state while determining the role
+      return <div>Loading...</div>;
     }
 
     return userRole && allowedRoles.includes(userRole) ? (

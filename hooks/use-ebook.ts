@@ -36,7 +36,6 @@ export function useEbookBySlug(slug: string) {
 
   return {
     ebook: data?.data,
-    totalPages: data?.lastPage || 1,
     isLoading: !error && !data,
     isError: error,
     mutate,

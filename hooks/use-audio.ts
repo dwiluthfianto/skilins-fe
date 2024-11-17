@@ -1,9 +1,11 @@
 import { fetcher } from "@/utils/fetcher";
 import useSWR from "swr";
 
-export function useAudio(page: number) {
+export function useAudio(page?: number, limit?: number, search?: string) {
   const { data, error, mutate } = useSWR(
-    `/contents/audios?page=${page}&limit=25`,
+    page && limit
+      ? `/contents/audios?page=${page}&limit=${limit}&search=${search}`
+      : `/contents/audios`,
     fetcher
   );
 
@@ -19,6 +21,32 @@ export function useAudio(page: number) {
 export function useAudioLatest(page: number, limit: number, week: number) {
   const { data, error, mutate } = useSWR(
     `/contents/audios/latest?page=${page}&limit=${limit}&week=${week}`,
+    fetcher
+  );
+
+  return {
+    audios: data?.data,
+    totalPages: data?.lastPage || 1,
+    isLoading: !error && !data,
+    isError: error,
+    mutate,
+  };
+}
+
+export function useAudioBySlug(slug: string) {
+  const { data, error, mutate } = useSWR(`/contents/audios/${slug}`, fetcher);
+
+  return {
+    audio: data?.data,
+    isLoading: !error && !data,
+    isError: error,
+    mutate,
+  };
+}
+
+export function useUserAudio(page?: number, limit?: number, status?: string) {
+  const { data, error, mutate } = useSWR(
+    `/contents/audios/student?page=${page}&limit=${limit}&status=${status}`,
     fetcher
   );
 

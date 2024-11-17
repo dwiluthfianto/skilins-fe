@@ -3,7 +3,14 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 
-import { FileAudio, FilePenLine, MoreHorizontal, Trash2 } from "lucide-react";
+import {
+  CircleOff,
+  FileAudio,
+  FileSearch,
+  MoreHorizontal,
+  Signature,
+  Trash2,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -19,8 +26,9 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import Image from "next/image";
 import React from "react";
 import DeleteDialog from "@/components/staff-panel/delete-dialog";
-import AudioEditForm from "@/components/staff-panel/forms/audio/audio-edit-form";
-
+import ApproveDialog from "@/components/staff-panel/approve-dialog";
+import RejectDialog from "@/components/staff-panel/reject-dialog";
+import { Badge } from "@/components/ui/badge";
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type Audio = {
@@ -28,12 +36,13 @@ export type Audio = {
   title: string;
   thumbnail: string;
   description: string;
-  subjects: string[];
+  genres: string[];
   category: string;
   creator: string;
   duration: number;
   file_url: string;
   tags: string[];
+  status: string;
 };
 
 export const columns: ColumnDef<Audio>[] = [
@@ -80,39 +89,22 @@ export const columns: ColumnDef<Audio>[] = [
       );
     },
   },
+
   {
-    accessorKey: "description",
+    accessorKey: "genres",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Description
+          Genres
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
     cell: ({ row }) => {
-      return (
-        <div className=" line-clamp-3 break-words ">
-          {row.original.description}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "subjects",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Subjects
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
+      return row.original.genres.map((genre: any) => genre?.text).join(", ");
     },
   },
   {
@@ -177,7 +169,7 @@ export const columns: ColumnDef<Audio>[] = [
       );
     },
     cell: ({ row }) => {
-      return row.original.tags.map((tag: any) => tag?.name).join(", ");
+      return row.original.tags.map((genre: any) => genre?.text).join(", ");
     },
   },
   {
@@ -205,12 +197,43 @@ export const columns: ColumnDef<Audio>[] = [
       );
     },
   },
+  {
+    accessorKey: "status",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Status
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      return row.original.status === "PENDING" ? (
+        <Badge className="bg-yellow-500 text-white" variant={"outline"}>
+          {row.original.status}
+        </Badge>
+      ) : row.original.status === "APPROVED" ? (
+        <Badge className="bg-green-500 text-white" variant={"outline"}>
+          {row.original.status}
+        </Badge>
+      ) : (
+        <Badge className="bg-red-500 text-white" variant={"outline"}>
+          {row.original.status}
+        </Badge>
+      );
+    },
+  },
 
   {
     id: "actions",
     cell: ({ row }) => {
       // eslint-disable-next-line react-hooks/rules-of-hooks
-      const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
+      const [approveOpen, setApproveOpen] = React.useState(false);
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      const [rejectOpen, setRejectOpen] = React.useState(false);
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
       return (
@@ -223,24 +246,47 @@ export const columns: ColumnDef<Audio>[] = [
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => setIsEditDialogOpen(true)}>
-                <FilePenLine className="mr-2" width={16} /> Edit
+              <DropdownMenuLabel>Status</DropdownMenuLabel>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => setApproveOpen(true)}
+              >
+                <Signature className="mr-2" width={16} /> Approve
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setIsDeleteDialogOpen(true)}>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => setRejectOpen(true)}
+              >
+                <CircleOff className="mr-2" width={16} /> Reject
+              </DropdownMenuItem>
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuItem className="cursor-pointer">
+                <FileSearch className="mr-2" width={16} /> Detail
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => setIsDeleteDialogOpen(true)}
+              >
                 <Trash2 className="mr-2" width={16} /> Delete
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <AudioEditForm
-            isEditDialogOpen={isEditDialogOpen}
-            setIsEditDialogOpen={setIsEditDialogOpen}
-            values={row.original}
-          />
+
           <DeleteDialog
-            isDeleteDialogOpen={isDeleteDialogOpen}
-            setIsDeleteDialogOpen={setIsDeleteDialogOpen}
+            open={isDeleteDialogOpen}
+            onOpenChange={setIsDeleteDialogOpen}
             pathApi={`/contents/audios/${row.original.uuid}`}
+          />
+
+          <ApproveDialog
+            open={approveOpen}
+            onOpenChange={setApproveOpen}
+            pathApi={`/contents/${row.original.uuid}`}
+          />
+          <RejectDialog
+            open={rejectOpen}
+            onOpenChange={setRejectOpen}
+            pathApi={`/contents/${row.original.uuid}`}
           />
         </div>
       );

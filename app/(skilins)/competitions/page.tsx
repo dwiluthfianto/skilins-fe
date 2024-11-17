@@ -29,11 +29,10 @@ export default function CompetitionPage() {
           </div>
         </div>
         <div className="w-full grid gap-2 grid-cols-2  lg:grid-cols-4">
-          <div className="pl-[20px] max-w-[352px]">
-            {competitions?.map((item: any) => {
-              return (
+          {competitions?.map((item: any) => {
+            return (
+              <div className="pl-[20px] max-w-[352px]" key={item.uuid}>
                 <a
-                  key={item.uuid}
                   href={`competitions/${item.type.toLowerCase()}/${item.slug}`}
                   className="group flex flex-col justify-between"
                 >
@@ -65,9 +64,9 @@ export default function CompetitionPage() {
                     </p>
                   </div>
                 </a>
-              );
-            })}
-          </div>
+              </div>
+            );
+          })}
         </div>
       </section>
     </ContentLayout>

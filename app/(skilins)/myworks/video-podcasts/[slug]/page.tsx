@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ContentLayout } from "@/components/user-panel/content-layout";
-import axios from "../../../../utils/axios";
+import axios from "@/utils/axios";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { format } from "date-fns";
 import {
@@ -23,8 +23,7 @@ import {
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import LikeComponent from "@/components/user-panel/ui/like";
-import CommentComponent from "@/components/user-panel/ui/comment";
+import MinimalTiptapPreview from "@/components/minimal-tiptap/minimal-tiptap-preview";
 
 export default async function VideoDetail({ params }: any) {
   const { slug } = params;
@@ -97,9 +96,10 @@ export default async function VideoDetail({ params }: any) {
                   <p className="mt-1 md:mt-6 text text-lg max-w-xl lg:max-w-xl leading-relaxed tracking-tight font-medium">
                     Description
                   </p>
-                  <p className="mt-1 text-muted-foreground line-clamp-3 text-justify">
-                    {video.description}
-                  </p>
+                  <MinimalTiptapPreview
+                    value={video.description}
+                    editable={false}
+                  />
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button
@@ -116,9 +116,10 @@ export default async function VideoDetail({ params }: any) {
                         </DialogTitle>
                       </DialogHeader>
                       <ScrollArea className="max-h-[600px] pr-4">
-                        <p className="text-justify text-muted-foreground	">
-                          {video.description}
-                        </p>
+                        <MinimalTiptapPreview
+                          value={video.description}
+                          editable={false}
+                        />
                       </ScrollArea>
                     </DialogContent>
                   </Dialog>
@@ -149,16 +150,14 @@ export default async function VideoDetail({ params }: any) {
                         <div className="flex flex-row gap-6 items-start">
                           <div className="flex flex-col gap-1">
                             <p className="text-muted-foreground text-sm">
-                              Subjects
+                              Genres
                             </p>
                             <p>
-                              {video.subjects.map(
-                                (subject: any, index: number) => (
-                                  <Badge key={index} className="mr-2">
-                                    {subject}
-                                  </Badge>
-                                )
-                              )}
+                              {video.genres.map((genre: any, index: number) => (
+                                <Badge key={index} className="mr-2">
+                                  {genre.text}
+                                </Badge>
+                              ))}
                             </p>
                           </div>
                         </div>
@@ -173,7 +172,7 @@ export default async function VideoDetail({ params }: any) {
                                   key={index}
                                   className="mr-2 items-center"
                                 >
-                                  #{tag.name}
+                                  #{tag.text}
                                 </Badge>
                               ))}
                             </p>
@@ -186,15 +185,6 @@ export default async function VideoDetail({ params }: any) {
               </Card>
             </div>
           </div>
-          <Card className=" py-8 lg:py-16 antialiased mt-10">
-            <CardContent className="space-y-4">
-              <LikeComponent likes={video.likes} contentUuid={slug} />
-              <CommentComponent
-                comments={video.comments}
-                contentId={video.uuid}
-              />
-            </CardContent>
-          </Card>
         </div>
       </section>
     </ContentLayout>

@@ -39,7 +39,9 @@ export default async function CompetitionPage({
   params: { slug: string; type: string };
 }) {
   try {
-    const res = (await axios.get(`/competitions/${params.slug}`)).data;
+    const res = (
+      await axios.get(`/competitions/${params.slug}?type=${params.type}`)
+    ).data;
 
     const data = res.data;
 
@@ -153,7 +155,7 @@ export default async function CompetitionPage({
               <WinnerLayout Winners={data.Winners} />
             </TabsContent>
             <TabsContent value="judge">
-              <JudgeLayout />
+              <JudgeLayout Judges={data.Judges} />
             </TabsContent>
           </Tabs>
         </div>

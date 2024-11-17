@@ -1,7 +1,7 @@
 // src/components/ImageUploader.tsx
 import { FC, useEffect, useRef, useState } from "react";
 import { useImageUpload } from "@/hooks/useImageUpload";
-import { FormControl, FormItem } from "@/components/ui/form";
+import { FormControl, FormItem, FormMessage } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import Image from "next/image";
@@ -91,6 +91,7 @@ const ImageUploader: FC<ImageUploaderProps> = ({
           </span>
         </Label>
       )}
+      <FormMessage />
     </FormItem>
   );
 };

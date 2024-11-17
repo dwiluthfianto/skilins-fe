@@ -116,11 +116,11 @@ export function Navbar({ title }: NavbarProps) {
                             </a>
                           </NavigationMenuLink>
                         </li>
-                        <ListItem href="/myworks/audios" title="Audio">
+                        <ListItem href="/myworks/audio-podcasts" title="Audio">
                           {`Share the audio works you’ve crafted, from music to
                           engaging podcasts.`}
                         </ListItem>
-                        <ListItem href="/myworks/videos" title="Video">
+                        <ListItem href="/myworks/video-podcasts" title="Video">
                           {`Share the creative videos you’ve produced, showcasing your
                           ideas and stories.`}
                         </ListItem>

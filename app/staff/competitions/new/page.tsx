@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/form";
 import ImageUploader from "@/components/imageUploader";
 import { useRouter } from "next/navigation";
-import { CalendarIcon, Loader2 } from "lucide-react";
+import { CalendarIcon, CircleAlert, Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { ContentLayout } from "@/components/staff-panel/content-layout";
 
@@ -35,6 +35,8 @@ import { cn } from "@/lib/utils";
 import MinimalTiptapOne from "@/components/minimal-tiptap/minimal-tiptap-one";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { Tag, TagInput } from "emblor";
+import { useJudge } from "@/hooks/use-judge";
 const ContentSchema = z.object({
   title: z
     .string()
@@ -48,6 +50,12 @@ const ContentSchema = z.object({
   start_date: z.date(),
   end_date: z.date(),
   submission_deadline: z.date(),
+  judges: z.array(
+    z.object({
+      id: z.string(),
+      text: z.string(),
+    })
+  ),
 });
 
 export default function CreateCompetition() {
@@ -62,8 +70,12 @@ export default function CreateCompetition() {
       start_date: new Date(),
       end_date: new Date(),
       submission_deadline: new Date(),
+      judges: [],
     },
   });
+  const [judges, setJudges] = useState<Tag[]>([]);
+  const [activeJudgeIndex, setActiveJudgeIndex] = useState<number | null>(null);
+  const { autocompleteJudges } = useJudge();
 
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -80,6 +92,7 @@ export default function CreateCompetition() {
     formData.append("end_date", String(data.end_date));
     formData.append("type", data.type_competition);
     formData.append("submission_deadline", String(data.submission_deadline));
+    formData.append("judge_uuids", JSON.stringify(data.judges));
 
     try {
       const { data: contentData } = await axios.post(
@@ -99,6 +112,8 @@ export default function CreateCompetition() {
 
       router.push("/staff/competitions");
     } catch (error) {
+      console.log(error);
+
       if (error instanceof AxiosError && error.response) {
         toast({
           title: "Error!",
@@ -139,12 +154,17 @@ export default function CreateCompetition() {
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
-                          <AutosizeTextarea
-                            {...field}
-                            maxLength={45}
-                            placeholder="New competition title here..."
-                            className="outline-none w-full text-4xl p-0 border-none  shadow-none focus-visible:ring-0  font-bold placeholder:text-slate-700 h-full resize-none overflow-hidden "
-                          />
+                          <div className="relative group">
+                            <AutosizeTextarea
+                              {...field}
+                              maxLength={45}
+                              placeholder="New competition title here..."
+                              className="outline-none w-full text-4xl p-0 border-none  shadow-none focus-visible:ring-0  font-bold placeholder:text-slate-700 h-full resize-none overflow-hidden "
+                            />
+                            <div className="absolute inset-y-0 end-0 flex items-center z-20 cursor-pointer text-gray-400 px-3">
+                              <CircleAlert width={18} className="shrink-0" />
+                            </div>
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -379,6 +399,48 @@ export default function CreateCompetition() {
                             />
                           </PopoverContent>
                         </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Separator />
+                  <FormField
+                    control={form.control}
+                    name="judges"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <TagInput
+                            {...field}
+                            tags={judges}
+                            setTags={(newTags) => {
+                              setJudges(newTags);
+                              form.setValue(
+                                "judges",
+                                newTags as [Tag, ...Tag[]]
+                              );
+                            }}
+                            placeholder="Add up to 4 judges..."
+                            styleClasses={{
+                              input:
+                                "w-full h-fit outline-none border-none shadow-none  text-base p-0",
+                              inlineTagsContainer: "border-none p-0",
+                              autoComplete: {
+                                command: "[&>div]:border-none",
+                                popoverContent: "p-4",
+                                commandList: "list-none",
+                                commandGroup: "font-bold",
+                              },
+                            }}
+                            activeTagIndex={activeJudgeIndex}
+                            setActiveTagIndex={setActiveJudgeIndex}
+                            enableAutocomplete={true}
+                            autocompleteOptions={autocompleteJudges}
+                            restrictTagsToAutocompleteOptions={true}
+                            minTags={3}
+                            maxTags={6}
+                          />
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}

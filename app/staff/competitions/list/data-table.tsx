@@ -24,15 +24,6 @@ import {
 } from "@/components/ui/table";
 
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-
-import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
@@ -41,8 +32,18 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useAudio } from "@/hooks/use-audio";
+import { ChevronDownIcon, Medal } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import useDebounce from "@/lib/debounce";
+import { useCompetition } from "@/hooks/use-competition";
+import Link from "next/link";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -67,7 +68,8 @@ export function DataTable<TData, TValue>({
     pageSize: parseInt(limit, 10),
   });
   const debouncedSearch = useDebounce(search, 1000);
-  const { audios, isLoading, isError, totalPages } = useAudio(
+
+  const { competitions, isLoading, isError, totalPages } = useCompetition(
     pagination.pageIndex + 1,
     parseInt(limit, 10),
     debouncedSearch
@@ -75,11 +77,10 @@ export function DataTable<TData, TValue>({
 
   React.useEffect(() => {
     setPagination({ ...pagination, pageIndex: 0 });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearch, limit]);
 
   const table = useReactTable({
-    data: audios || [],
+    data: competitions || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -110,12 +111,16 @@ export function DataTable<TData, TValue>({
   if (isLoading) return <h1>Loading..</h1>;
   if (isError) return <h1>Error</h1>;
   return (
-    <div className="bg-white dark:bg-black border rounded-md p-6 aspect-square lg:aspect-auto flex justify-between flex-col">
+    <div className="bg-white dark:bg-black border rounded-md p-6 aspect-square lg:aspect-auto flex  flex-col">
       <div className="flex flex-col items-start md:items-center md:flex-row justify-between gap-4">
         <div>
-          <p className="font-bold text-4xl">Audio Podcasts</p>
-          <p className="text-sm">Voices that Inspire, Stories that Connect.</p>
+          <p className="font-bold text-4xl">Competitions</p>
         </div>
+        <Link href={"/staff/competitions/new"}>
+          <Button>
+            <Medal width={16} /> Add competition
+          </Button>
+        </Link>
       </div>
       <div className="flex items-center py-4">
         <Input
@@ -128,7 +133,7 @@ export function DataTable<TData, TValue>({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
-              Columns
+              Columns <ChevronDownIcon className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -181,7 +186,14 @@ export function DataTable<TData, TValue>({
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell
+                      key={cell.id}
+                      className={
+                        cell.column.getIsPinned()
+                          ? "sticky right-0 z-50 bg-white dark:bg-black"
+                          : ""
+                      }
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()

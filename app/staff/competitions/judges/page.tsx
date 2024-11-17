@@ -29,7 +29,7 @@ export default function JudgeList() {
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage>e-Books</BreadcrumbPage>
+            <BreadcrumbPage>Judges</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>

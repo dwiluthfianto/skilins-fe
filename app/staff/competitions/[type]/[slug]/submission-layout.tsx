@@ -1,14 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import ContentCard from "@/components/content-card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Send } from "lucide-react";
 import { FC } from "react";
 
 interface SubmissionProps {
+  onUpdateStatus: (status: string) => void;
+  status: string;
   Submissions: [];
 }
 
-const SubmissionLayout: FC<SubmissionProps> = ({ Submissions }) => {
+const SubmissionLayout: FC<SubmissionProps> = ({
+  onUpdateStatus,
+  Submissions,
+  status,
+}) => {
   return (
     <section className="w-full py-6">
       <div className="container mx-auto">
@@ -27,7 +34,27 @@ const SubmissionLayout: FC<SubmissionProps> = ({ Submissions }) => {
           </div>
         </div>
       </div>
-      <div className="w-full grid gap-2 grid-cols-2 md:grid-cols-4 lg:grid-cols-6 py-8">
+      <div className="space-x-2 py-8">
+        <Button
+          variant={status === "APPROVED" ? "default" : "outline"}
+          onClick={() => onUpdateStatus("APPROVED")}
+        >
+          Approved
+        </Button>
+        <Button
+          variant={status === "PENDING" ? "default" : "outline"}
+          onClick={() => onUpdateStatus("PENDING")}
+        >
+          Pending
+        </Button>
+        <Button
+          variant={status === "REJECTED" ? "default" : "outline"}
+          onClick={() => onUpdateStatus("REJECTED")}
+        >
+          Rejected
+        </Button>
+      </div>
+      <div className="w-full grid gap-2 grid-cols-2 md:grid-cols-4 lg:grid-cols-6">
         {Submissions.map((item: any) => {
           return item.content.type === "AUDIO" ? (
             <ContentCard

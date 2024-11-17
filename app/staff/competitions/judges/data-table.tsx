@@ -89,6 +89,12 @@ export function DataTable<TData, TValue>({
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    initialState: {
+      columnPinning: {
+        left: [],
+        right: ["actions"],
+      },
+    },
 
     manualPagination: true,
     pageCount: totalPages,
@@ -176,7 +182,14 @@ export function DataTable<TData, TValue>({
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell
+                      key={cell.id}
+                      className={
+                        cell.column.getIsPinned()
+                          ? "sticky right-0 z-50 bg-white dark:bg-black"
+                          : ""
+                      }
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
@@ -199,7 +212,7 @@ export function DataTable<TData, TValue>({
         </Table>
       </div>
       <div className="flex items-center justify-between space-x-2 py-4">
-        <div className="flex space-x-2 items-center">
+        <div className="flex flex-wrap md:space-x-2 items-center">
           <p className="font-semibold text-sm">Rows per page</p>
           <Select onValueChange={(value) => setLimit(value)} defaultValue="10">
             <SelectTrigger className="w-fit">
@@ -214,10 +227,11 @@ export function DataTable<TData, TValue>({
             </SelectContent>
           </Select>
         </div>
-        <span className="font-semibold text-sm">
-          Page {pagination.pageIndex + 1} of {totalPages}
-        </span>
+
         <div>
+          <span className="font-semibold text-sm mr-4">
+            Page {pagination.pageIndex + 1} of {totalPages}
+          </span>
           <Button
             variant="outline"
             size="sm"

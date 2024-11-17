@@ -48,16 +48,7 @@ const LoginSchema = z.object({
         )}`,
       }
     ),
-  password: z
-    .string()
-    .min(8, "Password must be at least 8 characters.")
-    .regex(/[A-Z]/, "Passwords must have at least one uppercase letter")
-    .regex(/[a-z]/, "Passwords must have at least one lowercase letter")
-    .regex(/[0-9]/, "Password must have at least one number")
-    .regex(
-      /[@$!%*?&]/,
-      "Password must have at least 1 special symbol (@$!%*?&)"
-    ),
+  password: z.string().min(8, "Password must be at least 8 characters."),
 });
 
 export default function Login() {
@@ -98,9 +89,9 @@ export default function Login() {
   useEffect(() => {
     if (!isLoading && user) {
       // Redirect sesuai dengan role user hanya ketika data user sudah di-fetch
-      if (user?.data?.role === "admin") {
-        router.push("/admin/dashboard");
-      } else if (user?.data?.role === "user") {
+      if (user?.data?.role === "Staff") {
+        router.push("/staff/dashboard");
+      } else {
         router.push("/");
       }
     }

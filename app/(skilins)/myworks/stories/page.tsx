@@ -52,4 +52,4 @@ function MyworkStories() {
   );
 }
 
-export default withRole(MyworkStories, ["Staff"], "/auth/user/login");
+export default withRole(MyworkStories, ["Student"], "/auth/user/login");

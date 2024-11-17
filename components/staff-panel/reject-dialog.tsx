@@ -18,14 +18,14 @@ import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-interface DeleteDialogProps {
+interface DialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   className?: string;
   pathApi: string;
 }
 
-const DeleteDialog: FC<DeleteDialogProps> = ({
+const RejectDialog: FC<DialogProps> = ({
   open,
   onOpenChange,
   className,
@@ -33,17 +33,17 @@ const DeleteDialog: FC<DeleteDialogProps> = ({
 }) => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const deleteHandle = async () => {
+  const rejectHandle = async () => {
     setLoading(true);
     try {
-      const { data } = await axios.delete(pathApi);
+      const { data } = await axios.patch(`${pathApi}/reject`);
 
       const path = pathApi.replace(
         /\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
         ""
       );
       toast({
-        title: "Delete Successful!",
+        title: "Content Rejected Successfully!",
         description: data.message,
       });
 
@@ -55,7 +55,7 @@ const DeleteDialog: FC<DeleteDialogProps> = ({
           description:
             error?.response.data.message ||
             error?.response.data.error ||
-            "An error occurred while delete the content.",
+            "An error occurred while reject the content.",
           variant: "destructive",
         });
       }
@@ -71,10 +71,10 @@ const DeleteDialog: FC<DeleteDialogProps> = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className={cn("sm:max-w-[425px]", className)}>
         <DialogHeader>
-          <DialogTitle>Are you sure? </DialogTitle>
+          <DialogTitle>Confirm Rejection</DialogTitle>
           <DialogDescription>
-            Do you really want to delete these records? This process cannot be
-            undone.
+            Are you sure you want to reject this content? Once rejected, the
+            author will be notified, and it will not be published.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
@@ -82,18 +82,18 @@ const DeleteDialog: FC<DeleteDialogProps> = ({
             <Button variant="outline">Cancel</Button>
           </DialogClose>
           <Button
-            onClick={() => deleteHandle()}
+            onClick={() => rejectHandle()}
             type="submit"
             disabled={loading}
-            variant={"destructive"}
+            variant={"default"}
           >
             {loading ? (
               <>
                 <Loader2 className="animate-spin" />
-                Deleting
+                Loading
               </>
             ) : (
-              "Delete"
+              "Reject"
             )}
           </Button>
         </DialogFooter>
@@ -102,4 +102,4 @@ const DeleteDialog: FC<DeleteDialogProps> = ({
   );
 };
 
-export default DeleteDialog;
+export default RejectDialog;

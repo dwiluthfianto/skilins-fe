@@ -1,5 +1,5 @@
 import { FC, useRef, useState, useEffect } from "react";
-import { FormControl, FormItem } from "@/components/ui/form";
+import { FormControl, FormItem, FormMessage } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -120,6 +120,7 @@ const FileUploader: FC<FileUploaderProps> = ({
           </span>
         </Label>
       )}
+      <FormMessage />
     </FormItem>
   );
 };
