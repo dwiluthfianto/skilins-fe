@@ -87,8 +87,8 @@ function AudioStudent() {
                 </DropdownMenuContent>
               </DropdownMenu>
               <DeleteDialog
-                isDeleteDialogOpen={isDeleteDialogOpen}
-                setIsDeleteDialogOpen={setIsDeleteDialogOpen}
+                open={isDeleteDialogOpen}
+                onOpenChange={setIsDeleteDialogOpen}
                 pathApi={`/contents/audios/${item.uuid}`}
               />
             </div>

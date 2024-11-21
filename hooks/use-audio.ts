@@ -18,9 +18,14 @@ export function useAudio(page?: number, limit?: number, search?: string) {
   };
 }
 
-export function useAudioLatest(page: number, limit: number, week: number) {
+export function useAudioLatest(
+  page: number,
+  limit: number,
+  week: number,
+  status: string
+) {
   const { data, error, mutate } = useSWR(
-    `/contents/audios/latest?page=${page}&limit=${limit}&week=${week}`,
+    `/contents/audios/latest?page=${page}&limit=${limit}&week=${week}&status=${status}`,
     fetcher
   );
 

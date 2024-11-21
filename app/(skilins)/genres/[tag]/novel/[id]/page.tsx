@@ -25,7 +25,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { BookText } from "lucide-react";
-import LikeComponent from "@/components/user-panel/ui/like";
+import LikeComponent from "@/components/user-panel/ui/rating";
 import CommentComponent from "@/components/user-panel/ui/comment";
 
 export default async function NovelsDetail({ params }: any) {

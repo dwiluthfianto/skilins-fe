@@ -155,9 +155,9 @@ export const columns: ColumnDef<Judges>[] = [
           </DropdownMenu>
 
           <DeleteDialog
-            isDeleteDialogOpen={isDeleteDialogOpen}
-            setIsDeleteDialogOpen={setIsDeleteDialogOpen}
-            pathApi={`/contents/ebooks/${row.original.uuid}`}
+            open={isDeleteDialogOpen}
+            onOpenChange={setIsDeleteDialogOpen}
+            pathApi={`/judges/${row.original.uuid}`}
           />
         </div>
       );

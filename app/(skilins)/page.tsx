@@ -11,7 +11,7 @@ import { useVideoLatest } from "@/hooks/use-video";
 
 export default function Home() {
   const { novels } = useNovelLatest(1, 10, 12);
-  const { audios } = useAudioLatest(1, 10, 12);
+  const { audios } = useAudioLatest(1, 10, 12, "APPROVED");
   const { videos } = useVideoLatest(1, 10, 12);
 
   return (

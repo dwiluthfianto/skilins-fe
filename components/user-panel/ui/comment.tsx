@@ -40,6 +40,7 @@ import {
 import { GetFirstLetterStr } from "@/utils/get-first-letter-str";
 import { FC } from "react";
 import { cn } from "@/lib/utils";
+import RatingComponent from "./rating";
 
 const CommentSchema = z.object({
   content: z
@@ -104,6 +105,7 @@ const CommentComponent: FC<CommentProps> = ({
       <Card>
         <CardContent>
           <CardHeader className="px-0 pt-6 pb-2">
+            <RatingComponent contentUuid={contentId}></RatingComponent>
             <CardTitle className="text-lg lg:text-2xl font-bold text-gray-900 dark:text-white">
               Comments {`(${comments.length})`}
             </CardTitle>

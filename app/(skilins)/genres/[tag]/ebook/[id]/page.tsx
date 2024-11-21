@@ -26,7 +26,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import CommentComponent from "@/components/user-panel/ui/comment";
 import { BookText } from "lucide-react";
-import LikeComponent from "@/components/user-panel/ui/like";
+import LikeComponent from "@/components/user-panel/ui/rating";
 
 export default async function EbookDetail({ params }: any) {
   const { id } = params;

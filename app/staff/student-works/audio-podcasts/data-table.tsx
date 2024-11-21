@@ -61,7 +61,7 @@ export function DataTable<TData, TValue>({
   const [rowSelection, setRowSelection] = React.useState({});
 
   const [search, setSearch] = React.useState("");
-  const [limit, setLimit] = React.useState("25");
+  const [limit, setLimit] = React.useState("10");
   const [pagination, setPagination] = React.useState({
     pageIndex: 0,
     pageSize: parseInt(limit, 10),

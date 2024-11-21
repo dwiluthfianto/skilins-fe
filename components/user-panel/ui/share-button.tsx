@@ -30,7 +30,7 @@ const ShareButton: FC<ShareButtonProps> = ({
 }) => {
   return (
     <div className={cn(className)}>
-      <div className="grid grid-cols-4 md:grid-cols-1 md:grid-rows-4 w-fit h-fit gap-2 ">
+      <div className="grid grid-cols-4  min-[1340px]:grid-cols-1  min-[1340px]:grid-rows-4 w-fit h-fit gap-2 ">
         <WhatsappShareButton url={url} title={title}>
           <WhatsappIcon className="rounded-md md:rounded-xl w-8 h-8 md:w-12 md:h-12" />
         </WhatsappShareButton>

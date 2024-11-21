@@ -15,7 +15,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import ImageUploader from "@/components/imageUploader";
@@ -29,14 +28,19 @@ import { Input } from "@/components/ui/input";
 import { AutosizeTextarea } from "@/components/autosize-textarea";
 import { useGenre } from "@/hooks/use-genre";
 import MinimalTiptapOne from "@/components/minimal-tiptap/minimal-tiptap-one";
-import FileUploader from "@/components/file-uploader";
 import { useUser } from "@/hooks/use-user";
 import { ContentLayout } from "@/components/user-panel/content-layout";
 const ContentSchema = z.object({
   title: z
     .string()
     .min(5, { message: "Title must be longer than or equal to 5 characters" }),
-  thumbnail: z.instanceof(File).optional().nullable(),
+  thumbnail: z
+    .instanceof(File)
+    .refine(
+      (file) =>
+        file && ["image/png", "image/jpeg", "image/jpg"].includes(file.type),
+      { message: "Invalid image file type" }
+    ),
   description: z.string().min(1, { message: "Description is required." }),
   tags: z
     .array(
@@ -47,11 +51,7 @@ const ContentSchema = z.object({
     )
     .optional(),
   category: z.string().min(1, { message: "Category is required." }),
-  duration: z
-    .number()
-    .min(1, { message: "Duration must be greater than 0." })
-    .nonnegative(),
-  file: z.instanceof(File),
+  file: z.string().url().min(1, { message: "Video URL is required" }),
   genres: z
     .array(
       z.object({
@@ -62,7 +62,7 @@ const ContentSchema = z.object({
     .optional(),
 });
 
-export default function VideoSubmission() {
+export default function VideoCreate() {
   const form = useForm<z.infer<typeof ContentSchema>>({
     resolver: zodResolver(ContentSchema),
     defaultValues: {
@@ -71,7 +71,6 @@ export default function VideoSubmission() {
       description: "",
       genres: [],
       category: "",
-      duration: 0,
       file: undefined,
       tags: [],
     },
@@ -84,11 +83,9 @@ export default function VideoSubmission() {
   const [activeGenreIndex, setActiveGenreIndex] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const [file, setFile] = useState<File | null>(null);
-  const params = useParams<{ type: string; slug: string }>();
 
   const { categories, isLoading } = useCategorySearch(form.watch("category"));
-
+  const params = useParams<{ type: string; slug: string }>();
   const { user } = useUser();
 
   async function onSubmit(data: z.infer<typeof ContentSchema>) {
@@ -97,20 +94,18 @@ export default function VideoSubmission() {
     const formData = new FormData();
     formData.append("competition_slug", params.slug);
     formData.append("type", params.type.toUpperCase());
-
     if (data.thumbnail) formData.append("thumbnail", data.thumbnail);
-    formData.append("audioData[title]", data.title);
-    formData.append("audioData[description]", data.description);
-    formData.append("audioData[genres]", JSON.stringify(data.genres));
-    formData.append("audioData[category_name]", data.category);
-    formData.append("audioData[duration]", String(data.duration));
-    if (file) formData.append("file_url", file);
-    if (user) formData.append("audioData[creator_uuid]", user?.data.uuid);
-    formData.append("audioData[tags]", JSON.stringify(data.tags));
+    formData.append("videoData[title]", data.title);
+    formData.append("videoData[description]", data.description);
+    formData.append("videoData[genres]", JSON.stringify(data.genres));
+    formData.append("videoData[category_name]", data.category);
+    formData.append("videoData[file_url]", data.file);
+    if (user) formData.append("videoData[creator_uuid]", user?.data.uuid);
+    formData.append("videoData[tags]", JSON.stringify(data.tags));
 
     try {
       const { data: contentData } = await axios.post(
-        "/competitions/submit",
+        "/competitions/submissions/submit",
         formData,
         {
           headers: {
@@ -126,8 +121,6 @@ export default function VideoSubmission() {
 
       router.push(`/competitions/${params.type}/${params.slug}`);
     } catch (error) {
-      console.log(error);
-
       if (error instanceof AxiosError && error.response) {
         toast({
           title: "Error!",
@@ -146,7 +139,7 @@ export default function VideoSubmission() {
   return (
     <ContentLayout title="">
       <div className="max-w-4xl mx-auto">
-        <h1 className="font-semibold mb-4">Create Submission</h1>
+        <h1 className="font-semibold mb-4">Create video</h1>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <Card>
@@ -157,8 +150,10 @@ export default function VideoSubmission() {
                     name="thumbnail"
                     render={() => (
                       <ImageUploader
-                        onChange={(file) => form.setValue("thumbnail", file)}
-                        ratioImage={1 / 1}
+                        onChange={(file) =>
+                          file && form.setValue("thumbnail", file)
+                        }
+                        ratioImage={4 / 3}
                       />
                     )}
                   />
@@ -170,7 +165,7 @@ export default function VideoSubmission() {
                         <FormControl>
                           <AutosizeTextarea
                             {...field}
-                            placeholder="New audio title here..."
+                            placeholder="New video title here..."
                             className="outline-none w-full text-4xl p-0 border-none  shadow-none focus-visible:ring-0  font-bold placeholder:text-slate-700 h-full resize-none overflow-hidden "
                           />
                         </FormControl>
@@ -307,40 +302,12 @@ export default function VideoSubmission() {
                     control={form.control}
                     name="file"
                     render={({ field }) => (
-                      <FileUploader
-                        onChange={(file) => {
-                          field.onChange(file);
-                          setFile(file);
-                        }}
-                        accept="audio/mp3"
-                        onDurationChange={(duration) =>
-                          form.setValue("duration", duration ?? 0)
-                        }
-                        label="Add an Audio file"
-                        initialFileName={field.value ? field.value.name : ""}
-                        initialFileUrl={
-                          field.value ? URL.createObjectURL(field.value) : ""
-                        }
-                      />
-                    )}
-                  />
-                  <Separator />
-                  <FormField
-                    control={form.control}
-                    name="duration"
-                    render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="font-normal text-base text-muted-foreground">
-                          Duration
-                        </FormLabel>
                         <FormControl>
                           <Input
-                            value={new Date(1000 * field.value)
-                              .toISOString()
-                              .substring(11, 19)
-                              .replace(/^[0:]+/, "")}
+                            {...field}
+                            placeholder="Youtube Video URL here"
                             type="text"
-                            readOnly
                             className="border-none outline-none shadow-none text-base p-0 focus-visible:ring-0 focus:border-none "
                           />
                         </FormControl>

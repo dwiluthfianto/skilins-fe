@@ -162,7 +162,7 @@ export const columns: ColumnDef<Competitions>[] = [
           <DeleteDialog
             open={isDeleteDialogOpen}
             onOpenChange={setIsDeleteDialogOpen}
-            pathApi={`/contents/ebooks/${row.original.uuid}`}
+            pathApi={`/competitions/${row.original.uuid}`}
           />
         </div>
       );

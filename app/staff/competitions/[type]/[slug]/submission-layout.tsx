@@ -2,8 +2,24 @@
 import ContentCard from "@/components/content-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Send } from "lucide-react";
-import { FC } from "react";
+import {
+  CircleOff,
+  MoreHorizontal,
+  Send,
+  Signature,
+  Trash2,
+} from "lucide-react";
+import { FC, useState } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import DeleteDialog from "@/components/staff-panel/delete-dialog";
+import ApproveDialog from "@/components/staff-panel/approve-dialog";
+import RejectDialog from "@/components/staff-panel/reject-dialog";
 
 interface SubmissionProps {
   onUpdateStatus: (status: string) => void;
@@ -16,6 +32,9 @@ const SubmissionLayout: FC<SubmissionProps> = ({
   Submissions,
   status,
 }) => {
+  const [approveOpen, setApproveOpen] = useState(false);
+  const [rejectOpen, setRejectOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
   return (
     <section className="w-full py-6">
       <div className="container mx-auto">
@@ -54,35 +73,85 @@ const SubmissionLayout: FC<SubmissionProps> = ({
           Rejected
         </Button>
       </div>
-      <div className="w-full grid gap-2 grid-cols-2 md:grid-cols-4 lg:grid-cols-6">
+      <div className="w-full grid gap-2 grid-cols-2 md:grid-cols-5">
         {Submissions.map((item: any) => {
-          return item.content.type === "AUDIO" ? (
-            <ContentCard
-              key={item.content.slug}
-              className="max-w-[250px]"
-              href={`/staff/audios/${item.content.slug}`}
-              aspectRatio="aspect-[1/1]"
-              imageSrc={item.content.thumbnail}
-              title={item.content.title}
-            />
-          ) : item.content.type === "VIDEO" ? (
-            <ContentCard
-              key={item.content.slug}
-              className="max-w-[352px]"
-              href={`/staff/videos/${item.content.slug}`}
-              aspectRatio="aspect-[4/3]"
-              imageSrc={item.content.thumbnail}
-              title={item.content.title}
-            />
-          ) : (
-            <ContentCard
-              key={item.content.slug}
-              className="max-w-[250px]"
-              href={`/staff/prakerin/${item.content.slug}`}
-              aspectRatio="aspect-[3/4]"
-              imageSrc={item.content.thumbnail}
-              title={item.content.title}
-            />
+          return (
+            <div className="relative" key={item.content.slug}>
+              {" "}
+              {item.content.type === "AUDIO" ? (
+                <ContentCard
+                  className="max-w-[250px]"
+                  href={`/staff/audios/${item.content.slug}`}
+                  aspectRatio="aspect-[1/1]"
+                  imageSrc={item.content.thumbnail}
+                  title={item.content.title}
+                />
+              ) : item.content.type === "VIDEO" ? (
+                <ContentCard
+                  className="max-w-[352px]"
+                  href={`/staff/videos/${item.content.slug}`}
+                  aspectRatio="aspect-[4/3]"
+                  imageSrc={item.content.thumbnail}
+                  title={item.content.title}
+                />
+              ) : (
+                <ContentCard
+                  className="max-w-[250px]"
+                  href={`/staff/prakerin/${item.content.slug}`}
+                  aspectRatio="aspect-[3/4]"
+                  imageSrc={item.content.thumbnail}
+                  title={item.content.title}
+                />
+              )}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="absolute top-0 end-0 flex p-1 rounded-md transform translate-y-[-8px] translate-x-2 bg-white border dark:bg-neutral-900 dark:ring-neutral-900 items-center h-8 w-8"
+                  >
+                    <span className="sr-only">Open menu</span>
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>Status</DropdownMenuLabel>
+                  <DropdownMenuItem
+                    className="cursor-pointer"
+                    onClick={() => setApproveOpen(true)}
+                  >
+                    <Signature className="mr-2" width={16} /> Approve
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="cursor-pointer"
+                    onClick={() => setRejectOpen(true)}
+                  >
+                    <CircleOff className="mr-2" width={16} /> Reject
+                  </DropdownMenuItem>
+                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                  <DropdownMenuItem
+                    className="cursor-pointer"
+                    onClick={() => setDeleteOpen(true)}
+                  >
+                    <Trash2 className="mr-2" width={16} /> Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <ApproveDialog
+                open={approveOpen}
+                onOpenChange={setApproveOpen}
+                pathApi={`/competitions/submissions/${item.uuid}`}
+              />
+              <RejectDialog
+                open={rejectOpen}
+                onOpenChange={setRejectOpen}
+                pathApi={`/competitions/submissions/${item.uuid}`}
+              />
+              <DeleteDialog
+                open={deleteOpen}
+                onOpenChange={setDeleteOpen}
+                pathApi={`/contents/audios/${item.uuid}`}
+              />
+            </div>
           );
         })}
       </div>

@@ -110,7 +110,7 @@ export default function AudioSubmission() {
 
     try {
       const { data: contentData } = await axios.post(
-        "/competitions/submit",
+        "/competitions/submissions/submit",
         formData,
         {
           headers: {

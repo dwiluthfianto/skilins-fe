@@ -24,10 +24,11 @@ import {
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { AudioPlayer } from "@/components/user-panel/ui/audio-player";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import CommentComponent from "@/components/user-panel/ui/comment";
 import MinimalTiptapPreview from "@/components/minimal-tiptap/minimal-tiptap-preview";
 import ShareButton from "@/components/user-panel/ui/share-button";
+import { Star } from "lucide-react";
 
 export default async function AudioDetail({ params }: any) {
   const { slug } = params;
@@ -72,7 +73,7 @@ export default async function AudioDetail({ params }: any) {
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
-          <div className="grid grid-cols-1 md:grid-cols-4 mt-8 gap-y-6 md:gap-8 lg:gap-10">
+          <div className="grid grid-cols-1  min-[1340px]:grid-cols-4 mt-8 gap-y-6  min-[1340px]:gap-8">
             <div className="relative">
               <AspectRatio ratio={1 / 1}>
                 <Image
@@ -198,17 +199,35 @@ export default async function AudioDetail({ params }: any) {
           </div>
           <div className=" py-8 lg:py-16 antialiased mt-10">
             <div className="space-y-4">
-              <div className="grid md:grid-cols-6 gap-4">
+              <div className="grid grid-cols-1 min-[1340px]:grid-cols-8 gap-8">
                 <ShareButton
                   url={`${process.env.NEXT_PUBLIC_FRONTEND_URL}/audio-podcasts/${audio.slug}`}
                   title={`${audio.title} - ${audio.creator}`}
-                  className="flex text-end md:justify-end"
+                  className="flex text-end min-[1340px]:justify-end"
                 />
-                <CommentComponent
-                  className="col-span-3"
-                  comments={audio.comments}
-                  contentId={audio.uuid}
-                />
+                <div className=" min-[1340px]:col-span-5">
+                  <CommentComponent
+                    comments={audio.comments}
+                    contentId={audio.uuid}
+                  />
+                </div>
+                <Card className="text-center  min-[1340px]:col-span-2 h-fit  max-[1340px]:order-first">
+                  <CardHeader>
+                    <div>
+                      <Star width={32} />
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <h6 className="text-4xl font-bold text-deep-purple-accent-400">
+                      {Number(audio.avg_rating.toFixed(1))}
+                    </h6>
+                    <p className="mb-2 font-bold text-md">Average Rating</p>
+                    <p className="text-gray-700">
+                      {`It's an idea that deserves a stellar rating from the wisest
+                    throughout history.`}
+                    </p>
+                  </CardContent>
+                </Card>
               </div>
             </div>
           </div>

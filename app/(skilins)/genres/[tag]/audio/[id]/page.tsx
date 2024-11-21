@@ -25,7 +25,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { AudioPlayer } from "@/components/user-panel/ui/audio-player";
 import { Card, CardContent } from "@/components/ui/card";
-import LikeComponent from "@/components/user-panel/ui/like";
+import LikeComponent from "@/components/user-panel/ui/rating";
 import CommentComponent from "@/components/user-panel/ui/comment";
 
 export default async function AudioDetail({ params }: any) {

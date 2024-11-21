@@ -26,8 +26,7 @@ export type Video = {
   uuid: string;
   title: string;
   thumbnail: string;
-  description: string;
-  subjects: string[];
+  genres: string[];
   category: string;
   creator: string;
   duration: number;
@@ -80,38 +79,20 @@ export const columns: ColumnDef<Video>[] = [
     },
   },
   {
-    accessorKey: "description",
+    accessorKey: "genres",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Description
+          Genres
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
     cell: ({ row }) => {
-      return (
-        <div className=" line-clamp-3 break-words ">
-          {row.original.description}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "subjects",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Subjects
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
+      return row.original.genres.map((genre: any) => genre?.text).join(", ");
     },
   },
   {
@@ -143,25 +124,6 @@ export const columns: ColumnDef<Video>[] = [
     },
   },
   {
-    accessorKey: "duration",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Duration
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => {
-      const hours = Math.floor(row.original.duration / 60);
-      const minutes = row.original.duration % 60;
-      return hours > 0 ? `${hours} Hours` : `${minutes} Minutes`;
-    },
-  },
-  {
     accessorKey: "tags",
     header: ({ column }) => {
       return (
@@ -175,7 +137,7 @@ export const columns: ColumnDef<Video>[] = [
       );
     },
     cell: ({ row }) => {
-      return row.original.tags.map((tag: any) => tag?.name).join(", ");
+      return row.original.tags.map((tag: any) => tag?.text).join(", ");
     },
   },
   {
@@ -237,8 +199,8 @@ export const columns: ColumnDef<Video>[] = [
             values={row.original}
           />
           <DeleteDialog
-            isDeleteDialogOpen={isDeleteDialogOpen}
-            setIsDeleteDialogOpen={setIsDeleteDialogOpen}
+            open={isDeleteDialogOpen}
+            onOpenChange={setIsDeleteDialogOpen}
             pathApi={`/contents/videos/${row.original.uuid}`}
           />
         </div>
