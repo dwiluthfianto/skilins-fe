@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ContentLayout } from "@/components/user-panel/content-layout";
-import axios from "../../../../utils/axios";
-import Image from "next/image";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { ContentLayout } from '@/components/user-panel/content-layout';
+import axios from '../../../../utils/axios';
+import Image from 'next/image';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
 // import { format } from "date-fns";
 // import {
 //   Dialog,
@@ -20,15 +20,15 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import Link from "next/link";
+} from '@/components/ui/breadcrumb';
+import Link from 'next/link';
 // import { Badge } from "@/components/ui/badge";
 // import { Card, CardContent } from "@/components/ui/card";
 // import CommentComponent from "@/components/user-panel/ui/comment";
 // import { BookText } from "lucide-react";
 // import LikeComponent from "@/components/user-panel/ui/like";
-import { Metadata } from "next";
-import MinimalTiptapPreview from "@/components/minimal-tiptap/minimal-tiptap-preview";
+import { Metadata } from 'next';
+import MinimalTiptapPreview from '@/components/minimal-tiptap/minimal-tiptap-preview';
 
 export async function generateMetadata({
   params,
@@ -62,20 +62,20 @@ export default async function EbookDetail({ params }: any) {
   const blog = res.data;
 
   return (
-    <ContentLayout title={blog.title}>
-      <section className="md:py-2">
-        <div className="md:container">
+    <ContentLayout title=''>
+      <section className='md:py-2'>
+        <div className='max-w-3xl mx-auto'>
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="/">Home</Link>
+                  <Link href='/'>Home</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="/blogs">blogs</Link>
+                  <Link href='/blogs'>blogs</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
@@ -84,16 +84,16 @@ export default async function EbookDetail({ params }: any) {
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
-          <div className="grid grid-cols-5">
-            <div className="col-span-3">
+          <div>
+            <div className='col-span-3'>
               <AspectRatio ratio={16 / 9}>
                 <Image
                   src={blog.thumbnail}
-                  alt="placeholder"
-                  layout="fill"
-                  objectFit="cover"
-                  objectPosition="center"
-                  className=" rounded-lg"
+                  alt='placeholder'
+                  layout='fill'
+                  objectFit='cover'
+                  objectPosition='center'
+                  className=' rounded-lg'
                 />
               </AspectRatio>
               <MinimalTiptapPreview value={blog.description} editable={false} />

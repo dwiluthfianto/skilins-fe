@@ -252,8 +252,8 @@ export const columns: ColumnDef<eBooks>[] = [
           </DropdownMenu>
 
           <DeleteDialog
-            isDeleteDialogOpen={isDeleteDialogOpen}
-            setIsDeleteDialogOpen={setIsDeleteDialogOpen}
+            open={isDeleteDialogOpen}
+            onOpenChange={setIsDeleteDialogOpen}
             pathApi={`/contents/ebooks/${row.original.uuid}`}
           />
         </div>

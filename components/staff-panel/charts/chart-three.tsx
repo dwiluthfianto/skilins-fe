@@ -24,11 +24,11 @@ const chartConfig = {
     label: "Page feedbacks",
   },
   comment: {
-    label: "Likes",
+    label: "Comments",
     color: "hsl(var(--chart-1))",
   },
-  like: {
-    label: "Comments",
+  rating: {
+    label: "Ratings",
     color: "hsl(var(--chart-2))",
   },
 } satisfies ChartConfig;
@@ -40,7 +40,7 @@ export default function ChartThree() {
     (item: { date: any; count: any }, index: string | number) => ({
       date: item.date,
       comment: item.count,
-      like: data.lastThreeMonthsLike[index]?.count || 0, // Assuming both arrays are same length
+      rating: data.lastThreeMonthsRating[index]?.count || 0, // Assuming both arrays are same length
     })
   );
 
@@ -53,8 +53,8 @@ export default function ChartThree() {
         (acc: any, curr: { comment: any }) => acc + curr.comment,
         0
       ),
-      like: chartData?.reduce(
-        (acc: any, curr: { like: any }) => acc + curr.like,
+      rating: chartData?.reduce(
+        (acc: any, curr: { rating: any }) => acc + curr.rating,
         0
       ),
     }),
@@ -73,7 +73,7 @@ export default function ChartThree() {
           </CardDescription>
         </div>
         <div className="flex">
-          {["comment", "like"].map((key) => {
+          {["comment", "rating"].map((key) => {
             const chart = key as keyof typeof chartConfig;
             return (
               <button

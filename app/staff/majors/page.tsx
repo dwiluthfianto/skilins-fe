@@ -116,8 +116,8 @@ function Majors() {
                         values={m}
                       />
                       <DeleteDialog
-                        isDeleteDialogOpen={deleteUuid === m.uuid}
-                        setIsDeleteDialogOpen={() => setDeleteUuid(null)}
+                        open={deleteUuid === m.uuid}
+                        onOpenChange={() => setDeleteUuid(null)}
                         pathApi={`/majors/${m.uuid}`}
                       />
                     </div>

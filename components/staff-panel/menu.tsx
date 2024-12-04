@@ -45,7 +45,7 @@ export function Menu({ isOpen }: MenuProps) {
       await logout();
 
       mutate(null, false);
-      router.push("/auth/admin/login");
+      router.push("/auth/staff/login");
     } catch (error) {
       console.error("Logout failed", error);
     }

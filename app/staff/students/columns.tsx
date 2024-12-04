@@ -2,8 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 
-import { FilePenLine, MoreHorizontal, Trash2 } from "lucide-react";
-// import { Badge } from "@/components/ui/badge";
+import { MoreHorizontal, ShieldCheck, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -16,16 +15,13 @@ import {
 
 import { ArrowUpDown } from "lucide-react";
 import { format } from "date-fns";
-import Image from "next/image";
 import DeleteDialog from "@/components/staff-panel/delete-dialog";
 import React from "react";
-import StudentEditForm from "@/components/staff-panel/forms/student/student-edit-form";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
+import VerifyStudentDialog from "@/components/verify-student-dialog";
 
 export type Student = {
   uuid: string;
   nis: string;
-  image_url: string;
   name: string;
   birthplace: string;
   birthdate: Date;
@@ -50,22 +46,6 @@ export const columns: ColumnDef<Student>[] = [
     },
   },
   {
-    accessorKey: "image",
-    header: "Image",
-    cell: ({ row }) => (
-      <AspectRatio ratio={4 / 3} className="h-full relative">
-        <Image
-          key={row.original.image_url}
-          src={`${row.original.image_url}`}
-          alt="Image"
-          layout="fill"
-          objectFit="cover"
-          objectPosition="center"
-        />
-      </AspectRatio>
-    ),
-  },
-  {
     accessorKey: "name",
     header: ({ column }) => {
       return (
@@ -73,7 +53,7 @@ export const columns: ColumnDef<Student>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Name
+          Full Name
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
@@ -166,7 +146,6 @@ export const columns: ColumnDef<Student>[] = [
       );
     },
   },
-
   {
     id: "actions",
     cell: ({ row }) => {
@@ -186,23 +165,32 @@ export const columns: ColumnDef<Student>[] = [
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-
-              <DropdownMenuItem onClick={() => setIsEditDialogOpen(true)}>
-                <FilePenLine className="mr-2" width={16} /> Edit
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setIsDeleteDialogOpen(true)}>
+              {row.original.status ? (
+                ""
+              ) : (
+                <DropdownMenuItem
+                  className="cursor-pointer"
+                  onClick={() => setIsEditDialogOpen(true)}
+                >
+                  <ShieldCheck className="mr-2" width={16} /> Verify Student
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => setIsDeleteDialogOpen(true)}
+              >
                 <Trash2 className="mr-2" width={16} /> Delete
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <StudentEditForm
-            student={student}
-            isEditDialogOpen={isEditDialogOpen}
-            setIsEditDialogOpen={setIsEditDialogOpen}
+          <VerifyStudentDialog
+            open={isEditDialogOpen}
+            onOpenChange={setIsEditDialogOpen}
+            pathApi={`/students/${student.uuid}`}
           />
           <DeleteDialog
-            isDeleteDialogOpen={isDeleteDialogOpen}
-            setIsDeleteDialogOpen={setIsDeleteDialogOpen}
+            open={isDeleteDialogOpen}
+            onOpenChange={setIsDeleteDialogOpen}
             pathApi={`/students/${student.uuid}`}
           />
         </div>

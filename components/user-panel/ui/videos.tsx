@@ -3,8 +3,8 @@
 
 import { Badge } from "@/components/ui/badge";
 import { useVideo } from "@/hooks/use-video";
-import Image from "next/image";
 import { LoadingContent2 } from "./skeletons/skeleton-card";
+import ContentCard from "@/components/content-card";
 
 export function Videos() {
   const { videos, isLoading } = useVideo(1);
@@ -29,31 +29,13 @@ export function Videos() {
       <div className="w-full grid gap-2 grid-cols-2  lg:grid-cols-4">
         {videos.map((item: any) => {
           return (
-            <div key={item.uuid} className="pl-[20px] max-w-[352px]">
-              <a
-                href={`videos/${item.uuid}`}
-                className="group flex flex-col justify-between"
-              >
-                <div>
-                  <div className="flex aspect-[3/2] text-clip">
-                    <div className="flex-1">
-                      <div className="relative size-full origin-bottom transition duration-300 group-hover:scale-105">
-                        <Image
-                          src={item.thumbnail}
-                          alt={item.title}
-                          layout="fill"
-                          objectFit="cover"
-                          objectPosition="center"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="mb-2 line-clamp-3 break-words pt-4 text-base font-semibold md:mb-3 md:pt-4 lg:pt-4 lg:text-md">
-                  {item.title}
-                </div>
-              </a>
-            </div>
+            <ContentCard
+              key={item.uuid}
+              variant="video"
+              href={`video-podcasts/${item.slug}`}
+              imageSrc={item.thumbnail}
+              title={item.title}
+            />
           );
         })}
       </div>

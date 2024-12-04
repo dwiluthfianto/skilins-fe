@@ -164,8 +164,8 @@ export const columns: ColumnDef<Blogs>[] = [
             </DropdownMenuContent>
           </DropdownMenu>
           <DeleteDialog
-            isDeleteDialogOpen={isDeleteDialogOpen}
-            setIsDeleteDialogOpen={setIsDeleteDialogOpen}
+            open={isDeleteDialogOpen}
+            onOpenChange={setIsDeleteDialogOpen}
             pathApi={`/contents/blogs/${row.original.uuid}`}
           />
         </div>

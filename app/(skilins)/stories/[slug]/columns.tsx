@@ -16,11 +16,13 @@ export const columns: ColumnDef<Episode>[] = [
   {
     accessorKey: "order",
     header: "",
-    cell: ({ row }) => (
-      <p className="line-clamp-1 break-words">
-        Chapter {row.original.order}. {row.original.title}
-      </p>
-    ),
+    cell: ({ row }) => {
+      return (
+        <p className="line-clamp-1 break-words">
+          Chapter {row.original.order}. {row.original.title}
+        </p>
+      );
+    },
   },
   {
     accessorKey: "created_at",

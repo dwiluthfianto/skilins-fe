@@ -55,9 +55,8 @@ function AudioStudent() {
           return (
             <div key={item.uuid} className="relative">
               <ContentCard
-                className="max-w-[250px]"
                 href={`audio-podcasts/${item.slug}`}
-                aspectRatio="aspect-[1/1]"
+                variant="audio"
                 imageSrc={item.thumbnail}
                 title={item.title}
               />

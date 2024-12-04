@@ -1,18 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ContentLayout } from "@/components/user-panel/content-layout";
-import axios from "@/utils/axios";
-import Image from "next/image";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { format } from "date-fns";
+import { ContentLayout } from '@/components/user-panel/content-layout';
+import axios from '@/utils/axios';
+import Image from 'next/image';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
+import { format } from 'date-fns';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -20,15 +20,34 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
-import { AudioPlayer } from "@/components/user-panel/ui/audio-player";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import CommentComponent from "@/components/user-panel/ui/comment";
-import MinimalTiptapPreview from "@/components/minimal-tiptap/minimal-tiptap-preview";
-import ShareButton from "@/components/user-panel/ui/share-button";
-import { Star } from "lucide-react";
+} from '@/components/ui/breadcrumb';
+import Link from 'next/link';
+import { Badge } from '@/components/ui/badge';
+import { AudioPlayer } from '@/components/user-panel/ui/audio-player';
+import { Card, CardContent } from '@/components/ui/card';
+import MinimalTiptapPreview from '@/components/minimal-tiptap/minimal-tiptap-preview';
+import { Metadata } from 'next';
+import FeedbackComponent from '@/components/skilins/features/feedback';
+
+type Props = {
+  params: Promise<{ slug: string }>;
+};
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  // read route params
+  const slug = (await params).slug;
+
+  // fetch data
+  const res = (await axios.get(`/contents/audios/${slug}`)).data;
+  const audio = res.data;
+
+  return {
+    title: `${audio.title} - ${audio.creator} | skilins.`,
+    openGraph: {
+      images: [`${audio.thumbnail}`],
+    },
+  };
+}
 
 export default async function AudioDetail({ params }: any) {
   const { slug } = params;
@@ -39,7 +58,7 @@ export default async function AudioDetail({ params }: any) {
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
-    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
   };
 
   const track = {
@@ -52,19 +71,19 @@ export default async function AudioDetail({ params }: any) {
 
   return (
     <ContentLayout title={audio.title}>
-      <section className="md:py-2">
-        <div className="md:container">
+      <section className='md:py-2'>
+        <div className='md:container'>
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="/">Home</Link>
+                  <Link href='/'>Home</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="/audio-podcasts">audios</Link>
+                  <Link href='/audio-podcasts'>audios</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
@@ -73,30 +92,30 @@ export default async function AudioDetail({ params }: any) {
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
-          <div className="grid grid-cols-1  min-[1340px]:grid-cols-4 mt-8 gap-y-6  min-[1340px]:gap-8">
-            <div className="relative">
+          <div className='grid grid-cols-1  min-[1340px]:grid-cols-4 mt-8 gap-y-6  min-[1340px]:gap-8'>
+            <div className='relative'>
               <AspectRatio ratio={1 / 1}>
                 <Image
                   src={audio.thumbnail}
-                  alt="placeholder"
-                  layout="fill"
-                  objectFit="cover"
-                  objectPosition="center"
-                  className="rounded-lg "
+                  alt='placeholder'
+                  layout='fill'
+                  objectFit='cover'
+                  objectPosition='center'
+                  className='rounded-lg '
                 />
               </AspectRatio>
               <AudioPlayer data={track} />
             </div>
-            <div className="col-span-3 ">
-              <Card className="rounded-lg ">
-                <CardContent className="p-6">
-                  <p className="text-lg text-muted-foreground">
+            <div className='col-span-3 '>
+              <Card className='rounded-lg '>
+                <CardContent className='p-6'>
+                  <p className='text-lg text-muted-foreground'>
                     {audio.creator}
                   </p>
-                  <h2 className="text-3xl font-medium text-balance md:text-5xl">
+                  <h2 className='text-3xl font-medium text-balance md:text-5xl'>
                     {audio.title}
                   </h2>
-                  <p className="max-w-xl mt-1 text-lg font-medium leading-relaxed tracking-tight md:mt-6 text lg:max-w-xl">
+                  <p className='max-w-xl mt-1 text-lg font-medium leading-relaxed tracking-tight md:mt-6 text lg:max-w-xl'>
                     Description
                   </p>
                   <MinimalTiptapPreview
@@ -107,19 +126,19 @@ export default async function AudioDetail({ params }: any) {
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button
-                        variant="link"
-                        className="flex items-center w-full"
+                        variant='link'
+                        className='flex items-center w-full'
                       >
                         See more
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-[425px] md:max-w-[600px]">
+                    <DialogContent className='sm:max-w-[425px] md:max-w-[600px]'>
                       <DialogHeader>
-                        <DialogTitle className="items-center justify-center text-center">
+                        <DialogTitle className='items-center justify-center text-center'>
                           Description
                         </DialogTitle>
                       </DialogHeader>
-                      <ScrollArea className="max-h-[600px] pr-4">
+                      <ScrollArea className='max-h-[600px] pr-4'>
                         <MinimalTiptapPreview
                           value={audio.description}
                           editable={false}
@@ -127,62 +146,62 @@ export default async function AudioDetail({ params }: any) {
                       </ScrollArea>
                     </DialogContent>
                   </Dialog>
-                  <div className="flex flex-col items-start gap-4 py-4 lg:py-8">
-                    <div className="flex flex-col gap-2">
-                      <p className="max-w-xl text-lg font-medium leading-relaxed tracking-tight lg:max-w-xl">
+                  <div className='flex flex-col items-start gap-4 py-4 lg:py-8'>
+                    <div className='flex flex-col gap-2'>
+                      <p className='max-w-xl text-lg font-medium leading-relaxed tracking-tight lg:max-w-xl'>
                         Detail Audio
                       </p>
                     </div>
-                    <div className="flex flex-col w-full">
-                      <div className="grid items-start grid-cols-2 gap-4 lg:grid-cols-3">
-                        <div className="flex flex-row items-start w-full gap-6">
-                          <div className="flex flex-col gap-1">
-                            <p className="text-sm text-muted-foreground">
+                    <div className='flex flex-col w-full'>
+                      <div className='grid items-start grid-cols-2 gap-4 lg:grid-cols-3'>
+                        <div className='flex flex-row items-start w-full gap-6'>
+                          <div className='flex flex-col gap-1'>
+                            <p className='text-sm text-muted-foreground'>
                               Category
                             </p>
                             <p>{audio.category}</p>
                           </div>
                         </div>
-                        <div className="flex flex-row items-start gap-6">
-                          <div className="flex flex-col gap-1">
-                            <p className="text-sm text-muted-foreground">
+                        <div className='flex flex-row items-start gap-6'>
+                          <div className='flex flex-col gap-1'>
+                            <p className='text-sm text-muted-foreground'>
                               Duration
                             </p>
                             <p>{formatTime(audio.duration)} </p>
                           </div>
                         </div>
-                        <div className="flex flex-row items-start gap-6">
-                          <div className="flex flex-col gap-1">
-                            <p className="text-sm text-muted-foreground">
+                        <div className='flex flex-row items-start gap-6'>
+                          <div className='flex flex-col gap-1'>
+                            <p className='text-sm text-muted-foreground'>
                               Release Date
                             </p>
-                            <p>{format(audio.created_at, "dd MMM yyyy")}</p>
+                            <p>{format(audio.created_at, 'dd MMM yyyy')}</p>
                           </div>
                         </div>
-                        <div className="flex flex-row items-start gap-6">
-                          <div className="flex flex-col gap-1">
-                            <p className="text-sm text-muted-foreground">
+                        <div className='flex flex-row items-start gap-6'>
+                          <div className='flex flex-col gap-1'>
+                            <p className='text-sm text-muted-foreground'>
                               Genres
                             </p>
                             <p>
                               {audio.genres.map((genre: any, index: number) => (
-                                <Badge key={index} className="mr-2">
+                                <Badge key={index} className='mr-2'>
                                   {genre.text}
                                 </Badge>
                               ))}
                             </p>
                           </div>
                         </div>
-                        <div className="flex flex-row items-start gap-6">
-                          <div className="flex flex-col gap-1">
-                            <p className="text-sm text-muted-foreground">
+                        <div className='flex flex-row items-start gap-6'>
+                          <div className='flex flex-col gap-1'>
+                            <p className='text-sm text-muted-foreground'>
                               Tags
                             </p>
                             <p>
                               {audio.tags.map((tag: any, index: number) => (
                                 <Badge
                                   key={index}
-                                  className="items-center mr-2"
+                                  className='items-center mr-2'
                                 >
                                   #{tag.text}
                                 </Badge>
@@ -197,40 +216,15 @@ export default async function AudioDetail({ params }: any) {
               </Card>
             </div>
           </div>
-          <div className=" py-8 lg:py-16 antialiased mt-10">
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 min-[1340px]:grid-cols-8 gap-8">
-                <ShareButton
-                  url={`${process.env.NEXT_PUBLIC_FRONTEND_URL}/audio-podcasts/${audio.slug}`}
-                  title={`${audio.title} - ${audio.creator}`}
-                  className="flex text-end min-[1340px]:justify-end"
-                />
-                <div className=" min-[1340px]:col-span-5">
-                  <CommentComponent
-                    comments={audio.comments}
-                    contentId={audio.uuid}
-                  />
-                </div>
-                <Card className="text-center  min-[1340px]:col-span-2 h-fit  max-[1340px]:order-first">
-                  <CardHeader>
-                    <div>
-                      <Star width={32} />
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <h6 className="text-4xl font-bold text-deep-purple-accent-400">
-                      {Number(audio.avg_rating.toFixed(1))}
-                    </h6>
-                    <p className="mb-2 font-bold text-md">Average Rating</p>
-                    <p className="text-gray-700">
-                      {`It's an idea that deserves a stellar rating from the wisest
-                    throughout history.`}
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          </div>
+          <FeedbackComponent
+            contentUuid={audio.uuid}
+            shareUrl={`${process.env.NEXT_PUBLIC_FRONTEND_URL}/audio-podcasts/${audio.slug}`}
+            titleContent={audio.title}
+            comments={audio.comments}
+            avgRating={Number(audio.avg_rating)}
+            creator={audio.creator}
+            className='my-8 lg:my-16 antialiased'
+          />
         </div>
       </section>
     </ContentLayout>

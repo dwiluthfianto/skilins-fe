@@ -208,8 +208,8 @@ export const columns: ColumnDef<Report>[] = [
             values={row.original}
           />
           <DeleteDialog
-            isDeleteDialogOpen={isDeleteDialogOpen}
-            setIsDeleteDialogOpen={setIsDeleteDialogOpen}
+            open={isDeleteDialogOpen}
+            onOpenChange={setIsDeleteDialogOpen}
             pathApi={`/contents/reports/${row.original.uuid}`}
           />
         </div>

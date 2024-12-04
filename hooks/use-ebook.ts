@@ -1,9 +1,11 @@
 import { fetcher } from "@/utils/fetcher";
 import useSWR from "swr";
 
-export function useEbook(page: number) {
+export function useEbook(page?: number, limit?: number, search?: string) {
   const { data, error, mutate } = useSWR(
-    `/contents/ebooks?page=${page}&limit=25`,
+    page && limit
+      ? `/contents/ebooks?page=${page}&limit=${limit}&search=${search}`
+      : `/contents/ebooks`,
     fetcher
   );
 
@@ -16,9 +18,14 @@ export function useEbook(page: number) {
   };
 }
 
-export function useEbookLatest(page: number, limit: number, week: number) {
+export function useEbookLatest(
+  page: number,
+  limit: number,
+  week: number,
+  status: string
+) {
   const { data, error, mutate } = useSWR(
-    `/contents/ebooks/latest?page=${page}&limit=${limit}&week=${week}`,
+    `/contents/ebooks/latest?page=${page}&limit=${limit}&week=${week}&status=${status}`,
     fetcher
   );
 

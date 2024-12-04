@@ -44,6 +44,43 @@ export const register = async (data: {
   return response.data;
 };
 
+export const registerStudent = async (data: {
+  email: string;
+  password: string;
+  fullName: string;
+  nis: number;
+  name: string;
+  major: string;
+  birthplace: string;
+  birthdate: Date;
+  sex: string;
+}) => {
+  const {
+    email,
+    password,
+    fullName,
+    nis,
+    name,
+    major,
+    birthplace,
+    birthdate,
+    sex,
+  } = data;
+  const response = await axios.post("/auth/register-student", {
+    email,
+    password,
+    full_name: fullName,
+    nis: String(nis),
+    name,
+    major,
+    birthplace,
+    birthdate,
+    sex,
+  });
+
+  return response.data;
+};
+
 export const resetPassword = async (email: string) => {
   const response = await axios.post("/auth/forgot-password", { email });
 

@@ -80,25 +80,22 @@ const SubmissionLayout: FC<SubmissionProps> = ({
               {" "}
               {item.content.type === "AUDIO" ? (
                 <ContentCard
-                  className="max-w-[250px]"
                   href={`/staff/audios/${item.content.slug}`}
-                  aspectRatio="aspect-[1/1]"
+                  variant="audio"
                   imageSrc={item.content.thumbnail}
                   title={item.content.title}
                 />
               ) : item.content.type === "VIDEO" ? (
                 <ContentCard
-                  className="max-w-[352px]"
                   href={`/staff/videos/${item.content.slug}`}
-                  aspectRatio="aspect-[4/3]"
+                  variant="video"
                   imageSrc={item.content.thumbnail}
                   title={item.content.title}
                 />
               ) : (
                 <ContentCard
-                  className="max-w-[250px]"
                   href={`/staff/prakerin/${item.content.slug}`}
-                  aspectRatio="aspect-[3/4]"
+                  variant="default"
                   imageSrc={item.content.thumbnail}
                   title={item.content.title}
                 />

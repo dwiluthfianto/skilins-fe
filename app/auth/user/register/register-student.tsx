@@ -15,13 +15,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { ToastAction } from "@/components/ui/toast";
-import { register } from "@/utils/auth-service";
+import { registerStudent } from "@/utils/auth-service";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { CustomCalendar } from "@/components/ui/custom-calendar";
 import { format } from "date-fns";
-import { CalendarIcon, Check, ChevronsUpDown, UserRound } from "lucide-react";
+import { CalendarIcon, Loader2, UserRound } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import {
   Popover,
@@ -36,28 +35,18 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useState } from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
 
-const languages = [
-  { label: "English", value: "en" },
-  { label: "French", value: "fr" },
-  { label: "German", value: "de" },
-  { label: "Spanish", value: "es" },
-  { label: "Portuguese", value: "pt" },
-  { label: "Russian", value: "ru" },
-  { label: "Japanese", value: "ja" },
-  { label: "Korean", value: "ko" },
-  { label: "Chinese", value: "zh" },
-] as const;
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useMajor } from "@/hooks/use-major";
+import { AxiosError } from "axios";
+import { useState } from "react";
 
 const allowedDomains = ["@gmail.com", "@skilins.com"];
 
@@ -119,21 +108,32 @@ export default function RegisterStudent() {
       sex: "Male",
     },
   });
-  const [open, setOpen] = useState(false);
+
+  const { major, isLoading, isError } = useMajor();
+  const [loading, setLoading] = useState(false);
 
   async function onSubmit(data: z.infer<typeof StudentSchema>) {
+    setLoading(true);
     try {
-      await register(data);
+      await registerStudent(data);
       router.push("/auth/verify-email");
     } catch (error) {
-      toast({
-        title: "Failed!",
-        description: "Register failed!",
-        action: <ToastAction altText="Try again">Try again</ToastAction>,
-        variant: "destructive",
-      });
+      if (error instanceof AxiosError && error.response) {
+        toast({
+          title: "Error!",
+          description:
+            error?.response.data.message ||
+            error?.response.data.error ||
+            "An error occurred while register.",
+          variant: "destructive",
+        });
+      }
+    } finally {
+      setLoading(false);
     }
   }
+  if (isLoading) return <h1>Loading..</h1>;
+  if (isError) return <h1>Error</h1>;
 
   return (
     <Card className="mx-auto w-full ">
@@ -278,56 +278,23 @@ export default function RegisterStudent() {
               render={({ field }) => (
                 <FormItem className="grid gap-2">
                   <FormLabel>Major</FormLabel>
-                  <Popover open={open} onOpenChange={setOpen}>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          className={cn(
-                            " justify-between",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          {field.value
-                            ? languages.find(
-                                (major) => major.value === field.value
-                              )?.label
-                            : "Select major"}
-                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[200px] p-0">
-                      <Command>
-                        <CommandInput placeholder="Search major..." />
-                        <CommandList>
-                          <CommandEmpty>No major found.</CommandEmpty>
-                          <CommandGroup>
-                            {languages.map((major) => (
-                              <CommandItem
-                                value={major.label}
-                                key={major.value}
-                                onSelect={() => {
-                                  form.setValue("major", major.value);
-                                }}
-                              >
-                                <Check
-                                  className={cn(
-                                    "mr-2 h-4 w-4",
-                                    major.value === field.value
-                                      ? "opacity-100"
-                                      : "opacity-0"
-                                  )}
-                                />
-                                {major.label}
-                              </CommandItem>
-                            ))}
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="col-span-3">
+                        <SelectValue placeholder="Select a major" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {major.data?.map((m: { name: string; uuid: string }) => (
+                        <div key={m.uuid}>
+                          <SelectItem value={m.name}>{m.name}</SelectItem>
+                        </div>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
@@ -392,7 +359,15 @@ export default function RegisterStudent() {
                 </FormItem>
               )}
             />
-            <Button type="submit">Register</Button>
+            <Button className="mt-6" disabled={loading}>
+              {loading ? (
+                <>
+                  <Loader2 className="animate-spin" /> {`Loading...`}
+                </>
+              ) : (
+                "Register"
+              )}
+            </Button>
           </form>
         </Form>
       </CardContent>

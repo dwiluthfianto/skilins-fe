@@ -90,8 +90,8 @@ export default function TagsPage() {
                 values={tag}
               />
               <DeleteDialog
-                isDeleteDialogOpen={deleteUuid === tag.uuid}
-                setIsDeleteDialogOpen={() => setDeleteUuid(null)}
+                open={deleteUuid === tag.uuid}
+                onOpenChange={() => setDeleteUuid(null)}
                 pathApi={`/tags/${tag.uuid}`}
               />
             </div>

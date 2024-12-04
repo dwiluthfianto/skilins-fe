@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
+import ContentCard from "@/components/content-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,7 +10,6 @@ import {
   CarouselItem,
 } from "@/components/ui/carousel";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 
 export function VideoCarousel({ data }: any) {
@@ -89,30 +89,14 @@ export function VideoCarousel({ data }: any) {
         >
           <CarouselContent>
             {videos.map((item: any) => (
-              <CarouselItem key={item.uuid} className="pl-[20px] max-w-[352px]">
-                <a
-                  href={`/video/${item.uuid}`}
-                  className="group flex flex-col justify-between"
-                >
-                  <div>
-                    <div className="flex aspect-[3/2] text-clip">
-                      <div className="flex-1">
-                        <div className="relative size-full origin-bottom transition duration-300 group-hover:scale-105">
-                          <Image
-                            src={item.thumbnail}
-                            alt={item.title}
-                            layout="fill"
-                            objectFit="cover"
-                            objectPosition="center"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="mb-2 line-clamp-3 break-words pt-4 text-base font-semibold md:mb-3 md:pt-4 lg:pt-4 lg:text-md">
-                    {item.title}
-                  </div>
-                </a>
+              <CarouselItem key={item.uuid} className="max-w-[352px]">
+                <ContentCard
+                  key={item.uuid}
+                  variant="video"
+                  href={`video-podcasts/${item.slug}`}
+                  imageSrc={item.thumbnail}
+                  title={item.title}
+                />
               </CarouselItem>
             ))}
           </CarouselContent>

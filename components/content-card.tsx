@@ -2,26 +2,40 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { FC } from "react";
 
-interface ContentProps {
-  className?: string;
+const cardVariants = {
+  default: {
+    ratio: "aspect-[3/4]",
+    width: "max-w-[250px]",
+  },
+  video: {
+    ratio: "aspect-[4/3]",
+    width: "max-w-[352px]",
+  },
+  audio: {
+    ratio: "aspect-[1/1]",
+    width: "max-w-[250px]",
+  },
+};
+
+interface ContentProps extends React.HTMLAttributes<HTMLDivElement> {
   href: string;
-  aspectRatio: string;
   imageSrc: string;
   title: string;
+  variant?: keyof typeof cardVariants;
 }
 
 const ContentCard: FC<ContentProps> = ({
-  className,
   href,
-  aspectRatio,
   imageSrc,
   title,
+  variant = "default",
+  ...props
 }) => {
   return (
-    <div className={cn("pl-[20px]", className)}>
+    <div className={cn("pl-[20px]", cardVariants[variant].width)} {...props}>
       <a href={href} className="group flex flex-col justify-between">
         <div>
-          <div className={cn("flex text-clip", aspectRatio)}>
+          <div className={cn("flex text-clip", cardVariants[variant].ratio)}>
             <div className="flex-1">
               <div className="relative size-full origin-bottom transition duration-300 group-hover:scale-105">
                 <Image

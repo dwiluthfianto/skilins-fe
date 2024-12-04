@@ -1,7 +1,7 @@
-"use client";
-import Link from "next/link";
+'use client';
+import Link from 'next/link';
 
-import { ContentLayout } from "@/components/staff-panel/content-layout";
+import { ContentLayout } from '@/components/staff-panel/content-layout';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -9,42 +9,42 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+} from '@/components/ui/breadcrumb';
 
-import { DataTable } from "./data-table";
-import { columns } from "./columns";
+import { DataTable } from './data-table';
+import { columns } from './columns';
 
-export default function NovelsPage() {
+export default function StoriesListPage() {
   return (
-    <ContentLayout title="Users">
+    <ContentLayout title='Users'>
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <Link href="/">Home</Link>
+              <Link href='/'>Home</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <Link href="/dashboard">Dashboard</Link>
+              <Link href='/dashboard'>Dashboard</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <Link href="/dashboard">Student Works</Link>
+              <Link href='/dashboard'>Student Works</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage>Novels</BreadcrumbPage>
+            <BreadcrumbPage>Stories</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <div className="w-full py-8">
-        <div className=" mx-auto">
-          <div className="flex flex-col gap-4 ">
+      <div className='w-full py-8'>
+        <div className=' mx-auto'>
+          <div className='flex flex-col gap-4 '>
             <DataTable columns={columns} />
           </div>
         </div>

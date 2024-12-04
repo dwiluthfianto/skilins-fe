@@ -33,7 +33,6 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import StudentForm from "@/components/staff-panel/forms/student/student-form";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -77,11 +76,7 @@ export function DataTable<TData, TValue>({
       <div className="flex flex-col items-start md:items-center md:flex-row justify-between gap-4">
         <div>
           <p className="font-bold text-4xl">Students</p>
-          <p className="text-sm">
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-          </p>
         </div>
-        <StudentForm />
       </div>
       <div className="flex items-center py-4">
         <Input

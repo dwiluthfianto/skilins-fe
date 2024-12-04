@@ -1,5 +1,5 @@
-import { fetcher } from "@/utils/fetcher";
-import useSWR from "swr";
+import { fetcher } from '@/utils/fetcher';
+import useSWR from 'swr';
 
 export function useVideo(page: number) {
   const { data, error, mutate } = useSWR(
@@ -16,9 +16,14 @@ export function useVideo(page: number) {
   };
 }
 
-export function useVideoLatest(page: number, limit: number, week: number) {
+export function useVideoLatest(
+  page: number,
+  limit: number,
+  week: number,
+  status: string
+) {
   const { data, error, mutate } = useSWR(
-    `/contents/videos/latest?page=${page}&limit=${limit}&week=${week}`,
+    `/contents/videos/latest?page=${page}&limit=${limit}&week=${week}&status=${status}`,
     fetcher
   );
 

@@ -77,6 +77,7 @@ export function DataTable<TData, TValue>({
 
   React.useEffect(() => {
     setPagination({ ...pagination, pageIndex: 0 });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearch, limit]);
 
   const table = useReactTable({

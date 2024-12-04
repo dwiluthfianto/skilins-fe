@@ -106,8 +106,8 @@ export default function CategoriesPage() {
                 values={category}
               />
               <DeleteDialog
-                isDeleteDialogOpen={deleteCategoryUuid === category.uuid}
-                setIsDeleteDialogOpen={() => setDeleteCategoryUuid(null)}
+                open={deleteCategoryUuid === category.uuid}
+                onOpenChange={() => setDeleteCategoryUuid(null)}
                 pathApi={`/categories/${category.uuid}`}
               />
             </div>

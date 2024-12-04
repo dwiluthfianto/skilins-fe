@@ -3,8 +3,8 @@
 
 import { Badge } from "@/components/ui/badge";
 import { useAudio } from "@/hooks/use-audio";
-import Image from "next/image";
 import { LoadingContent3 } from "./skeletons/skeleton-card";
+import ContentCard from "@/components/content-card";
 
 export function Audios() {
   const { audios, isLoading } = useAudio(1);
@@ -29,31 +29,13 @@ export function Audios() {
       <div className="w-full grid gap-2 grid-cols-2 md:grid-cols-4 lg:grid-cols-6">
         {audios.map((item: any) => {
           return (
-            <div key={item.uuid} className="pl-[20px] max-w-[250px]">
-              <a
-                href={`audio-podcasts/${item.slug}`}
-                className="group flex flex-col justify-between"
-              >
-                <div>
-                  <div className="flex aspect-[1/1] text-clip">
-                    <div className="flex-1">
-                      <div className="relative size-full origin-bottom transition duration-300 group-hover:scale-105">
-                        <Image
-                          src={item.thumbnail}
-                          alt={item.title}
-                          layout="fill"
-                          objectFit="cover"
-                          objectPosition="center"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="mb-2 line-clamp-3 break-words pt-4 text-base font-semibold md:mb-3 md:pt-4 lg:pt-4 lg:text-md">
-                  {item.title}
-                </div>
-              </a>
-            </div>
+            <ContentCard
+              key={item.uuid}
+              href={`audio-podcasts/${item.slug}`}
+              imageSrc={item.thumbnail}
+              variant="audio"
+              title={item.title}
+            />
           );
         })}
       </div>

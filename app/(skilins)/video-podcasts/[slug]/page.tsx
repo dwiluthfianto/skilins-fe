@@ -23,8 +23,28 @@ import {
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import LikeComponent from "@/components/user-panel/ui/rating";
-import CommentComponent from "@/components/user-panel/ui/comment";
+import FeedbackComponent from "@/components/skilins/features/feedback";
+import { Metadata } from "next";
+
+type Props = {
+  params: Promise<{ slug: string }>;
+};
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  // read route params
+  const slug = (await params).slug;
+
+  // fetch data
+  const res = (await axios.get(`/contents/videos/${slug}`)).data;
+  const video = res.data;
+
+  return {
+    title: `${video.title} - ${video.creator} | skilins.`,
+    openGraph: {
+      images: [`${video.thumbnail}`],
+    },
+  };
+}
 
 export default async function VideoDetail({ params }: any) {
   const { slug } = params;
@@ -152,13 +172,11 @@ export default async function VideoDetail({ params }: any) {
                               Subjects
                             </p>
                             <p>
-                              {video.subjects.map(
-                                (subject: any, index: number) => (
-                                  <Badge key={index} className="mr-2">
-                                    {subject}
-                                  </Badge>
-                                )
-                              )}
+                              {video.genres.map((genre: any, index: number) => (
+                                <Badge key={index} className="mr-2">
+                                  {genre.text}
+                                </Badge>
+                              ))}
                             </p>
                           </div>
                         </div>
@@ -173,7 +191,7 @@ export default async function VideoDetail({ params }: any) {
                                   key={index}
                                   className="mr-2 items-center"
                                 >
-                                  #{tag.name}
+                                  #{tag.text}
                                 </Badge>
                               ))}
                             </p>
@@ -186,15 +204,15 @@ export default async function VideoDetail({ params }: any) {
               </Card>
             </div>
           </div>
-          <Card className=" py-8 lg:py-16 antialiased mt-10">
-            <CardContent className="space-y-4">
-              <LikeComponent likes={video.likes} contentUuid={slug} />
-              <CommentComponent
-                comments={video.comments}
-                contentId={video.uuid}
-              />
-            </CardContent>
-          </Card>
+          <FeedbackComponent
+            comments={video.comments}
+            contentUuid={video.uuid}
+            creator={video.creator}
+            shareUrl={`${process.env.NEXT_PUBLIC_FRONTEND_URL}/video-podcasts/${video.slug}`}
+            titleContent={video.title}
+            avgRating={Number(video.avg_rating)}
+            className="my-8 lg:my-16 antialiased"
+          />
         </div>
       </section>
     </ContentLayout>

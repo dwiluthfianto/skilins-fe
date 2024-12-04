@@ -56,7 +56,7 @@ function VideoStudent() {
             <div key={item.uuid} className="relative">
               <ContentCard
                 href={`video-podcasts/${item.slug}`}
-                aspectRatio="aspect-[4/3]"
+                variant="video"
                 imageSrc={item.thumbnail}
                 title={item.title}
               />
@@ -86,8 +86,8 @@ function VideoStudent() {
                 </DropdownMenuContent>
               </DropdownMenu>
               <DeleteDialog
-                isDeleteDialogOpen={isDeleteDialogOpen}
-                setIsDeleteDialogOpen={setIsDeleteDialogOpen}
+                open={isDeleteDialogOpen}
+                onOpenChange={setIsDeleteDialogOpen}
                 pathApi={`/contents/videos/${item.uuid}`}
               />
             </div>

@@ -1,9 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
+'use client';
 
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef } from '@tanstack/react-table';
 
-import { FilePenLine, FileText, MoreHorizontal, Trash2 } from "lucide-react";
+import {
+  CircleOff,
+  FileSearch,
+  MoreHorizontal,
+  Signature,
+  Trash2,
+} from 'lucide-react';
 
 import {
   DropdownMenu,
@@ -11,202 +17,195 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from '@/components/ui/dropdown-menu';
 
-import { ArrowUpDown } from "lucide-react";
-import Image from "next/image";
-import * as React from "react";
-import { Button } from "@/components/ui/button";
-import DeleteDialog from "@/components/staff-panel/delete-dialog";
-import NovelEditForm from "@/components/staff-panel/forms/novel/novel-edit-form";
+import { ArrowUpDown } from 'lucide-react';
+import Image from 'next/image';
+import * as React from 'react';
+import { Button } from '@/components/ui/button';
+import DeleteDialog from '@/components/staff-panel/delete-dialog';
+import ApproveDialog from '@/components/staff-panel/approve-dialog';
+import RejectDialog from '@/components/staff-panel/reject-dialog';
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
-export type Novels = {
+export type Stories = {
   uuid: string;
   title: string;
   thumbnail: string;
   description: string;
-  subjects: string[];
+  genres: string[];
   category: string;
-  author: string;
-  pages: number;
-  file_url: string;
+  creator: string;
   tags: string[];
+  status: string;
 };
 
-export const columns: ColumnDef<Novels>[] = [
+export const columns: ColumnDef<Stories>[] = [
   {
-    accessorKey: "thumbnail",
-    header: "Thumbnail",
+    accessorKey: 'thumbnail',
+    header: 'Thumbnail',
     cell: ({ row }) => (
       <Image
         key={row.original.thumbnail}
         src={`${row.original.thumbnail}`}
-        alt="Image"
-        className=" object-cover"
+        alt='Image'
+        className=' object-cover'
         width={96}
         height={96}
       />
     ),
   },
   {
-    accessorKey: "author",
+    accessorKey: 'title',
     header: ({ column }) => {
       return (
         <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Author
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-  },
-  {
-    accessorKey: "title",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          variant='ghost'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Title
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          <ArrowUpDown className='ml-2 h-4 w-4' />
         </Button>
       );
     },
   },
   {
-    accessorKey: "description",
-    header: "Description",
-  },
-  {
-    accessorKey: "category",
+    accessorKey: 'creator',
     header: ({ column }) => {
       return (
         <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          variant='ghost'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Creator
+          <ArrowUpDown className='ml-2 h-4 w-4' />
+        </Button>
+      );
+    },
+  },
+  {
+    accessorKey: 'category',
+    header: ({ column }) => {
+      return (
+        <Button
+          variant='ghost'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Category
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          <ArrowUpDown className='ml-2 h-4 w-4' />
         </Button>
       );
     },
   },
   {
-    accessorKey: "pages",
+    accessorKey: 'genres',
     header: ({ column }) => {
       return (
         <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          variant='ghost'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Pages
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-  },
-
-  {
-    accessorKey: "subjects",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Subjects
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          Genres
+          <ArrowUpDown className='ml-2 h-4 w-4' />
         </Button>
       );
     },
     cell: ({ row }) => {
-      return row.original.subjects.join(", ");
+      return row.original.genres.map((genre: any) => genre?.text).join(', ');
     },
   },
   {
-    accessorKey: "tags",
+    accessorKey: 'tags',
     header: ({ column }) => {
       return (
         <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          variant='ghost'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Tags
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          <ArrowUpDown className='ml-2 h-4 w-4' />
         </Button>
       );
     },
     cell: ({ row }) => {
-      return row.original.tags.map((tag: any) => tag?.name).join(", ");
+      return row.original.tags.map((tag: any) => tag?.text).join(', ');
     },
   },
   {
-    accessorKey: "file_url",
+    accessorKey: 'status',
     header: ({ column }) => {
       return (
         <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          variant='ghost'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          File
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          Status
+          <ArrowUpDown className='ml-2 h-4 w-4' />
         </Button>
       );
     },
-    cell: ({ row }) => {
-      return (
-        <a
-          key={row.original.file_url}
-          href={`${row.original.file_url}`}
-          className="text-pink-600 items-center flex gap-2"
-        >
-          <FileText width={16} />
-          .pdf
-        </a>
-      );
-    },
   },
-
   {
-    id: "actions",
+    id: 'actions',
     cell: ({ row }) => {
       // eslint-disable-next-line react-hooks/rules-of-hooks
-      const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
+      const [approveOpen, setApproveOpen] = React.useState(false);
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      const [rejectOpen, setRejectOpen] = React.useState(false);
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
       return (
         <div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
+              <Button variant='ghost' className='h-8 w-8 p-0'>
+                <span className='sr-only'>Open menu</span>
+                <MoreHorizontal className='h-4 w-4' />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => setIsEditDialogOpen(true)}>
-                <FilePenLine className="mr-2" width={16} /> Edit
+            <DropdownMenuContent align='end'>
+              <DropdownMenuLabel>Status</DropdownMenuLabel>
+              <DropdownMenuItem
+                className='cursor-pointer'
+                onClick={() => setApproveOpen(true)}
+              >
+                <Signature className='mr-2' width={16} /> Approve
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setIsDeleteDialogOpen(true)}>
-                <Trash2 className="mr-2" width={16} /> Delete
+              <DropdownMenuItem
+                className='cursor-pointer'
+                onClick={() => setRejectOpen(true)}
+              >
+                <CircleOff className='mr-2' width={16} /> Reject
+              </DropdownMenuItem>
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuItem className='cursor-pointer'>
+                <FileSearch className='mr-2' width={16} /> Detail
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className='cursor-pointer'
+                onClick={() => setIsDeleteDialogOpen(true)}
+              >
+                <Trash2 className='mr-2' width={16} /> Delete
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <NovelEditForm
-            isEditDialogOpen={isEditDialogOpen}
-            setIsEditDialogOpen={setIsEditDialogOpen}
-            values={row.original}
-          />
+
           <DeleteDialog
-            isDeleteDialogOpen={isDeleteDialogOpen}
-            setIsDeleteDialogOpen={setIsDeleteDialogOpen}
-            pathApi={`/contents/novels/${row.original.uuid}`}
+            open={isDeleteDialogOpen}
+            onOpenChange={setIsDeleteDialogOpen}
+            pathApi={`/contents/stories/${row.original.uuid}`}
+          />
+
+          <ApproveDialog
+            open={approveOpen}
+            onOpenChange={setApproveOpen}
+            pathApi={`/contents/${row.original.uuid}`}
+          />
+          <RejectDialog
+            open={rejectOpen}
+            onOpenChange={setRejectOpen}
+            pathApi={`/contents/${row.original.uuid}`}
           />
         </div>
       );
