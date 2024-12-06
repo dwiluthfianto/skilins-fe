@@ -6,9 +6,9 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+} from '@/components/ui/sheet';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   Form,
   FormControl,
@@ -16,43 +16,43 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useToast } from "@/hooks/use-toast";
-import { Eye, EyeOff, Loader2, SquareUserRound } from "lucide-react";
-import { useState } from "react";
-import axios from "@/utils/axios";
-import { AxiosError } from "axios";
+} from '@/components/ui/form';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useToast } from '@/hooks/use-toast';
+import { Eye, EyeOff, Loader2, SquareUserRound } from 'lucide-react';
+import { useState } from 'react';
+import axios from '@/utils/axios';
+import { AxiosError } from 'axios';
 
-const allowedDomains = ["@gmail.com", "@skilins.com"];
+const allowedDomains = ['@gmail.com', '@skilins.com'];
 
 const JudgeSchema = z.object({
   email: z
     .string()
-    .email("This is not valid email")
-    .min(1, "Email must be filled")
+    .email('This is not valid email')
+    .min(1, 'Email must be filled')
     .refine(
       (email) => allowedDomains.some((domain) => email.endsWith(domain)),
       {
         message: `Email must use one of the following domains: ${allowedDomains.join(
-          ", "
+          ', '
         )}`,
       }
     ),
   password: z
     .string()
-    .min(8, "Password must be at least 8 characters.")
-    .regex(/[A-Z]/, "Passwords must have at least one uppercase letter")
-    .regex(/[a-z]/, "Passwords must have at least one lowercase letter")
-    .regex(/[0-9]/, "Password must have at least one number")
+    .min(8, 'Password must be at least 8 characters.')
+    .regex(/[A-Z]/, 'Passwords must have at least one uppercase letter')
+    .regex(/[a-z]/, 'Passwords must have at least one lowercase letter')
+    .regex(/[0-9]/, 'Password must have at least one number')
     .regex(
       /[@$!%*?&]/,
-      "Password must have at least 1 special symbol (@$!%*?&)"
+      'Password must have at least 1 special symbol (@$!%*?&)'
     ),
-  fullName: z.string().min(4, "Full name must be at least 4 characters."),
-  role: z.string().min(1, "Role judge must be fill."),
+  fullName: z.string().min(4, 'Full name must be at least 4 characters.'),
+  role: z.string().min(1, 'Role judge must be fill.'),
   linkedin: z.string().optional(),
   instagram: z.string().optional(),
 });
@@ -65,12 +65,12 @@ export default function JudgeForm() {
   const form = useForm<z.infer<typeof JudgeSchema>>({
     resolver: zodResolver(JudgeSchema),
     defaultValues: {
-      email: "",
-      password: "",
-      fullName: "",
-      role: "",
-      linkedin: "",
-      instagram: "",
+      email: '',
+      password: '',
+      fullName: '',
+      role: '',
+      linkedin: '',
+      instagram: '',
     },
   });
 
@@ -86,21 +86,23 @@ export default function JudgeForm() {
       instagram: data.instagram,
     };
     try {
-      const { data: judgeData } = await axios.post("/judges/add", payload);
+      const { data: judgeData } = await axios.post('/judges/add', payload);
 
       toast({
-        title: "Success!",
+        title: 'Success!',
         description: judgeData.message,
       });
     } catch (error) {
+      console.log(error);
+
       if (error instanceof AxiosError && error.response) {
         toast({
-          title: "Error!",
+          title: 'Error!',
           description:
             error?.response.data.message ||
             error?.response.data.error ||
-            "An error occurred while add the ebook.",
-          variant: "destructive",
+            'An error occurred while add the ebook.',
+          variant: 'destructive',
         });
       }
     } finally {
@@ -125,18 +127,18 @@ export default function JudgeForm() {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="grid gap-4 mt-8"
+            className='grid gap-4 mt-8'
           >
             <FormField
               control={form.control}
-              name="fullName"
+              name='fullName'
               render={({ field }) => (
-                <FormItem className="grid gap-2">
+                <FormItem className='grid gap-2'>
                   <FormLabel>
-                    Full name <span className="text-red-500">*</span>
+                    Full name <span className='text-red-500'>*</span>
                   </FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g. John Doe" {...field} type="text" />
+                    <Input placeholder='e.g. John Doe' {...field} type='text' />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -144,17 +146,17 @@ export default function JudgeForm() {
             />
             <FormField
               control={form.control}
-              name="email"
+              name='email'
               render={({ field }) => (
-                <FormItem className="grid gap-2">
+                <FormItem className='grid gap-2'>
                   <FormLabel>
-                    Email <span className="text-red-500">*</span>{" "}
+                    Email <span className='text-red-500'>*</span>{' '}
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="e.g. judge@skilins.com"
+                      placeholder='e.g. judge@skilins.com'
                       {...field}
-                      type="email"
+                      type='email'
                     />
                   </FormControl>
                   <FormMessage />
@@ -163,32 +165,32 @@ export default function JudgeForm() {
             />
             <FormField
               control={form.control}
-              name="password"
+              name='password'
               render={({ field }) => (
-                <FormItem className="grid gap-2">
+                <FormItem className='grid gap-2'>
                   <FormLabel>
-                    Password <span className="text-red-500">*</span>{" "}
+                    Password <span className='text-red-500'>*</span>{' '}
                   </FormLabel>
                   <FormControl>
-                    <div className="relative">
+                    <div className='relative'>
                       <Input
-                        id="hs-toggle-password"
-                        type={see ? "text" : "password"}
-                        placeholder="Enter password"
+                        id='hs-toggle-password'
+                        type={see ? 'text' : 'password'}
+                        placeholder='Enter password'
                         {...field}
                       />
-                      <div className="absolute inset-y-0 end-0 flex items-center z-20 cursor-pointer text-gray-400 px-3">
+                      <div className='absolute inset-y-0 end-0 flex items-center z-20 cursor-pointer text-gray-400 px-3'>
                         {see ? (
                           <Eye
                             width={18}
                             onClick={() => setSee(false)}
-                            className="shrink-0"
+                            className='shrink-0'
                           />
                         ) : (
                           <EyeOff
                             width={18}
                             onClick={() => setSee(true)}
-                            className="shrink-0"
+                            className='shrink-0'
                           />
                         )}
                       </div>
@@ -200,17 +202,17 @@ export default function JudgeForm() {
             />
             <FormField
               control={form.control}
-              name="role"
+              name='role'
               render={({ field }) => (
-                <FormItem className="grid gap-2">
+                <FormItem className='grid gap-2'>
                   <FormLabel>
-                    Role <span className="text-red-500">*</span>
+                    Role <span className='text-red-500'>*</span>
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="e.g. Content Creator | PT. Example"
+                      placeholder='e.g. Content Creator | PT. Example'
                       {...field}
-                      type="text"
+                      type='text'
                     />
                   </FormControl>
                   <FormMessage />
@@ -219,15 +221,15 @@ export default function JudgeForm() {
             />
             <FormField
               control={form.control}
-              name="linkedin"
+              name='linkedin'
               render={({ field }) => (
-                <FormItem className="grid gap-2">
+                <FormItem className='grid gap-2'>
                   <FormLabel>Linkedin (Optional)</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="e.g. https://linkedin.com/john-doe"
+                      placeholder='e.g. https://linkedin.com/john-doe'
                       {...field}
-                      type="text"
+                      type='text'
                     />
                   </FormControl>
                   <FormMessage />
@@ -236,15 +238,15 @@ export default function JudgeForm() {
             />
             <FormField
               control={form.control}
-              name="linkedin"
+              name='linkedin'
               render={({ field }) => (
-                <FormItem className="grid gap-2">
+                <FormItem className='grid gap-2'>
                   <FormLabel>Instagram (Optional)</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="e.g. https://instagram.com/john-doe"
+                      placeholder='e.g. https://instagram.com/john-doe'
                       {...field}
-                      type="text"
+                      type='text'
                     />
                   </FormControl>
                   <FormMessage />
@@ -252,13 +254,13 @@ export default function JudgeForm() {
               )}
             />
             <SheetFooter>
-              <Button className="mt-6" disabled={loading}>
+              <Button className='mt-6' disabled={loading}>
                 {loading ? (
                   <>
-                    <Loader2 className="animate-spin" /> {`Creating...`}
+                    <Loader2 className='animate-spin' /> {`Creating...`}
                   </>
                 ) : (
-                  "Add judge"
+                  'Add judge'
                 )}
               </Button>
             </SheetFooter>

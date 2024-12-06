@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-'use client';
+import { ContentLayout } from '@/components/user-panel/content-layout';
+import axios from '@/utils/axios';
 import Image from 'next/image';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { format } from 'date-fns';
@@ -22,20 +23,37 @@ import {
 } from '@/components/ui/breadcrumb';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
+import { AudioPlayer } from '@/components/user-panel/ui/audio-player';
 import { Card, CardContent } from '@/components/ui/card';
 import MinimalTiptapPreview from '@/components/minimal-tiptap/minimal-tiptap-preview';
-import { ContentLayout } from '@/components/judge-panel/content-layout';
-import { useAudioBySlug } from '@/hooks/use-audio';
-import FeedbackJudge from '@/components/judge-panel/feedback';
-import { useState } from 'react';
-import JudgeAudioPlayer from '@/components/judge-panel/judge-audio-player';
+import { Metadata } from 'next';
 
-export default function AudioDetail({ params }: any) {
+type Props = {
+  params: Promise<{ slug: string }>;
+};
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  // read route params
+  const slug = (await params).slug;
+
+  // fetch data
+  const res = (await axios.get(`/contents/audios/${slug}`)).data;
+  const audio = res.data;
+
+  return {
+    title: `${audio.title} - ${audio.creator} | skilins.`,
+    openGraph: {
+      images: [`${audio.thumbnail}`],
+    },
+  };
+}
+
+export default async function AudioDetail({ params }: any) {
   const { slug } = params;
-  const { audio, isLoading: audioLoading } = useAudioBySlug(slug);
-  const [hasPlayed, setHasPlayed] = useState(false);
+  const res = (await axios.get(`/contents/audios/${slug}`)).data;
 
-  if (audioLoading) return <h1>loading...</h1>;
+  const audio = res.data;
+
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
@@ -51,7 +69,7 @@ export default function AudioDetail({ params }: any) {
   };
 
   return (
-    <ContentLayout>
+    <ContentLayout title={audio.title}>
       <section className='md:py-2'>
         <div className='md:container'>
           <Breadcrumb>
@@ -73,15 +91,7 @@ export default function AudioDetail({ params }: any) {
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
-          {hasPlayed ? (
-            <FeedbackJudge
-              submissionUuid={audio.submission_uuid}
-              competitionUuid={audio.competition_uuid}
-            />
-          ) : (
-            ''
-          )}
-          <div className='grid grid-cols-1  md:grid-cols-4 mt-8 gap-y-6  md:gap-8'>
+          <div className='grid grid-cols-1  min-[1340px]:grid-cols-4 mt-8 gap-y-6  min-[1340px]:gap-8'>
             <div className='relative'>
               <AspectRatio ratio={1 / 1}>
                 <Image
@@ -93,7 +103,7 @@ export default function AudioDetail({ params }: any) {
                   className='rounded-lg '
                 />
               </AspectRatio>
-              <JudgeAudioPlayer data={track} onHasCheck={setHasPlayed} />
+              <AudioPlayer data={track} />
             </div>
             <div className='col-span-3 '>
               <Card className='rounded-lg '>
@@ -209,4 +219,31 @@ export default function AudioDetail({ params }: any) {
       </section>
     </ContentLayout>
   );
+}
+
+export async function generateStaticParams() {
+  let page = 1;
+  const limit = 25;
+  let allAudios: any[] = [];
+  let hasMore = true;
+
+  // Lakukan fetching hingga tidak ada lagi data yang dikembalikan
+  while (hasMore) {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/contents/audios?page=${page}&limit=${limit}`
+    );
+    const data = await res.json();
+    const audios = data?.data || [];
+
+    // Gabungkan data dari halaman saat ini
+    allAudios = allAudios.concat(audios);
+
+    // Cek apakah data masih ada di halaman berikutnya
+    hasMore = audios.length === limit;
+    page++;
+  }
+
+  return allAudios.map((audio: any) => ({
+    slug: audio.slug,
+  }));
 }

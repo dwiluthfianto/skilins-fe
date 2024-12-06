@@ -1,9 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 import { Pause, Play, RotateCcw, SkipBack, Volume2 } from 'lucide-react';
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, FC } from 'react';
 
-export function AudioPlayer({ data }: any) {
+interface JudgeAudioPlayerProps {
+  data: any;
+  onHasCheck: (played: boolean) => void;
+}
+
+const JudgeAudioPlayer: FC<JudgeAudioPlayerProps> = ({ data, onHasCheck }) => {
   const src = data?.src;
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -19,6 +24,7 @@ export function AudioPlayer({ data }: any) {
         audioRef.current.pause();
       } else {
         audioRef.current.play();
+        onHasCheck(true);
       }
       setIsPlaying(!isPlaying);
     }
@@ -199,4 +205,6 @@ export function AudioPlayer({ data }: any) {
       </div>
     </div>
   );
-}
+};
+
+export default JudgeAudioPlayer;

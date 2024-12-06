@@ -37,6 +37,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Tag, TagInput } from 'emblor';
 import { useJudge } from '@/hooks/use-judge';
+import { Input } from '@/components/ui/input';
 const ContentSchema = z.object({
   title: z
     .string()
@@ -44,6 +45,7 @@ const ContentSchema = z.object({
   thumbnail: z.instanceof(File).nullable(),
   description: z.string().min(1, { message: 'Description is required.' }),
   guide: z.string().min(1, { message: 'Guide is required.' }),
+  winner_count: z.number().min(1, { message: 'Winner count is required.' }),
   type_competition: z
     .string()
     .min(1, { message: 'Type of Competition is required.' }),
@@ -56,7 +58,22 @@ const ContentSchema = z.object({
       text: z.string(),
     })
   ),
+  parameters: z.array(
+    z.object({
+      parameterName: z
+        .string()
+        .min(1, { message: 'Parameter name is required.' }),
+      weight: z
+        .string()
+        .regex(/^\d+$/, { message: 'Weight must be a number.' }),
+    })
+  ),
 });
+
+type Parameter = {
+  parameterName: string;
+  weight: string;
+};
 
 export default function CreateCompetition() {
   const form = useForm<z.infer<typeof ContentSchema>>({
@@ -67,15 +84,41 @@ export default function CreateCompetition() {
       type_competition: 'AUDIO',
       description: '',
       guide: '',
+      winner_count: undefined,
       start_date: new Date(),
       end_date: new Date(),
       submission_deadline: new Date(),
       judges: [],
+      parameters: [{ parameterName: '', weight: '' }],
     },
   });
   const [judges, setJudges] = useState<Tag[]>([]);
   const [activeJudgeIndex, setActiveJudgeIndex] = useState<number | null>(null);
   const { autocompleteJudges } = useJudge();
+  const parameters = form.watch('parameters');
+  const addParameter = () => {
+    const newParameter = { parameterName: '', weight: '' };
+    form.setValue('parameters', [...parameters, newParameter]);
+  };
+
+  const updateParameter = (
+    index: number,
+    field: keyof Parameter,
+    value: string
+  ) => {
+    if (field === 'weight' && isNaN(Number(value))) {
+      console.error('Weight harus berupa angka.');
+      return;
+    }
+    const updatedParameters = [...parameters];
+    updatedParameters[index][field] = value;
+    form.setValue('parameters', updatedParameters);
+  };
+
+  const removeParameter = (index: number) => {
+    const updatedParameters = parameters.filter((_, i) => i !== index);
+    form.setValue('parameters', updatedParameters);
+  };
 
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -90,9 +133,11 @@ export default function CreateCompetition() {
     formData.append('guide', data.guide);
     formData.append('start_date', String(data.start_date));
     formData.append('end_date', String(data.end_date));
+    formData.append('winner_count', String(data.winner_count));
     formData.append('type', data.type_competition);
     formData.append('submission_deadline', String(data.submission_deadline));
     formData.append('judge_uuids', JSON.stringify(data.judges));
+    formData.append('parameters', JSON.stringify(data.parameters));
 
     try {
       const { data: contentData } = await axios.post(
@@ -352,6 +397,7 @@ export default function CreateCompetition() {
                           editorClassName='focus:outline-none'
                         />
                       </FormControl>
+                      <FormMessage className='ml-8' />
                     </FormItem>
                   )}
                 />
@@ -439,6 +485,90 @@ export default function CreateCompetition() {
                             restrictTagsToAutocompleteOptions={true}
                             minTags={3}
                             maxTags={6}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Separator />
+                  <FormField
+                    control={form.control}
+                    name='parameters'
+                    render={() => (
+                      <FormItem>
+                        <FormLabel className='font-normal text-base text-muted-foreground'>
+                          Score Parameter
+                        </FormLabel>
+                        {parameters.map((param, index) => (
+                          <div
+                            key={index}
+                            className='flex items-center gap-2 mb-4'
+                          >
+                            <FormControl>
+                              <Input
+                                type='text'
+                                placeholder='Parameter Name'
+                                value={param.parameterName}
+                                onChange={(e) =>
+                                  updateParameter(
+                                    index,
+                                    'parameterName',
+                                    e.target.value
+                                  )
+                                }
+                              />
+                            </FormControl>
+                            <FormControl>
+                              <Input
+                                type='text'
+                                placeholder='Weight'
+                                value={param.weight}
+                                onChange={(e) =>
+                                  updateParameter(
+                                    index,
+                                    'weight',
+                                    e.target.value
+                                  )
+                                }
+                              />
+                            </FormControl>
+                            <Button
+                              type='button'
+                              onClick={() => removeParameter(index)}
+                              disabled={parameters.length === 1}
+                              variant={'destructive'}
+                            >
+                              Remove
+                            </Button>
+                          </div>
+                        ))}
+                        <Button type='button' onClick={addParameter}>
+                          Add Parameter
+                        </Button>
+
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Separator />
+                  <FormField
+                    control={form.control}
+                    name='winner_count'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className='font-normal text-base text-muted-foreground'>
+                          Total Winners
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            type='number'
+                            placeholder='Total winners'
+                            min={1}
+                            onChange={(event) =>
+                              field.onChange(+event.target.value)
+                            }
                           />
                         </FormControl>
                         <FormMessage />

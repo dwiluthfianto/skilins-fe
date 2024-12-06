@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ContentLayout } from '@/components/judge-panel/content-layout';
-import axios from '../../../../utils/axios';
+import { ContentLayout } from '@/components/user-panel/content-layout';
+import axios from '@/utils/axios';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { format } from 'date-fns';
 import {
@@ -24,8 +24,6 @@ import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Metadata } from 'next';
-import FeedbackJudge from '@/components/judge-panel/feedback';
-import MinimalTiptapPreview from '@/components/minimal-tiptap/minimal-tiptap-preview';
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -70,7 +68,7 @@ export default async function VideoDetail({ params }: any) {
   const embedUrl = convertToEmbedLink(video.file_url);
 
   return (
-    <ContentLayout>
+    <ContentLayout title={video.title}>
       <section className='md:py-2'>
         <div className='md:container'>
           <Breadcrumb>
@@ -92,10 +90,6 @@ export default async function VideoDetail({ params }: any) {
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
-          <FeedbackJudge
-            submissionUuid={video.submission_uuid}
-            competitionUuid={video.competition_uuid}
-          />
           <div className='mt-4'>
             <AspectRatio ratio={16 / 9}>
               <iframe
@@ -122,10 +116,9 @@ export default async function VideoDetail({ params }: any) {
                   <p className='mt-1 md:mt-6 text text-lg max-w-xl lg:max-w-xl leading-relaxed tracking-tight font-medium'>
                     Description
                   </p>
-                  <MinimalTiptapPreview
-                    value={video.description}
-                    editable={false}
-                  />
+                  <p className='mt-1 text-muted-foreground line-clamp-3 text-justify'>
+                    {video.description}
+                  </p>
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button
@@ -142,10 +135,9 @@ export default async function VideoDetail({ params }: any) {
                         </DialogTitle>
                       </DialogHeader>
                       <ScrollArea className='max-h-[600px] pr-4'>
-                        <MinimalTiptapPreview
-                          value={video.description}
-                          editable={false}
-                        />
+                        <p className='text-justify text-muted-foreground	'>
+                          {video.description}
+                        </p>
                       </ScrollArea>
                     </DialogContent>
                   </Dialog>
@@ -215,4 +207,31 @@ export default async function VideoDetail({ params }: any) {
       </section>
     </ContentLayout>
   );
+}
+
+export async function generateStaticParams() {
+  let page = 1;
+  const limit = 25;
+  let allVideos: any[] = [];
+  let hasMore = true;
+
+  // Lakukan fetching hingga tidak ada lagi data yang dikembalikan
+  while (hasMore) {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/contents/videos?page=${page}&limit=${limit}`
+    );
+    const data = await res.json();
+    const videos = data?.data || [];
+
+    // Gabungkan data dari halaman saat ini
+    allVideos = allVideos.concat(videos);
+
+    // Cek apakah data masih ada di halaman berikutnya
+    hasMore = videos.length === limit;
+    page++;
+  }
+
+  return allVideos.map((video: any) => ({
+    slug: video.uuid,
+  }));
 }

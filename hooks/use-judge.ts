@@ -37,6 +37,20 @@ export function useJudgeUser() {
   };
 }
 
+export function useEvaluationParameter(competitionUuid: string) {
+  const { data, error, mutate } = useSWR(
+    `/judges/${competitionUuid}/evaluation-parameters`,
+    fetcher
+  );
+
+  return {
+    parameters: data?.data,
+    isLoading: !error && !data,
+    isError: error,
+    mutate,
+  };
+}
+
 export function useJudgeSubmission(isScore: boolean, competitionUuid: string) {
   const { data, error, mutate } = useSWR(
     isScore

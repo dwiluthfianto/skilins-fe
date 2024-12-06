@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 import { Button } from '@/components/ui/button';
 import {
@@ -21,58 +22,75 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from '@/utils/axios';
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
 import { toast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { CommentRatings } from '../ratings';
 import { AutosizeTextarea } from '../autosize-textarea';
-import { useJudgeUser } from '@/hooks/use-judge';
+import { useEvaluationParameter, useJudgeUser } from '@/hooks/use-judge';
+import { ScrollArea } from '../ui/scroll-area';
 
 const FeedbackSchema = z.object({
-  score: z.coerce
-    .number()
-    .min(1, {
-      message: 'Score must be at least 1.',
+  parameter_scores: z.array(
+    z.object({
+      parameter_uuid: z.string(),
+      notes: z.string().optional(),
+      score: z.number().min(0).max(5),
     })
-    .max(5, {
-      message: "Score can't more than 5",
-    }),
-  comment: z.coerce
-    .string()
-    .min(20, { message: 'Comment must be at least 20 character' }),
+  ),
 });
 
 interface FeedbackJudgeProps {
+  competitionUuid: string;
   submissionUuid: string;
 }
 
-const FeedbackJudge: FC<FeedbackJudgeProps> = ({ submissionUuid }) => {
+const FeedbackJudge: FC<FeedbackJudgeProps> = ({
+  competitionUuid,
+  submissionUuid,
+}) => {
+  const { parameters, isLoading } = useEvaluationParameter(competitionUuid);
   const form = useForm<z.infer<typeof FeedbackSchema>>({
     resolver: zodResolver(FeedbackSchema),
     defaultValues: {
-      score: 0,
-      comment: '',
+      parameter_scores: [],
     },
   });
   const [loading, setLoading] = useState(false);
   const { judge } = useJudgeUser();
   const router = useRouter();
 
+  useEffect(() => {
+    if (parameters) {
+      form.reset({
+        parameter_scores: parameters.map((param: any) => ({
+          parameter_uuid: param.uuid,
+          notes: '',
+          score: 0,
+        })),
+      });
+    }
+  }, [parameters, form]);
+
   async function onSubmit(data: z.infer<typeof FeedbackSchema>) {
     setLoading(true);
 
     try {
-      await axios.patch(`/judges/${judge && judge.uuid}/submission`, {
-        submission_uuid: submissionUuid,
-        score: data.score,
-        comment: data.comment,
-      });
+      const { data: judgeData } = await axios.patch(
+        `/judges/${judge && judge.uuid}/submission`,
+        {
+          submission_uuid: submissionUuid,
+          parameter_scores: data.parameter_scores,
+        }
+      );
       router.push('/judge/dashboard');
+      toast({
+        title: 'Success!',
+        description: judgeData.message,
+      });
     } catch (error) {
-      console.log(error);
-
       if (error instanceof AxiosError && error.response) {
         toast({
           title: 'Error!',
@@ -87,10 +105,13 @@ const FeedbackJudge: FC<FeedbackJudgeProps> = ({ submissionUuid }) => {
       setLoading(false);
     }
   }
+
+  if (isLoading) return <h1>loading</h1>;
+
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant='outline'>Judge Submission</Button>
+        <Button className='items-end'>Judge Submission</Button>
       </DialogTrigger>
       <DialogContent className='sm:max-w-[425px]'>
         <DialogHeader>
@@ -101,39 +122,44 @@ const FeedbackJudge: FC<FeedbackJudgeProps> = ({ submissionUuid }) => {
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            <FormField
-              control={form.control}
-              name='score'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Ratings</FormLabel>
-                  <FormControl>
-                    <CommentRatings
-                      rating={field.value}
-                      totalStars={5}
-                      size={32}
-                      variant='yellow'
-                      onRatingChange={(value) => form.setValue('score', value)}
-                      className='hover:cursor-pointer'
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='comment'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Comment</FormLabel>
-                  <FormControl>
-                    <AutosizeTextarea placeholder='comment' {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <ScrollArea className='h-[500px]'>
+              {parameters?.map((param: any, index: number) => (
+                <FormField
+                  key={param.uuid}
+                  control={form.control}
+                  name={`parameter_scores.${index}.score`}
+                  render={({ field }) => (
+                    <FormItem className='p-4'>
+                      <FormLabel>{param.parameterName}</FormLabel>
+                      <FormControl>
+                        <CommentRatings
+                          rating={field.value}
+                          totalStars={5}
+                          size={32}
+                          variant='yellow'
+                          onRatingChange={(value) =>
+                            form.setValue(
+                              `parameter_scores.${index}.score`,
+                              value
+                            )
+                          }
+                        />
+                      </FormControl>
+                      <FormField
+                        name={`parameter_scores.${index}.notes`}
+                        render={({ field }) => (
+                          <AutosizeTextarea
+                            placeholder={`Notes for ${param.parameterName}`}
+                            {...field}
+                          />
+                        )}
+                      />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              ))}
+            </ScrollArea>
             <DialogFooter>
               <Button className='mt-6' disabled={loading}>
                 {loading ? (
