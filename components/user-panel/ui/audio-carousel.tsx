@@ -44,7 +44,7 @@ export function AudioCarousel({ data }: any) {
             </h2>
             <a
               href="/audios"
-              className="group flex items-center text-xs font-medium md:text-base lg:text-lg"
+            className="group flex items-center text-xs font-medium md:text-base lg:text-lg"
             >
               See all{" "}
               <ArrowRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />

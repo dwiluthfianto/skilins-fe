@@ -1,5 +1,5 @@
-import { fetcher } from "@/utils/fetcher";
-import useSWR from "swr";
+import { fetcher } from '@/utils/fetcher';
+import useSWR from 'swr';
 
 export function useStory(page?: number, limit?: number, search?: string) {
   const { data, error, mutate } = useSWR(
@@ -40,6 +40,20 @@ export function useStoryLatest(
 
 export function useStoryBySlug(slug: string) {
   const { data, error, mutate } = useSWR(`/contents/stories/${slug}`, fetcher);
+
+  return {
+    story: data?.data,
+    isLoading: !error && !data,
+    isError: error,
+    mutate,
+  };
+}
+
+export function useStoryEpisode(slug: string, order: string) {
+  const { data, error, mutate } = useSWR(
+    `/contents/stories/episodes/${slug}?order=${order}`,
+    fetcher
+  );
 
   return {
     story: data?.data,

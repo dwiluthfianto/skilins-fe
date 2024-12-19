@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { z } from 'zod';
@@ -22,7 +22,7 @@ import { Loader2 } from 'lucide-react';
 import { AutosizeTextarea } from '@/components/autosize-textarea';
 import MinimalTiptapOne from '@/components/minimal-tiptap/minimal-tiptap-one';
 import { ContentLayout } from '@/components/user-panel/content-layout';
-import { useStoryBySlug } from '@/hooks/use-story';
+import { useStoryEpisode } from '@/hooks/use-story';
 import { Input } from '@/components/ui/input';
 const ContentSchema = z.object({
   title: z
@@ -33,25 +33,36 @@ const ContentSchema = z.object({
 });
 
 export default function StoryCreate() {
-  const params = useParams<{ slug: string }>();
+  const params = useParams<{ slug: string; order: string }>();
+  const { story, isLoading } = useStoryEpisode(params.slug, params.order);
+
   const form = useForm<z.infer<typeof ContentSchema>>({
     resolver: zodResolver(ContentSchema),
     defaultValues: {
-      title: '',
-      content: '',
-      order: 1,
+      title: story?.episode.title || '',
+      content: story?.episode.content || '',
+      order: story?.episode.order || 1,
     },
   });
+  useEffect(() => {
+    if (story) {
+      form.reset({
+        title: story.episode.title,
+        content: story.episode.content,
+        order: story.episode.order,
+      });
+    }
+  }, [story, form]);
+
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const { story, isLoading } = useStoryBySlug(params.slug);
 
   async function onSubmit(data: z.infer<typeof ContentSchema>) {
     setLoading(true);
 
     try {
-      const { data: contentData } = await axios.post(
-        `/contents/stories/${story.uuid}/episodes`,
+      const { data: contentData } = await axios.patch(
+        `/contents/stories/episodes/${story.uuid}`,
         { title: data.title, content: data.content, order: data.order }
       );
 
@@ -62,6 +73,8 @@ export default function StoryCreate() {
 
       router.back();
     } catch (error) {
+      console.log(error);
+
       if (error instanceof AxiosError && error.response) {
         toast({
           title: 'Error!',
