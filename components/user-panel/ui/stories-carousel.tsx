@@ -95,7 +95,7 @@ export function StoryCarousel({ data }: any) {
                   className='pl-[20px] max-w-[250px]'
                 >
                   <a
-                    href={`stories/${item.uuid}`}
+                    href={`stories/${item.slug}`}
                     className='group flex flex-col justify-between'
                   >
                     <div>

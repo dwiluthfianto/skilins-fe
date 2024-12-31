@@ -39,17 +39,17 @@ export default function StoryCreate() {
   const form = useForm<z.infer<typeof ContentSchema>>({
     resolver: zodResolver(ContentSchema),
     defaultValues: {
-      title: story?.episode.title || '',
-      content: story?.episode.content || '',
-      order: story?.episode.order || 1,
+      title: story?.title || '',
+      content: story?.content || '',
+      order: story?.order || 1,
     },
   });
   useEffect(() => {
     if (story) {
       form.reset({
-        title: story.episode.title,
-        content: story.episode.content,
-        order: story.episode.order,
+        title: story.title,
+        content: story.content,
+        order: story.order,
       });
     }
   }, [story, form]);

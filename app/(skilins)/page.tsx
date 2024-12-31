@@ -3,7 +3,7 @@ import { ContentLayout } from '@/components/user-panel/content-layout';
 import { AudioCarousel } from '@/components/user-panel/ui/audio-carousel';
 import { BlogCarousel } from '@/components/user-panel/ui/blog-carousel';
 import { EbookCarousel } from '@/components/user-panel/ui/ebook-carousel';
-import { StoryCarousel } from '@/components/user-panel/ui/novel-carousel';
+import { StoryCarousel } from '@/components/user-panel/ui/stories-carousel';
 import { VideoCarousel } from '@/components/user-panel/ui/video-carousel';
 import { useAudioLatest } from '@/hooks/use-audio';
 import { useEbookLatest } from '@/hooks/use-ebook';

@@ -162,7 +162,7 @@ export default async function StoryDetail({ params }: any) {
                             <p>
                               {story.tags.map((tag: any, index: number) => (
                                 <Badge key={index} className='mr-2'>
-                                  {tag.name}
+                                  {tag.text}
                                 </Badge>
                               ))}
                             </p>

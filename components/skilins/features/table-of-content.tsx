@@ -19,7 +19,7 @@ import { useState } from 'react';
 export default function TableofContent({ episodes }: any) {
   const params = useParams<{ slug: string }>();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const sortedEpisodes = episodes.sort((a: any, b: any) => a.order - b.order);
+  const sortedEpisodes = episodes.sort((a: any, b: any) => b.order - a.order);
 
   return (
     <div>
@@ -62,7 +62,7 @@ export default function TableofContent({ episodes }: any) {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align='end'>
                   <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                  <Link href={`video-podcasts/update?slug=${item.slug}`}>
+                  <Link href={`/stories/${params.slug}/${item.order}`}>
                     <DropdownMenuItem className='cursor-pointer'>
                       <Binoculars className='mr-2' width={16} /> View as reader
                     </DropdownMenuItem>

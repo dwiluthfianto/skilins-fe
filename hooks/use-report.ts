@@ -1,5 +1,5 @@
-import { fetcher } from "@/utils/fetcher";
-import useSWR from "swr";
+import { fetcher } from '@/utils/fetcher';
+import useSWR from 'swr';
 
 export function useReport(page?: number, limit?: number, search?: string) {
   const { data, error, mutate } = useSWR(
@@ -42,7 +42,7 @@ export function useReportBySlug(slug: string) {
   const { data, error, mutate } = useSWR(`/contents/prakerin/${slug}`, fetcher);
 
   return {
-    audio: data?.data,
+    prakerin: data?.data,
     isLoading: !error && !data,
     isError: error,
     mutate,

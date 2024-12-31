@@ -51,7 +51,7 @@ export function useStoryBySlug(slug: string) {
 
 export function useStoryEpisode(slug: string, order: string) {
   const { data, error, mutate } = useSWR(
-    `/contents/stories/episodes/${slug}?order=${order}`,
+    `/contents/stories/episode/${slug}?order=${order}`,
     fetcher
   );
 
