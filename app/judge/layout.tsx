@@ -1,7 +1,7 @@
-"use client";
-import { Toaster } from "@/components/ui/toaster";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import withRole from "@/utils/with-role";
+'use client';
+import { Toaster } from '@/components/ui/toaster';
+import { TooltipProvider } from '@/components/ui/tooltip';
+import withRole from '@/utils/with-role';
 
 function JudgeLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -12,4 +12,4 @@ function JudgeLayout({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default withRole(JudgeLayout, ["Judge"], "/auth/user/login");
+export default withRole(JudgeLayout, ['judge'], '/auth/user/login');

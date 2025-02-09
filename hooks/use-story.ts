@@ -1,37 +1,84 @@
 import { fetcher } from '@/utils/fetcher';
 import useSWR from 'swr';
 
-export function useStory(page?: number, limit?: number, search?: string) {
+type StoryFilter = {
+  page: number;
+  limit: number;
+  search?: string;
+  category?: string;
+  tag?: string;
+  genre?: string;
+  type?: string;
+  latest?: boolean;
+  status?: string;
+};
+
+export function useStory({
+  page,
+  limit,
+  search,
+  category,
+  tag,
+  genre,
+  type,
+  latest,
+}: StoryFilter) {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    limit: limit.toString(),
+  });
+  if (search) params.append('search', search);
+  if (category) params.append('category', category);
+  if (tag) params.append('tag', tag);
+  if (genre) params.append('genre', genre);
+  if (type) params.append('type', type);
+  if (latest) params.append('latest', latest.toString());
+
   const { data, error, mutate } = useSWR(
-    page && limit
-      ? `/contents/stories?page=${page}&limit=${limit}&search=${search}`
-      : `/contents/stories`,
+    `/contents/stories?${params.toString()}`,
     fetcher
   );
 
   return {
     stories: data?.data,
-    totalPages: data?.lastPage || 1,
+    last_page: data?.pagination.last_page,
     isLoading: !error && !data,
     isError: error,
     mutate,
   };
 }
 
-export function useStoryLatest(
-  page: number,
-  limit: number,
-  week: number,
-  status: string
-) {
+export function useStoryByStaff({
+  page,
+  limit,
+  search,
+  category,
+  tag,
+  genre,
+  type,
+  latest,
+  status,
+}: StoryFilter) {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    limit: limit.toString(),
+  });
+  if (search) params.append('search', search);
+  if (category) params.append('category', category);
+  if (tag) params.append('tag', tag);
+  if (genre) params.append('genre', genre);
+  if (type) params.append('type', type);
+  if (latest) params.append('latest', latest.toString());
+  if (status) params.append('status', status);
+
   const { data, error, mutate } = useSWR(
-    `/contents/stories/latest?page=${page}&limit=${limit}&week=${week}&status=${status}`,
+    `/contents/stories/staff?${params.toString()}`,
     fetcher
   );
 
   return {
     stories: data?.data,
-    totalPages: data?.lastPage || 1,
+    last_page: data?.pagination.last_page,
     isLoading: !error && !data,
     isError: error,
     mutate,

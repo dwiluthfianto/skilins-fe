@@ -11,10 +11,9 @@ import {
   CarouselItem,
 } from '@/components/ui/carousel';
 import Image from 'next/image';
-import { useBlog } from '@/hooks/use-blog';
 
-export function BlogCarousel() {
-  const { blogs: data, isLoading } = useBlog(1);
+export function BlogCarousel({ data }: any) {
+  const blogs = data || [];
   const [carouselApi, setCarouselApi] = useState<CarouselApi>();
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(false);
@@ -33,7 +32,6 @@ export function BlogCarousel() {
     };
   }, [carouselApi]);
 
-  if (isLoading) return <h1>loading</h1>;
   return (
     <section className='py-12'>
       <div>
@@ -88,7 +86,7 @@ export function BlogCarousel() {
           }}
         >
           <CarouselContent>
-            {data?.map((item: any) => (
+            {blogs?.map((item: any) => (
               <CarouselItem
                 key={item.uuid}
                 className='pl-[20px] md:max-w-[452px]'

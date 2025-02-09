@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   ColumnDef,
@@ -10,9 +10,9 @@ import {
   ColumnFiltersState,
   getFilteredRowModel,
   VisibilityState,
-} from "@tanstack/react-table";
+} from '@tanstack/react-table';
 
-import * as React from "react";
+import * as React from 'react';
 
 import {
   Table,
@@ -21,23 +21,23 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table';
 
-import { useReport } from "@/hooks/use-report";
+import { useReport } from '@/hooks/use-report';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
+} from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -55,10 +55,13 @@ export function DataTable<TData, TValue>({
 
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const { reports, isLoading, isError, totalPages } = useReport(1);
+  const { prakerin, isLoading, isError, last_page } = useReport({
+    page: 1,
+    limit: 10,
+  });
 
   const table = useReactTable({
-    data: reports || [],
+    data: prakerin || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -68,7 +71,7 @@ export function DataTable<TData, TValue>({
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
 
-    pageCount: totalPages,
+    pageCount: last_page,
     state: {
       sorting,
       columnFilters,
@@ -81,8 +84,8 @@ export function DataTable<TData, TValue>({
   if (isError) return <h1>Error</h1>;
 
   return (
-    <Card className="flex flex-col h-full overflow-auto rounded-md lg:col-span-2 lg:aspect-auto">
-      <CardHeader className="flex flex-row items-center justify-between">
+    <Card className='flex flex-col h-full overflow-auto rounded-md lg:col-span-2 lg:aspect-auto'>
+      <CardHeader className='flex flex-row items-center justify-between'>
         <div>
           <CardTitle>PKL Reports</CardTitle>
           <CardDescription>Showing the latest PKL Reports.</CardDescription>
@@ -90,11 +93,11 @@ export function DataTable<TData, TValue>({
         <div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto">
+              <Button variant='outline' className='ml-auto'>
                 Columns
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align='end'>
               {table
                 .getAllColumns()
                 .filter((column) => column.getCanHide())
@@ -102,7 +105,7 @@ export function DataTable<TData, TValue>({
                   return (
                     <DropdownMenuCheckboxItem
                       key={column.id}
-                      className="capitalize"
+                      className='capitalize'
                       checked={column.getIsVisible()}
                       onCheckedChange={(value) =>
                         column.toggleVisibility(!!value)
@@ -116,8 +119,8 @@ export function DataTable<TData, TValue>({
           </DropdownMenu>
         </div>
       </CardHeader>
-      <CardContent className="max-h-80 overflow-auto">
-        <Table className="w-full h-full">
+      <CardContent className='max-h-80 overflow-auto'>
+        <Table className='w-full h-full'>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -141,7 +144,7 @@ export function DataTable<TData, TValue>({
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
+                  data-state={row.getIsSelected() && 'selected'}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
@@ -157,7 +160,7 @@ export function DataTable<TData, TValue>({
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center"
+                  className='h-24 text-center'
                 >
                   No results.
                 </TableCell>

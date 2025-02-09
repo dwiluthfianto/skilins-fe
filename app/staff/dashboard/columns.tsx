@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
+'use client';
 
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef } from '@tanstack/react-table';
 
-import { FileText } from "lucide-react";
+import { FileText } from 'lucide-react';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 
-import { ArrowUpDown } from "lucide-react";
-import { format } from "date-fns";
-import React from "react";
+import { ArrowUpDown } from 'lucide-react';
+import { format } from 'date-fns';
+import React from 'react';
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -23,95 +23,95 @@ export type Report = {
   pages: number;
   major: string;
   subjects: string[];
-  file_url: string;
+  file: string;
   published_at: string;
   tags: string[];
 };
 
 export const columns: ColumnDef<Report>[] = [
   {
-    accessorKey: "title",
+    accessorKey: 'title',
     header: ({ column }) => {
       return (
         <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          variant='ghost'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Title
-          <ArrowUpDown className="w-4 h-4 ml-2" />
+          <ArrowUpDown className='w-4 h-4 ml-2' />
         </Button>
       );
     },
   },
   {
-    accessorKey: "description",
-    header: "Description",
+    accessorKey: 'description',
+    header: 'Description',
   },
   {
-    accessorKey: "author",
+    accessorKey: 'author',
     header: ({ column }) => {
       return (
         <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          variant='ghost'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Author
-          <ArrowUpDown className="w-4 h-4 ml-2" />
+          <ArrowUpDown className='w-4 h-4 ml-2' />
         </Button>
       );
     },
   },
   {
-    accessorKey: "major",
+    accessorKey: 'major',
     header: ({ column }) => {
       return (
         <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          variant='ghost'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Major
-          <ArrowUpDown className="w-4 h-4 ml-2" />
+          <ArrowUpDown className='w-4 h-4 ml-2' />
         </Button>
       );
     },
   },
   {
-    accessorKey: "category",
+    accessorKey: 'category',
     header: ({ column }) => {
       return (
         <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          variant='ghost'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Category
-          <ArrowUpDown className="w-4 h-4 ml-2" />
+          <ArrowUpDown className='w-4 h-4 ml-2' />
         </Button>
       );
     },
   },
   {
-    accessorKey: "pages",
+    accessorKey: 'pages',
     header: ({ column }) => {
       return (
         <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          variant='ghost'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Pages
-          <ArrowUpDown className="w-4 h-4 ml-2" />
+          <ArrowUpDown className='w-4 h-4 ml-2' />
         </Button>
       );
     },
   },
 
   {
-    accessorKey: "file_url",
-    header: "Report File",
+    accessorKey: 'file',
+    header: 'Report File',
     cell: ({ row }) => {
       return (
         <a
-          href={`${row.original.file_url}?t=${new Date().getTime()}`}
-          className="flex items-center gap-2 text-pink-600"
+          href={`${row.original.file}?t=${new Date().getTime()}`}
+          className='flex items-center gap-2 text-pink-600'
         >
           <FileText width={16} />
           .pdf
@@ -121,20 +121,20 @@ export const columns: ColumnDef<Report>[] = [
   },
 
   {
-    accessorKey: "published_at",
+    accessorKey: 'published_at',
     header: ({ column }) => {
       return (
         <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          variant='ghost'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Published At
-          <ArrowUpDown className="w-4 h-4 ml-2" />
+          <ArrowUpDown className='w-4 h-4 ml-2' />
         </Button>
       );
     },
     cell: ({ row }) => {
-      return format(row.original.published_at, "dd MMM yyyy");
+      return format(row.original.published_at, 'dd MMM yyyy');
     },
   },
 ];

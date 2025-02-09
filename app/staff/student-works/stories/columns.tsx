@@ -24,8 +24,10 @@ import Image from 'next/image';
 import * as React from 'react';
 import { Button } from '@/components/ui/button';
 import DeleteDialog from '@/components/staff-panel/delete-dialog';
-import ApproveDialog from '@/components/staff-panel/approve-dialog';
 import RejectDialog from '@/components/staff-panel/reject-dialog';
+import ApprovedDialog from '@/components/staff-panel/approve-dialog';
+import { Badge } from '@/components/ui/badge';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -34,26 +36,36 @@ export type Stories = {
   title: string;
   thumbnail: string;
   description: string;
-  genres: string[];
-  category: string;
-  creator: string;
-  tags: string[];
+  category: { name: string };
+  story: {
+    creator: { name: string };
+  };
   status: string;
 };
 
 export const columns: ColumnDef<Stories>[] = [
   {
+    accessorKey: 'No',
+    header: () => {
+      return <p>No</p>;
+    },
+    cell: ({ row }) => {
+      return <div>{row.index + 1}</div>;
+    },
+  },
+  {
     accessorKey: 'thumbnail',
-    header: 'Thumbnail',
+    header: () => <div className='text-right'>Image</div>,
     cell: ({ row }) => (
-      <Image
-        key={row.original.thumbnail}
-        src={`${row.original.thumbnail}`}
-        alt='Image'
-        className=' object-cover'
-        width={96}
-        height={96}
-      />
+      <AspectRatio ratio={3 / 4} className='h-full relative'>
+        <Image
+          src={`${row.original.thumbnail}?t=${new Date().getTime()}`}
+          alt='Image'
+          layout='fill'
+          objectFit='cover'
+          objectPosition='center'
+        />
+      </AspectRatio>
     ),
   },
   {
@@ -69,6 +81,29 @@ export const columns: ColumnDef<Stories>[] = [
         </Button>
       );
     },
+    cell: ({ row }) => {
+      return (
+        <div className=' line-clamp-3 break-words '>{row.original.title}</div>
+      );
+    },
+  },
+
+  {
+    accessorKey: 'category',
+    header: ({ column }) => {
+      return (
+        <Button
+          variant='ghost'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Category
+          <ArrowUpDown className='ml-2 h-4 w-4' />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      return row.original.category.name;
+    },
   },
   {
     accessorKey: 'creator',
@@ -83,53 +118,8 @@ export const columns: ColumnDef<Stories>[] = [
         </Button>
       );
     },
-  },
-  {
-    accessorKey: 'category',
-    header: ({ column }) => {
-      return (
-        <Button
-          variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          Category
-          <ArrowUpDown className='ml-2 h-4 w-4' />
-        </Button>
-      );
-    },
-  },
-  {
-    accessorKey: 'genres',
-    header: ({ column }) => {
-      return (
-        <Button
-          variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          Genres
-          <ArrowUpDown className='ml-2 h-4 w-4' />
-        </Button>
-      );
-    },
     cell: ({ row }) => {
-      return row.original.genres.map((genre: any) => genre?.text).join(', ');
-    },
-  },
-  {
-    accessorKey: 'tags',
-    header: ({ column }) => {
-      return (
-        <Button
-          variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          Tags
-          <ArrowUpDown className='ml-2 h-4 w-4' />
-        </Button>
-      );
-    },
-    cell: ({ row }) => {
-      return row.original.tags.map((tag: any) => tag?.text).join(', ');
+      return row.original.story.creator.name;
     },
   },
   {
@@ -143,6 +133,21 @@ export const columns: ColumnDef<Stories>[] = [
           Status
           <ArrowUpDown className='ml-2 h-4 w-4' />
         </Button>
+      );
+    },
+    cell: ({ row }) => {
+      return row.original.status === 'pending' ? (
+        <Badge className='bg-yellow-500 text-white' variant={'outline'}>
+          {row.original.status}
+        </Badge>
+      ) : row.original.status === 'approved' ? (
+        <Badge className='bg-green-500 text-white' variant={'outline'}>
+          {row.original.status}
+        </Badge>
+      ) : (
+        <Badge className='bg-red-500 text-white' variant={'outline'}>
+          {row.original.status}
+        </Badge>
       );
     },
   },
@@ -197,7 +202,7 @@ export const columns: ColumnDef<Stories>[] = [
             pathApi={`/contents/stories/${row.original.uuid}`}
           />
 
-          <ApproveDialog
+          <ApprovedDialog
             open={approveOpen}
             onOpenChange={setApproveOpen}
             pathApi={`/contents/${row.original.uuid}`}

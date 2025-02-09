@@ -18,7 +18,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import DeleteDialog from '@/components/staff-panel/delete-dialog';
-import ApproveDialog from '@/components/staff-panel/approve-dialog';
+import approvedialog from '@/components/staff-panel/approve-dialog';
 import RejectDialog from '@/components/staff-panel/reject-dialog';
 
 interface SubmissionProps {
@@ -55,16 +55,16 @@ const SubmissionLayout: FC<SubmissionProps> = ({
       </div>
       <div className='space-x-2 py-8'>
         <Button
-          variant={status === 'APPROVED' ? 'default' : 'outline'}
-          onClick={() => onUpdateStatus('APPROVED')}
+          variant={status === 'approved' ? 'default' : 'outline'}
+          onClick={() => onUpdateStatus('approved')}
         >
-          Approved
+          approved
         </Button>
         <Button
-          variant={status === 'PENDING' ? 'default' : 'outline'}
-          onClick={() => onUpdateStatus('PENDING')}
+          variant={status === 'pending' ? 'default' : 'outline'}
+          onClick={() => onUpdateStatus('pending')}
         >
-          Pending
+          pending
         </Button>
         <Button
           variant={status === 'REJECTED' ? 'default' : 'outline'}
@@ -134,7 +134,7 @@ const SubmissionLayout: FC<SubmissionProps> = ({
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-              <ApproveDialog
+              <approvedialog
                 open={approveOpen}
                 onOpenChange={setApproveOpen}
                 pathApi={`/competitions/submissions/${item.uuid}`}

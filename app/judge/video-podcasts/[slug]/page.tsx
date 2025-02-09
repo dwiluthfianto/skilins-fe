@@ -67,7 +67,7 @@ export default async function VideoDetail({ params }: any) {
     }
   }
 
-  const embedUrl = convertToEmbedLink(video.file_url);
+  const embedUrl = convertToEmbedLink(video.file);
 
   return (
     <ContentLayout>

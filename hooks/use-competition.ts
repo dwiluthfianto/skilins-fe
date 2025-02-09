@@ -1,17 +1,38 @@
 import { fetcher } from '@/utils/fetcher';
 import useSWR from 'swr';
 
-export function useCompetition(page?: number, limit?: number, search?: string) {
+type CompetitionFilter = {
+  page: number;
+  limit: number;
+  search?: string;
+  type?: string;
+  status?: boolean;
+};
+
+export function useCompetition({
+  page,
+  limit,
+  search,
+  type,
+  status,
+}: CompetitionFilter) {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    limit: limit.toString(),
+  });
+
+  if (search) params.append('search', search);
+  if (type) params.append('type', type);
+  if (status) params.append('status', status.toString());
+
   const { data, error, mutate } = useSWR(
-    page && limit
-      ? `/competitions?search=${search}&page=${page}&limit=${limit}`
-      : `/competitions`,
+    `/competitions?${params.toString()}`,
     fetcher
   );
 
   return {
     competitions: data?.data,
-    totalPages: data?.lastPage || 1,
+    last_page: data?.pagination.last_page,
     isLoading: !error && !data,
     isError: error,
     mutate,

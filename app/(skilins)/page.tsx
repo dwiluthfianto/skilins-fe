@@ -5,16 +5,18 @@ import { BlogCarousel } from '@/components/user-panel/ui/blog-carousel';
 import { EbookCarousel } from '@/components/user-panel/ui/ebook-carousel';
 import { StoryCarousel } from '@/components/user-panel/ui/stories-carousel';
 import { VideoCarousel } from '@/components/user-panel/ui/video-carousel';
-import { useAudioLatest } from '@/hooks/use-audio';
-import { useEbookLatest } from '@/hooks/use-ebook';
-import { useStoryLatest } from '@/hooks/use-story';
-import { useVideoLatest } from '@/hooks/use-video';
+import { useAudio } from '@/hooks/use-audio';
+import { useBlog } from '@/hooks/use-blog';
+import { useEbook } from '@/hooks/use-ebook';
+import { useStory } from '@/hooks/use-story';
+import { useVideo } from '@/hooks/use-video';
 
 export default function Home() {
-  const { stories } = useStoryLatest(1, 10, 12, 'APPROVED');
-  const { ebooks } = useEbookLatest(1, 10, 12, 'APPROVED');
-  const { audios } = useAudioLatest(1, 10, 12, 'APPROVED');
-  const { videos } = useVideoLatest(1, 10, 12, 'APPROVED');
+  const { stories } = useStory({ page: 1, limit: 10, status: 'approved' });
+  const { ebooks } = useEbook({ page: 1, limit: 10, status: 'approved' });
+  const { audios } = useAudio({ page: 1, limit: 10, status: 'approved' });
+  const { videos } = useVideo({ page: 1, limit: 10, status: 'approved' });
+  const { blogs } = useBlog({ page: 1, limit: 10, status: 'approved' });
 
   return (
     <ContentLayout title='Home'>
@@ -22,7 +24,7 @@ export default function Home() {
       {stories && <StoryCarousel data={stories} />}
       {audios && <AudioCarousel data={audios} />}
       {videos && <VideoCarousel data={videos} />}
-      <BlogCarousel />
+      {blogs && <BlogCarousel data={blogs} />}
     </ContentLayout>
   );
 }

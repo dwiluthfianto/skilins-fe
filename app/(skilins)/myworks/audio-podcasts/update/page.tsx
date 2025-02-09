@@ -135,7 +135,7 @@ export default function AudioUpdate() {
     formData.append('genres', JSON.stringify(data.genres));
     formData.append('category_name', data.category);
     formData.append('duration', String(data.duration));
-    if (file) formData.append('file_url', file);
+    if (file) formData.append('file', file);
     if (user) formData.append('creator_uuid', user?.data.uuid);
     formData.append('tags', JSON.stringify(data.tags));
 
@@ -350,8 +350,8 @@ export default function AudioUpdate() {
                           form.setValue('duration', duration ?? 0)
                         }
                         label='Add an Audio file'
-                        initialFileName={audio?.file_url.split('/').pop()}
-                        initialFileUrl={audio?.file_url}
+                        initialFileName={audio?.file.split('/').pop()}
+                        initialFileUrl={audio?.file}
                       />
                     )}
                   />

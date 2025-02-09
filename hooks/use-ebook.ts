@@ -1,37 +1,49 @@
-import { fetcher } from "@/utils/fetcher";
-import useSWR from "swr";
+import { fetcher } from '@/utils/fetcher';
+import useSWR from 'swr';
 
-export function useEbook(page?: number, limit?: number, search?: string) {
+type EbookFilter = {
+  page: number;
+  limit: number;
+  search?: string;
+  category?: string;
+  tag?: string;
+  genre?: string;
+  type?: string;
+  latest?: boolean;
+  status?: string;
+};
+
+export function useEbook({
+  page,
+  limit,
+  search,
+  category,
+  tag,
+  genre,
+  type,
+  latest,
+  status,
+}: EbookFilter) {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    limit: limit.toString(),
+  });
+  if (search) params.append('search', search);
+  if (category) params.append('category', category);
+  if (tag) params.append('tag', tag);
+  if (genre) params.append('genre', genre);
+  if (type) params.append('type', type);
+  if (latest) params.append('latest', latest.toString());
+  if (status) params.append('status', status);
+
   const { data, error, mutate } = useSWR(
-    page && limit
-      ? `/contents/ebooks?page=${page}&limit=${limit}&search=${search}`
-      : `/contents/ebooks`,
+    `/contents/ebooks?${params.toString()}`,
     fetcher
   );
 
   return {
     ebooks: data?.data,
-    totalPages: data?.lastPage || 1,
-    isLoading: !error && !data,
-    isError: error,
-    mutate,
-  };
-}
-
-export function useEbookLatest(
-  page: number,
-  limit: number,
-  week: number,
-  status: string
-) {
-  const { data, error, mutate } = useSWR(
-    `/contents/ebooks/latest?page=${page}&limit=${limit}&week=${week}&status=${status}`,
-    fetcher
-  );
-
-  return {
-    ebooks: data?.data,
-    totalPages: data?.lastPage || 1,
+    last_page: data?.pagination.last_page,
     isLoading: !error && !data,
     isError: error,
     mutate,

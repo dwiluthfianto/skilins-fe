@@ -1,37 +1,59 @@
 import { fetcher } from '@/utils/fetcher';
 import useSWR from 'swr';
 
-export function useReport(page?: number, limit?: number, search?: string) {
+type PrakerinFilter = {
+  page: number;
+  limit: number;
+  search?: string;
+  latest?: boolean;
+  status?: string;
+};
+
+export function useReport({ page, limit, search, latest }: PrakerinFilter) {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    limit: limit.toString(),
+  });
+  if (search) params.append('search', search);
+  if (latest) params.append('latest', latest.toString());
+
   const { data, error, mutate } = useSWR(
-    page && limit
-      ? `/contents/prakerin?page=${page}&limit=${limit}&search=${search}`
-      : `/contents/prakerin`,
+    `/contents/prakerin?${params.toString()}`,
     fetcher
   );
 
   return {
     prakerin: data?.data,
-    totalPages: data?.lastPage || 1,
+    last_page: data?.pagination.last_page || 1,
     isLoading: !error && !data,
     isError: error,
     mutate,
   };
 }
 
-export function useReportLatest(
-  page: number,
-  limit: number,
-  week: number,
-  status: string
-) {
+export function useReportByStaff({
+  page,
+  limit,
+  search,
+  latest,
+  status,
+}: PrakerinFilter) {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    limit: limit.toString(),
+  });
+  if (search) params.append('search', search);
+  if (latest) params.append('latest', latest.toString());
+  if (status) params.append('status', status.toString());
+
   const { data, error, mutate } = useSWR(
-    `/contents/prakerin/latest?page=${page}&limit=${limit}&week=${week}&status=${status}`,
+    `/contents/prakerin/staff?${params.toString()}`,
     fetcher
   );
 
   return {
     prakerin: data?.data,
-    totalPages: data?.lastPage || 1,
+    last_page: data?.pagination.last_page || 1,
     isLoading: !error && !data,
     isError: error,
     mutate,

@@ -28,7 +28,7 @@ import { useUserStory } from '@/hooks/use-story';
 import { Card, CardContent } from '@/components/ui/card';
 
 function StoryStudent() {
-  const [contentStatus, setContentStatus] = useState('APPROVED');
+  const [contentStatus, setContentStatus] = useState('approved');
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const { stories, isLoading, isError } = useUserStory(1, 10, contentStatus);
 

@@ -61,7 +61,7 @@ export default async function AudioDetail({ params }: any) {
   };
 
   const track = {
-    src: audio.file_url,
+    src: audio.file,
     title: audio.title,
     category: audio.category,
     image: audio.thumbnail,

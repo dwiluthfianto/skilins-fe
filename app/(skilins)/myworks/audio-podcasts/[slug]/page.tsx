@@ -1,23 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ContentLayout } from "@/components/user-panel/content-layout";
-import axios from "@/utils/axios";
-import Image from "next/image";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { format } from "date-fns";
+import { ContentLayout } from '@/components/user-panel/content-layout';
+import axios from '@/utils/axios';
+import Image from 'next/image';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
+import { format } from 'date-fns';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Badge } from "@/components/ui/badge";
-import { AudioPlayer } from "@/components/user-panel/ui/audio-player";
-import { Card, CardContent } from "@/components/ui/card";
-import MinimalTiptapPreview from "@/components/minimal-tiptap/minimal-tiptap-preview";
-import { CircleOff, Loader, Signature } from "lucide-react";
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Badge } from '@/components/ui/badge';
+import { AudioPlayer } from '@/components/user-panel/ui/audio-player';
+import { Card, CardContent } from '@/components/ui/card';
+import MinimalTiptapPreview from '@/components/minimal-tiptap/minimal-tiptap-preview';
+import { CircleOff, Loader, Signature } from 'lucide-react';
 
 export default async function AudioDetail({ params }: any) {
   const { slug } = params;
@@ -28,11 +28,11 @@ export default async function AudioDetail({ params }: any) {
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
-    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
   };
 
   const track = {
-    src: audio.file_url,
+    src: audio.file,
     title: audio.title,
     category: audio.category,
     image: audio.thumbnail,
@@ -41,56 +41,56 @@ export default async function AudioDetail({ params }: any) {
 
   return (
     <ContentLayout title={audio.title}>
-      <section className="md:py-2">
-        <div className="md:container">
+      <section className='md:py-2'>
+        <div className='md:container'>
           <div>
-            {audio.status === "PENDING" ? (
+            {audio.status === 'pending' ? (
               <Badge
-                className="bg-yellow-600 p-2 text-white"
-                variant={"outline"}
+                className='bg-yellow-600 p-2 text-white'
+                variant={'outline'}
               >
-                <Loader width={18} className="mr-2" />
+                <Loader width={18} className='mr-2' />
                 {audio.status}
               </Badge>
-            ) : audio.status === "APPROVED" ? (
+            ) : audio.status === 'approved' ? (
               <Badge
-                className="bg-green-600 text-white p-2"
-                variant={"outline"}
+                className='bg-green-600 text-white p-2'
+                variant={'outline'}
               >
-                <Signature width={18} className="mr-2" />
+                <Signature width={18} className='mr-2' />
                 {audio.status}
               </Badge>
             ) : (
-              <Badge variant={"destructive"}>
-                <CircleOff width={18} className="mr-2" />
+              <Badge variant={'destructive'}>
+                <CircleOff width={18} className='mr-2' />
                 {audio.status}
               </Badge>
             )}
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-4 mt-8 gap-y-6 md:gap-8 lg:gap-10">
-            <div className="relative">
+          <div className='grid grid-cols-1 md:grid-cols-4 mt-8 gap-y-6 md:gap-8 lg:gap-10'>
+            <div className='relative'>
               <AspectRatio ratio={1 / 1}>
                 <Image
                   src={audio.thumbnail}
-                  alt="placeholder"
-                  layout="fill"
-                  objectFit="cover"
-                  objectPosition="center"
-                  className="rounded-lg "
+                  alt='placeholder'
+                  layout='fill'
+                  objectFit='cover'
+                  objectPosition='center'
+                  className='rounded-lg '
                 />
               </AspectRatio>
               <AudioPlayer data={track} />
             </div>
-            <div className="col-span-3 ">
-              <Card className="rounded-lg ">
-                <CardContent className="p-6">
-                  <p className="text-lg text-muted-foreground">
+            <div className='col-span-3 '>
+              <Card className='rounded-lg '>
+                <CardContent className='p-6'>
+                  <p className='text-lg text-muted-foreground'>
                     {audio.creator}
                   </p>
-                  <h2 className="text-3xl font-medium text-balance md:text-5xl">
+                  <h2 className='text-3xl font-medium text-balance md:text-5xl'>
                     {audio.title}
                   </h2>
-                  <p className="max-w-xl mt-1 text-lg font-medium leading-relaxed tracking-tight md:mt-6 text lg:max-w-xl">
+                  <p className='max-w-xl mt-1 text-lg font-medium leading-relaxed tracking-tight md:mt-6 text lg:max-w-xl'>
                     Description
                   </p>
                   <MinimalTiptapPreview
@@ -101,19 +101,19 @@ export default async function AudioDetail({ params }: any) {
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button
-                        variant="link"
-                        className="flex items-center w-full"
+                        variant='link'
+                        className='flex items-center w-full'
                       >
                         See more
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-[425px] md:max-w-[600px]">
+                    <DialogContent className='sm:max-w-[425px] md:max-w-[600px]'>
                       <DialogHeader>
-                        <DialogTitle className="items-center justify-center text-center">
+                        <DialogTitle className='items-center justify-center text-center'>
                           Description
                         </DialogTitle>
                       </DialogHeader>
-                      <ScrollArea className="max-h-[600px] pr-4">
+                      <ScrollArea className='max-h-[600px] pr-4'>
                         <MinimalTiptapPreview
                           value={audio.description}
                           editable={false}
@@ -121,62 +121,62 @@ export default async function AudioDetail({ params }: any) {
                       </ScrollArea>
                     </DialogContent>
                   </Dialog>
-                  <div className="flex flex-col items-start gap-4 py-4 lg:py-8">
-                    <div className="flex flex-col gap-2">
-                      <p className="max-w-xl text-lg font-medium leading-relaxed tracking-tight lg:max-w-xl">
+                  <div className='flex flex-col items-start gap-4 py-4 lg:py-8'>
+                    <div className='flex flex-col gap-2'>
+                      <p className='max-w-xl text-lg font-medium leading-relaxed tracking-tight lg:max-w-xl'>
                         Detail Audio
                       </p>
                     </div>
-                    <div className="flex flex-col w-full">
-                      <div className="grid items-start grid-cols-2 gap-4 lg:grid-cols-3">
-                        <div className="flex flex-row items-start w-full gap-6">
-                          <div className="flex flex-col gap-1">
-                            <p className="text-sm text-muted-foreground">
+                    <div className='flex flex-col w-full'>
+                      <div className='grid items-start grid-cols-2 gap-4 lg:grid-cols-3'>
+                        <div className='flex flex-row items-start w-full gap-6'>
+                          <div className='flex flex-col gap-1'>
+                            <p className='text-sm text-muted-foreground'>
                               Category
                             </p>
                             <p>{audio.category}</p>
                           </div>
                         </div>
-                        <div className="flex flex-row items-start gap-6">
-                          <div className="flex flex-col gap-1">
-                            <p className="text-sm text-muted-foreground">
+                        <div className='flex flex-row items-start gap-6'>
+                          <div className='flex flex-col gap-1'>
+                            <p className='text-sm text-muted-foreground'>
                               Duration
                             </p>
                             <p>{formatTime(audio.duration)} </p>
                           </div>
                         </div>
-                        <div className="flex flex-row items-start gap-6">
-                          <div className="flex flex-col gap-1">
-                            <p className="text-sm text-muted-foreground">
+                        <div className='flex flex-row items-start gap-6'>
+                          <div className='flex flex-col gap-1'>
+                            <p className='text-sm text-muted-foreground'>
                               Release Date
                             </p>
-                            <p>{format(audio.created_at, "dd MMM yyyy")}</p>
+                            <p>{format(audio.created_at, 'dd MMM yyyy')}</p>
                           </div>
                         </div>
-                        <div className="flex flex-row items-start gap-6">
-                          <div className="flex flex-col gap-1">
-                            <p className="text-sm text-muted-foreground">
+                        <div className='flex flex-row items-start gap-6'>
+                          <div className='flex flex-col gap-1'>
+                            <p className='text-sm text-muted-foreground'>
                               Genres
                             </p>
                             <p>
                               {audio.genres.map((genre: any, index: number) => (
-                                <Badge key={index} className="mr-2">
+                                <Badge key={index} className='mr-2'>
                                   {genre.text}
                                 </Badge>
                               ))}
                             </p>
                           </div>
                         </div>
-                        <div className="flex flex-row items-start gap-6">
-                          <div className="flex flex-col gap-1">
-                            <p className="text-sm text-muted-foreground">
+                        <div className='flex flex-row items-start gap-6'>
+                          <div className='flex flex-col gap-1'>
+                            <p className='text-sm text-muted-foreground'>
                               Tags
                             </p>
                             <p>
                               {audio.tags.map((tag: any, index: number) => (
                                 <Badge
                                   key={index}
-                                  className="items-center mr-2"
+                                  className='items-center mr-2'
                                 >
                                   #{tag.text}
                                 </Badge>

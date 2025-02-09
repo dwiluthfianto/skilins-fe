@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogClose,
@@ -8,24 +8,24 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { toast } from "@/hooks/use-toast";
-import { mutate } from "swr";
-import axios from "../../utils/axios";
-import { AxiosError } from "axios";
-import React, { FC, useState } from "react";
-import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
-import { cn } from "@/lib/utils";
+} from '@/components/ui/dialog';
+import { toast } from '@/hooks/use-toast';
+import { mutate } from 'swr';
+import axios from '../../utils/axios';
+import { AxiosError } from 'axios';
+import React, { FC, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Loader2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
-interface DeleteDialogProps {
+interface ApprovedDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   className?: string;
   pathApi: string;
 }
 
-const ApproveDialog: FC<DeleteDialogProps> = ({
+const ApprovedDialog: FC<ApprovedDialogProps> = ({
   open,
   onOpenChange,
   className,
@@ -40,10 +40,10 @@ const ApproveDialog: FC<DeleteDialogProps> = ({
 
       const path = pathApi.replace(
         /\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
-        ""
+        ''
       );
       toast({
-        title: "Content Approved Succesfully",
+        title: 'Content approved Succesfully',
         description: data.message,
       });
 
@@ -51,12 +51,12 @@ const ApproveDialog: FC<DeleteDialogProps> = ({
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
         toast({
-          title: "Error!",
+          title: 'Error!',
           description:
             error?.response.data.message ||
             error?.response.data.error ||
-            "An error occurred while approve the content.",
-          variant: "destructive",
+            'An error occurred while approve the content.',
+          variant: 'destructive',
         });
       }
       onOpenChange(false);
@@ -69,7 +69,7 @@ const ApproveDialog: FC<DeleteDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={cn("sm:max-w-[425px]", className)}>
+      <DialogContent className={cn('sm:max-w-[425px]', className)}>
         <DialogHeader>
           <DialogTitle>Confirm Approval</DialogTitle>
           <DialogDescription>
@@ -79,21 +79,21 @@ const ApproveDialog: FC<DeleteDialogProps> = ({
         </DialogHeader>
         <DialogFooter>
           <DialogClose asChild>
-            <Button variant="outline">Cancel</Button>
+            <Button variant='outline'>Cancel</Button>
           </DialogClose>
           <Button
             onClick={() => approveHandle()}
-            type="submit"
+            type='submit'
             disabled={loading}
-            variant={"default"}
+            variant={'default'}
           >
             {loading ? (
               <>
-                <Loader2 className="animate-spin" />
+                <Loader2 className='animate-spin' />
                 Loading
               </>
             ) : (
-              "Approve"
+              'Approve'
             )}
           </Button>
         </DialogFooter>
@@ -102,4 +102,4 @@ const ApproveDialog: FC<DeleteDialogProps> = ({
   );
 };
 
-export default ApproveDialog;
+export default ApprovedDialog;

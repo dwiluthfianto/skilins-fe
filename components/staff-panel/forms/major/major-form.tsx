@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { SquareUser } from "lucide-react";
+import { SquareUser } from 'lucide-react';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 
 import {
   Dialog,
@@ -12,13 +12,13 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 
-import * as React from "react";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import * as React from 'react';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Form,
   FormControl,
@@ -26,18 +26,18 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../../../ui/form";
+} from '../../../ui/form';
 
-import axios from "@/utils/axios";
-import { toast } from "@/hooks/use-toast";
-import { mutate } from "swr";
-import Compressor from "compressorjs";
-import { AxiosError } from "axios";
+import axios from '@/utils/axios';
+import { toast } from '@/hooks/use-toast';
+import { mutate } from 'swr';
+import Compressor from 'compressorjs';
+import { AxiosError } from 'axios';
 
 const MajorSchema = z.object({
   image: z.instanceof(File).optional(),
-  name: z.string().min(1, { message: "Name is required." }),
-  description: z.string().min(1, { message: "Description is required" }),
+  name: z.string().min(1, { message: 'Name is required.' }),
+  description: z.string().min(1, { message: 'Description is required' }),
   avatar: z.instanceof(File).optional(),
 });
 
@@ -46,8 +46,8 @@ function MajorForm() {
     resolver: zodResolver(MajorSchema),
     defaultValues: {
       image: undefined,
-      name: "",
-      description: "",
+      name: '',
+      description: '',
       avatar: undefined,
     },
   });
@@ -62,8 +62,8 @@ function MajorForm() {
       form.reset({
         image: undefined,
         avatar: undefined,
-        name: "",
-        description: "",
+        name: '',
+        description: '',
       });
     }
   }, [open, form]);
@@ -86,7 +86,7 @@ function MajorForm() {
           setImage(compressedFile);
         },
         error(err) {
-          console.error("Compression failed:", err.message);
+          console.error('Compression failed:', err.message);
         },
       });
     }
@@ -110,7 +110,7 @@ function MajorForm() {
           setAvatar(compressedFile);
         },
         error(err) {
-          console.error("Compression failed:", err.message);
+          console.error('Compression failed:', err.message);
         },
       });
     }
@@ -118,40 +118,40 @@ function MajorForm() {
 
   async function onSubmit(data: z.infer<typeof MajorSchema>) {
     const formData = new FormData();
-    if (image) formData.append("image_url", image);
-    formData.append("name", data.name);
-    formData.append("description", data.description);
-    if (avatar) formData.append("avatar_url", avatar);
+    if (image) formData.append('image_url', image);
+    formData.append('name', data.name);
+    formData.append('description', data.description);
+    if (avatar) formData.append('avatar', avatar);
 
     try {
-      const { data: majorData } = await axios.post("/majors", formData, {
+      const { data: majorData } = await axios.post('/majors', formData, {
         headers: {
-          "Content-Type": "multipart/form-data",
+          'Content-Type': 'multipart/form-data',
         },
       });
 
       toast({
-        title: "Major Added Successfully!",
+        title: 'Major Added Successfully!',
         description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">
+          <pre className='mt-2 w-[340px] rounded-md bg-slate-950 p-4'>
+            <code className='text-white'>
               {JSON.stringify(majorData.message, null, 2)}
             </code>
           </pre>
         ),
       });
 
-      mutate("/majors");
+      mutate('/majors');
 
       setOpen(false);
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
         toast({
-          title: "Error!",
+          title: 'Error!',
           description:
             JSON.stringify(error?.message) ||
-            "An error occurred while add the major.",
-          variant: "destructive",
+            'An error occurred while add the major.',
+          variant: 'destructive',
         });
       }
     }
@@ -160,7 +160,7 @@ function MajorForm() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button>
-          <SquareUser className="mr-2" width={16} /> Add Major
+          <SquareUser className='mr-2' width={16} /> Add Major
         </Button>
       </DialogTrigger>
       <DialogContent>
@@ -173,16 +173,16 @@ function MajorForm() {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="grid gap-4 py-4"
+            className='grid gap-4 py-4'
           >
             <FormField
               control={form.control}
-              name="image"
+              name='image'
               render={() => (
-                <FormItem className="grid grid-cols-4 items-center gap-2">
+                <FormItem className='grid grid-cols-4 items-center gap-2'>
                   <FormLabel>Image</FormLabel>
-                  <FormControl className="col-span-3">
-                    <Input type="file" onChange={handleImageChange} />
+                  <FormControl className='col-span-3'>
+                    <Input type='file' onChange={handleImageChange} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -190,12 +190,12 @@ function MajorForm() {
             />
             <FormField
               control={form.control}
-              name="avatar"
+              name='avatar'
               render={() => (
-                <FormItem className="grid grid-cols-4 items-center gap-2">
+                <FormItem className='grid grid-cols-4 items-center gap-2'>
                   <FormLabel>Avatar</FormLabel>
-                  <FormControl className="col-span-3">
-                    <Input type="file" onChange={handleAvatarChange} />
+                  <FormControl className='col-span-3'>
+                    <Input type='file' onChange={handleAvatarChange} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -203,12 +203,12 @@ function MajorForm() {
             />
             <FormField
               control={form.control}
-              name="name"
+              name='name'
               render={({ field }) => (
-                <FormItem className="grid grid-cols-4 items-center gap-2">
+                <FormItem className='grid grid-cols-4 items-center gap-2'>
                   <FormLabel>Name</FormLabel>
-                  <FormControl className="col-span-3">
-                    <Input {...field} type="text" />
+                  <FormControl className='col-span-3'>
+                    <Input {...field} type='text' />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -216,19 +216,19 @@ function MajorForm() {
             />
             <FormField
               control={form.control}
-              name="description"
+              name='description'
               render={({ field }) => (
-                <FormItem className="grid grid-cols-4 items-center gap-2">
+                <FormItem className='grid grid-cols-4 items-center gap-2'>
                   <FormLabel>Description</FormLabel>
-                  <FormControl className="col-span-3">
-                    <Input {...field} type="text" />
+                  <FormControl className='col-span-3'>
+                    <Input {...field} type='text' />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
             <DialogFooter>
-              <Button type="submit">Save</Button>
+              <Button type='submit'>Save</Button>
             </DialogFooter>
           </form>
         </Form>

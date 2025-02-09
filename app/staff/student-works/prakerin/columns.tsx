@@ -1,216 +1,265 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
+'use client';
 
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef } from '@tanstack/react-table';
 
-import { FileText, MoreHorizontal, PencilRuler, Trash2 } from "lucide-react";
+import {
+  CircleOff,
+  FileSearch,
+  MoreHorizontal,
+  Paperclip,
+  PencilRuler,
+  Signature,
+  Trash2,
+} from 'lucide-react';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from '@/components/ui/dropdown-menu';
 
-import { ArrowUpDown } from "lucide-react";
-import { format } from "date-fns";
-import React from "react";
-import Image from "next/image";
-import DeleteDialog from "@/components/staff-panel/delete-dialog";
-import ReportEditForm from "@/components/staff-panel/forms/report/report-edit-form";
+import { ArrowUpDown } from 'lucide-react';
+import React from 'react';
+import Image from 'next/image';
+import DeleteDialog from '@/components/staff-panel/delete-dialog';
+import ReportEditForm from '@/components/staff-panel/forms/report/report-edit-form';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
+import { Badge } from '@/components/ui/badge';
+import ApprovedDialog from '@/components/staff-panel/approve-dialog';
+import RejectDialog from '@/components/staff-panel/reject-dialog';
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type Report = {
   uuid: string;
-  thumbnail: string;
-  author: string;
   title: string;
+  thumbnail: string;
   description: string;
-  category: string;
-  pages: number;
-  major: string;
-  subjects: string[];
-  file_url: string;
-  published_at: string;
-  tags: string[];
+  prakerin: {
+    pages: number;
+    file_attachment: { file: string };
+    creator: { name: string; major: string };
+    published_at: Date;
+  };
+
+  status: string;
 };
 
 export const columns: ColumnDef<Report>[] = [
   {
-    accessorKey: "thumbnail",
-    header: "Thumbnail",
+    accessorKey: 'No',
+    header: () => {
+      return <p>No</p>;
+    },
+    cell: ({ row }) => {
+      return <div>{row.index + 1}</div>;
+    },
+  },
+  {
+    accessorKey: 'thumbnail',
+    header: () => <div className='text-right'>Image</div>,
     cell: ({ row }) => (
-      <Image
-        key={row.original.thumbnail}
-        src={`${row.original.thumbnail}`}
-        alt="Image"
-        className=" object-cover"
-        width={96}
-        height={96}
-      />
+      <AspectRatio ratio={3 / 4} className='h-full relative'>
+        <Image
+          src={`${row.original.thumbnail}?t=${new Date().getTime()}`}
+          alt='Image'
+          layout='fill'
+          objectFit='cover'
+          objectPosition='center'
+        />
+      </AspectRatio>
     ),
   },
   {
-    accessorKey: "title",
+    accessorKey: 'title',
     header: ({ column }) => {
       return (
         <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          variant='ghost'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Title
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          <ArrowUpDown className='ml-2 h-4 w-4' />
         </Button>
+      );
+    },
+    cell: ({ row }) => {
+      return (
+        <div className=' line-clamp-3 break-words '>{row.original.title}</div>
       );
     },
   },
   {
-    accessorKey: "description",
-    header: "Description",
-  },
-  {
-    accessorKey: "author",
+    accessorKey: 'creator',
     header: ({ column }) => {
       return (
         <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          variant='ghost'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Author
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          Creator
+          <ArrowUpDown className='ml-2 h-4 w-4' />
         </Button>
       );
     },
+    cell: ({ row }) => {
+      return row.original.prakerin.creator.name;
+    },
   },
   {
-    accessorKey: "major",
+    accessorKey: 'major',
     header: ({ column }) => {
       return (
         <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          variant='ghost'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Major
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          <ArrowUpDown className='ml-2 h-4 w-4' />
         </Button>
       );
     },
-  },
-  {
-    accessorKey: "category",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Category
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
+    cell: ({ row }) => {
+      return row.original.prakerin.creator.major;
     },
   },
   {
-    accessorKey: "pages",
+    accessorKey: 'pages',
     header: ({ column }) => {
       return (
         <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          variant='ghost'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Pages
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          <ArrowUpDown className='ml-2 h-4 w-4' />
         </Button>
       );
     },
-  },
-  {
-    accessorKey: "subjects",
-    header: "Subjects",
     cell: ({ row }) => {
-      return row.original.subjects.join(", ");
+      return row.original.prakerin.pages;
     },
   },
   {
-    accessorKey: "tags",
-    header: "Tags",
-    cell: ({ row }) => {
-      return row.original.tags.map((tag: any) => tag?.name).join(", ");
+    accessorKey: 'file',
+    header: ({ column }) => {
+      return (
+        <Button
+          variant='ghost'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          File
+          <ArrowUpDown className='ml-2 h-4 w-4' />
+        </Button>
+      );
     },
-  },
-  {
-    accessorKey: "file_url",
-    header: "Report File",
     cell: ({ row }) => {
       return (
         <a
-          key={row.original.file_url}
-          href={`${row.original.file_url}`}
-          className="text-pink-600 items-center flex gap-2"
+          href={`${
+            row.original.prakerin.file_attachment.file
+          }?t=${new Date().getTime()}`}
+          className='text-pink-600 items-center flex gap-2'
         >
-          <FileText width={16} />
+          <Paperclip width={16} />
           .pdf
         </a>
       );
     },
   },
-
   {
-    accessorKey: "published_at",
+    accessorKey: 'status',
     header: ({ column }) => {
       return (
         <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          variant='ghost'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Published At
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          Status
+          <ArrowUpDown className='ml-2 h-4 w-4' />
         </Button>
       );
     },
     cell: ({ row }) => {
-      return format(row.original.published_at, "dd MMM yyyy");
+      return row.original.status === 'pending' ? (
+        <Badge className='bg-yellow-500 text-white' variant={'outline'}>
+          {row.original.status}
+        </Badge>
+      ) : row.original.status === 'approved' ? (
+        <Badge className='bg-green-500 text-white' variant={'outline'}>
+          {row.original.status}
+        </Badge>
+      ) : (
+        <Badge className='bg-red-500 text-white' variant={'outline'}>
+          {row.original.status}
+        </Badge>
+      );
     },
   },
   {
-    id: "actions",
+    id: 'actions',
     cell: ({ row }) => {
       // eslint-disable-next-line react-hooks/rules-of-hooks
-      const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
+      const [approveOpen, setApproveOpen] = React.useState(false);
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      const [rejectOpen, setRejectOpen] = React.useState(false);
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
-
       return (
         <div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
+              <Button variant='ghost' className='h-8 w-8 p-0'>
+                <span className='sr-only'>Open menu</span>
+                <MoreHorizontal className='h-4 w-4' />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => setIsEditDialogOpen(true)}>
-                <PencilRuler className="mr-2" width={16} /> Edit
+            <DropdownMenuContent align='end'>
+              <DropdownMenuLabel>Status</DropdownMenuLabel>
+              <DropdownMenuItem
+                className='cursor-pointer'
+                onClick={() => setApproveOpen(true)}
+              >
+                <Signature className='mr-2' width={16} /> Approve
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setIsDeleteDialogOpen(true)}>
-                <Trash2 className="mr-2" width={16} /> Delete
+              <DropdownMenuItem
+                className='cursor-pointer'
+                onClick={() => setRejectOpen(true)}
+              >
+                <CircleOff className='mr-2' width={16} /> Reject
+              </DropdownMenuItem>
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuItem className='cursor-pointer'>
+                <FileSearch className='mr-2' width={16} /> Detail
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className='cursor-pointer'
+                onClick={() => setIsDeleteDialogOpen(true)}
+              >
+                <Trash2 className='mr-2' width={16} /> Delete
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <ReportEditForm
-            isEditDialogOpen={isEditDialogOpen}
-            setIsEditDialogOpen={setIsEditDialogOpen}
-            values={row.original}
-          />
+
           <DeleteDialog
             open={isDeleteDialogOpen}
             onOpenChange={setIsDeleteDialogOpen}
-            pathApi={`/contents/reports/${row.original.uuid}`}
+            pathApi={`/contents/prakerin/${row.original.uuid}`}
+          />
+
+          <ApprovedDialog
+            open={approveOpen}
+            onOpenChange={setApproveOpen}
+            pathApi={`/contents/${row.original.uuid}`}
+          />
+          <RejectDialog
+            open={rejectOpen}
+            onOpenChange={setRejectOpen}
+            pathApi={`/contents/${row.original.uuid}`}
           />
         </div>
       );

@@ -1,11 +1,11 @@
-import { fetcher } from "@/utils/fetcher";
-import useSWR from "swr";
+import { fetcher } from '@/utils/fetcher';
+import useSWR from 'swr';
 
 export function useMajor() {
   const { data, error, mutate } = useSWR(`/majors`, fetcher);
 
   return {
-    major: data,
+    major: data?.data,
     isLoading: !error && !data,
     isError: error,
     mutate,
@@ -14,7 +14,7 @@ export function useMajor() {
 
 export function useMajorSearch(searchValue: string) {
   const { data, error, mutate } = useSWR(
-    searchValue ? `/majors?search=${searchValue}` : "/majors",
+    searchValue ? `/majors?search=${searchValue}` : '/majors',
     fetcher
   );
 

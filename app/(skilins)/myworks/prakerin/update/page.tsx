@@ -95,7 +95,7 @@ export default function PrakerinUpdate() {
     formData.append('title', data.title);
     formData.append('description', data.description);
     formData.append('pages', String(data.pages));
-    if (file) formData.append('file_url', file);
+    if (file) formData.append('file', file);
     if (user) formData.append('author_uuid', user?.data.uuid);
 
     try {
@@ -210,7 +210,7 @@ export default function PrakerinUpdate() {
                         }
                         label='Add an pdf file'
                         initialFileName={field.value ? field.value.name : ''}
-                        initialFileUrl={prakerin?.file_url}
+                        initialFileUrl={prakerin?.file}
                       />
                     )}
                   />

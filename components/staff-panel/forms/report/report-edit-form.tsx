@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
-import { CalendarIcon, CheckIcon, CircleX } from "lucide-react";
-import { Button } from "@/components/ui/button";
+'use client';
+import { CalendarIcon, CheckIcon, CircleX } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 import {
   Dialog,
@@ -10,14 +10,14 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 
-import * as React from "react";
-import { useCategory } from "@/hooks/use-category";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import * as React from 'react';
+import { useCategory } from '@/hooks/use-category';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Form,
   FormControl,
@@ -25,19 +25,19 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../../../ui/form";
+} from '../../../ui/form';
 
-import axios from "../../../../utils/axios";
-import { toast } from "@/hooks/use-toast";
-import { mutate } from "swr";
-import { useStudent } from "@/hooks/use-student";
+import axios from '../../../../utils/axios';
+import { toast } from '@/hooks/use-toast';
+import { mutate } from 'swr';
+import { useStudent } from '@/hooks/use-student';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import { CaretSortIcon } from "@radix-ui/react-icons";
+} from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
+import { CaretSortIcon } from '@radix-ui/react-icons';
 import {
   Command,
   CommandEmpty,
@@ -45,29 +45,29 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Calendar } from "@/components/ui/calendar";
-import { format } from "date-fns";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
-import Image from "next/image";
-import Compressor from "compressorjs";
-import { AxiosError } from "axios";
+} from '@/components/ui/command';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Calendar } from '@/components/ui/calendar';
+import { format } from 'date-fns';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
+import Image from 'next/image';
+import Compressor from 'compressorjs';
+import { AxiosError } from 'axios';
 
 const ReportSchema = z.object({
   title: z
     .string()
-    .min(5, { message: "title must be longer than or equal to 5 characters" }),
+    .min(5, { message: 'title must be longer than or equal to 5 characters' }),
   thumbnail: z.instanceof(File).optional(),
-  description: z.string().min(1, { message: "Category is required." }),
+  description: z.string().min(1, { message: 'Category is required.' }),
   subjects: z.array(z.string()).optional(),
-  category: z.string().min(1, { message: "Category is required." }),
+  category: z.string().min(1, { message: 'Category is required.' }),
   pages: z
     .number()
-    .min(1, { message: "Pages must be greater than 0." })
+    .min(1, { message: 'Pages must be greater than 0.' })
     .nonnegative(),
   file: z.instanceof(File).optional(),
-  author: z.string().min(1, { message: "Author is required." }),
+  author: z.string().min(1, { message: 'Author is required.' }),
   tags: z.array(z.object({ name: z.string().min(1) })),
   published_at: z.date(),
 });
@@ -80,14 +80,14 @@ function ReportEditForm({
   const form = useForm<z.infer<typeof ReportSchema>>({
     resolver: zodResolver(ReportSchema),
     defaultValues: {
-      title: values?.title || "",
+      title: values?.title || '',
       thumbnail: undefined,
-      description: values?.description || "",
+      description: values?.description || '',
       subjects: values?.subjects || [],
-      category: values?.category || "",
+      category: values?.category || '',
       pages: values?.pages || 0,
       file: undefined,
-      author: values?.author || "",
+      author: values?.author || '',
       published_at: new Date(values?.published_at) || new Date(),
       tags: values?.tags || [],
     },
@@ -103,7 +103,7 @@ function ReportEditForm({
       );
       if (foundStudent) {
         setAuthorUuid(foundStudent.uuid);
-        form.setValue("author", foundStudent.name);
+        form.setValue('author', foundStudent.name);
       }
     }
   }, [values?.creator, student?.data, form, values?.author]);
@@ -111,15 +111,15 @@ function ReportEditForm({
   React.useEffect(() => {
     if (!isEditDialogOpen) {
       form.reset({
-        title: values?.title || "",
+        title: values?.title || '',
         thumbnail: undefined,
-        description: values?.description || "",
+        description: values?.description || '',
         subjects: values?.subjects || [],
-        category: values?.category || "",
+        category: values?.category || '',
         pages: values?.pages || 0,
         file: undefined,
         author:
-          values?.creator === student?.data.name ? student?.data?.uuid : "",
+          values?.creator === student?.data.name ? student?.data?.uuid : '',
         published_at: new Date(values?.published_at) || new Date(),
         tags: values?.tags || [],
       });
@@ -127,8 +127,8 @@ function ReportEditForm({
     }
   }, [isEditDialogOpen, values, form, student?.data]);
 
-  const [inputTag, setInputTag] = React.useState<string>("");
-  const [inputSubject, setInputSubject] = React.useState<string>("");
+  const [inputTag, setInputTag] = React.useState<string>('');
+  const [inputSubject, setInputSubject] = React.useState<string>('');
 
   const [image, setImage] = React.useState<File | null>(null);
   const [imageUrl, setImageUrl] = React.useState<string | null>(
@@ -160,7 +160,7 @@ function ReportEditForm({
           reader.readAsDataURL(compressedFile);
         },
         error(err) {
-          console.error("Compression failed:", err.message);
+          console.error('Compression failed:', err.message);
         },
       });
     }
@@ -169,14 +169,14 @@ function ReportEditForm({
   const [fileMedia, setFileMedia] = React.useState<File | null>(null);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [fileUrl, setFileUrl] = React.useState<string | null>(
-    values?.file_url || null
+    values?.file || null
   );
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       setFileMedia(file);
-      form.setValue("file", file);
+      form.setValue('file', file);
 
       const reader = new FileReader();
       reader.onload = (event) => {
@@ -187,55 +187,55 @@ function ReportEditForm({
       reader.readAsDataURL(file);
     }
   };
-  const [authorUuid, setAuthorUuid] = React.useState<string>("");
+  const [authorUuid, setAuthorUuid] = React.useState<string>('');
 
   if (isLoading) return <h1>Loading..</h1>;
   if (isError) return <h1>Error</h1>;
 
-  const tags = form.watch("tags") || [];
+  const tags = form.watch('tags') || [];
 
   const addTag = () => {
     const lowerCaseTag = inputTag.trim().toLowerCase();
     if (
-      lowerCaseTag !== "" &&
+      lowerCaseTag !== '' &&
       !tags.some((tag) => tag.name.toLowerCase() === lowerCaseTag)
     ) {
-      form.setValue("tags", [...tags, { name: lowerCaseTag }]);
-      setInputTag("");
+      form.setValue('tags', [...tags, { name: lowerCaseTag }]);
+      setInputTag('');
     }
   };
 
   const removeTag = (index: number) => {
     const updatedTags = tags.filter((_, i) => i !== index);
-    form.setValue("tags", updatedTags);
+    form.setValue('tags', updatedTags);
   };
 
-  const subjects = form.watch("subjects") || [];
+  const subjects = form.watch('subjects') || [];
 
   const addSubject = () => {
-    if (inputSubject.trim() !== "") {
-      form.setValue("subjects", [...subjects, inputSubject]);
-      setInputSubject("");
+    if (inputSubject.trim() !== '') {
+      form.setValue('subjects', [...subjects, inputSubject]);
+      setInputSubject('');
     }
   };
 
   const removeSubject = (index: number) => {
     const updatedSubjects = subjects.filter((_, i) => i !== index);
-    form.setValue("subjects", updatedSubjects);
+    form.setValue('subjects', updatedSubjects);
   };
 
   async function onSubmit(data: z.infer<typeof ReportSchema>) {
     const formData = new FormData();
-    if (image) formData.append("thumbnail", image);
-    formData.append("title", data.title);
-    formData.append("description", data.description);
-    formData.append("subjects", JSON.stringify(data.subjects));
-    formData.append("category_name", data.category);
-    formData.append("pages", String(data.pages));
-    if (fileMedia) formData.append("file_url", fileMedia);
-    formData.append("author_uuid", authorUuid);
-    formData.append("published_at", String(data.published_at));
-    formData.append("tags", JSON.stringify(data.tags));
+    if (image) formData.append('thumbnail', image);
+    formData.append('title', data.title);
+    formData.append('description', data.description);
+    formData.append('subjects', JSON.stringify(data.subjects));
+    formData.append('category_name', data.category);
+    formData.append('pages', String(data.pages));
+    if (fileMedia) formData.append('file', fileMedia);
+    formData.append('author_uuid', authorUuid);
+    formData.append('published_at', String(data.published_at));
+    formData.append('tags', JSON.stringify(data.tags));
 
     try {
       const { data: reportData } = await axios.patch(
@@ -243,33 +243,33 @@ function ReportEditForm({
         formData,
         {
           headers: {
-            "Content-Type": "multipart/form-data",
+            'Content-Type': 'multipart/form-data',
           },
         }
       );
 
       toast({
-        title: "Report Updated Successfully!",
+        title: 'Report Updated Successfully!',
         description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">
+          <pre className='mt-2 w-[340px] rounded-md bg-slate-950 p-4'>
+            <code className='text-white'>
               {JSON.stringify(reportData.message, null, 2)}
             </code>
           </pre>
         ),
       });
 
-      mutate("/contents/reports");
+      mutate('/contents/reports');
 
       setIsEditDialogOpen(false);
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
         toast({
-          title: "Error!",
+          title: 'Error!',
           description:
             JSON.stringify(error?.message) ||
-            "An error occurred while edit the report.",
-          variant: "destructive",
+            'An error occurred while edit the report.',
+          variant: 'destructive',
         });
       }
     }
@@ -289,18 +289,18 @@ function ReportEditForm({
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="grid gap-4 py-4"
+            className='grid gap-4 py-4'
           >
             <div>
-              <ScrollArea className="h-[500px]">
+              <ScrollArea className='h-[500px]'>
                 {imageUrl && (
-                  <div className="grid grid-cols-4 items-center gap-2">
-                    <div className="col-span-1">
+                  <div className='grid grid-cols-4 items-center gap-2'>
+                    <div className='col-span-1'>
                       <AspectRatio ratio={1 / 1}>
                         <Image
                           src={imageUrl}
-                          alt="Current student image"
-                          className="object-cover"
+                          alt='Current student image'
+                          className='object-cover'
                           fill
                         />
                       </AspectRatio>
@@ -309,15 +309,15 @@ function ReportEditForm({
                 )}
                 <FormField
                   control={form.control}
-                  name="thumbnail"
+                  name='thumbnail'
                   render={() => (
-                    <FormItem className="grid grid-cols-4 items-center gap-2">
+                    <FormItem className='grid grid-cols-4 items-center gap-2'>
                       <FormLabel>Thumbnail</FormLabel>
-                      <div className="col-span-3">
+                      <div className='col-span-3'>
                         <FormControl>
                           <Input
-                            type="file"
-                            accept="image/*"
+                            type='file'
+                            accept='image/*'
                             onChange={handleImageChange}
                           />
                         </FormControl>
@@ -328,15 +328,15 @@ function ReportEditForm({
                 />
                 <FormField
                   control={form.control}
-                  name="file"
+                  name='file'
                   render={() => (
-                    <FormItem className="grid grid-cols-4 items-center gap-2">
+                    <FormItem className='grid grid-cols-4 items-center gap-2'>
                       <FormLabel>File Report</FormLabel>
-                      <div className="col-span-3">
+                      <div className='col-span-3'>
                         <FormControl>
                           <Input
-                            type="file"
-                            accept=".pdf"
+                            type='file'
+                            accept='.pdf'
                             onChange={handleFileChange}
                           />
                         </FormControl>
@@ -347,13 +347,13 @@ function ReportEditForm({
                 />
                 <FormField
                   control={form.control}
-                  name="title"
+                  name='title'
                   render={({ field }) => (
-                    <FormItem className="grid grid-cols-4 items-center gap-2">
+                    <FormItem className='grid grid-cols-4 items-center gap-2'>
                       <FormLabel>Title</FormLabel>
-                      <div className="col-span-3">
+                      <div className='col-span-3'>
                         <FormControl>
-                          <Input {...field} type="text" />
+                          <Input {...field} type='text' />
                         </FormControl>
                         <FormMessage />
                       </div>
@@ -362,13 +362,13 @@ function ReportEditForm({
                 />
                 <FormField
                   control={form.control}
-                  name="description"
+                  name='description'
                   render={({ field }) => (
-                    <FormItem className="grid grid-cols-4 items-center gap-2">
+                    <FormItem className='grid grid-cols-4 items-center gap-2'>
                       <FormLabel>Description</FormLabel>
-                      <div className="col-span-3">
+                      <div className='col-span-3'>
                         <FormControl>
-                          <Input {...field} type="text" />
+                          <Input {...field} type='text' />
                         </FormControl>
                         <FormMessage />
                       </div>
@@ -377,15 +377,15 @@ function ReportEditForm({
                 />
                 <FormField
                   control={form.control}
-                  name="pages"
+                  name='pages'
                   render={({ field }) => (
-                    <FormItem className="grid grid-cols-4 items-center gap-2">
+                    <FormItem className='grid grid-cols-4 items-center gap-2'>
                       <FormLabel>Pages</FormLabel>
-                      <div className="col-span-3">
+                      <div className='col-span-3'>
                         <FormControl>
                           <Input
                             {...field}
-                            type="number"
+                            type='number'
                             min={0}
                             onChange={(e) => {
                               const value = e.target.value;
@@ -400,36 +400,36 @@ function ReportEditForm({
                 />
                 <FormField
                   control={form.control}
-                  name="author"
+                  name='author'
                   render={({ field }) => (
-                    <FormItem className="grid grid-cols-4 items-center gap-2">
+                    <FormItem className='grid grid-cols-4 items-center gap-2'>
                       <FormLabel>Creator</FormLabel>
-                      <div className="col-span-3">
+                      <div className='col-span-3'>
                         <Popover>
                           <PopoverTrigger asChild>
                             <FormControl>
                               <Button
-                                variant="outline"
-                                role="combobox"
+                                variant='outline'
+                                role='combobox'
                                 className={cn(
-                                  "w-full justify-between",
-                                  !field.value && "text-muted-foreground"
+                                  'w-full justify-between',
+                                  !field.value && 'text-muted-foreground'
                                 )}
                               >
                                 {field.value
                                   ? student?.data.find(
                                       (st: any) => st.name === field.value
                                     )?.name
-                                  : "Select creator"}
-                                <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                  : 'Select creator'}
+                                <CaretSortIcon className='ml-2 h-4 w-4 shrink-0 opacity-50' />
                               </Button>
                             </FormControl>
                           </PopoverTrigger>
-                          <PopoverContent className="p-0">
+                          <PopoverContent className='p-0'>
                             <Command>
                               <CommandInput
-                                placeholder="Search students..."
-                                className="h-9"
+                                placeholder='Search students...'
+                                className='h-9'
                               />
                               <CommandList>
                                 <CommandEmpty>No student found.</CommandEmpty>
@@ -439,17 +439,17 @@ function ReportEditForm({
                                       value={st.name}
                                       key={st.uuid}
                                       onSelect={() => {
-                                        form.setValue("author", st.name);
+                                        form.setValue('author', st.name);
                                         setAuthorUuid(st.uuid);
                                       }}
                                     >
                                       {st.name}
                                       <CheckIcon
                                         className={cn(
-                                          "ml-auto h-4 w-4",
+                                          'ml-auto h-4 w-4',
                                           st.name === field.value
-                                            ? "opacity-100"
-                                            : "opacity-0"
+                                            ? 'opacity-100'
+                                            : 'opacity-0'
                                         )}
                                       />
                                     </CommandItem>
@@ -466,20 +466,20 @@ function ReportEditForm({
                 />
                 <FormField
                   control={form.control}
-                  name="category"
+                  name='category'
                   render={({ field }) => (
-                    <FormItem className="grid grid-cols-4 items-center gap-2">
+                    <FormItem className='grid grid-cols-4 items-center gap-2'>
                       <FormLabel>Category</FormLabel>
-                      <div className="col-span-3">
+                      <div className='col-span-3'>
                         <Popover>
                           <PopoverTrigger asChild>
                             <FormControl>
                               <Button
-                                variant="outline"
-                                role="combobox"
+                                variant='outline'
+                                role='combobox'
                                 className={cn(
-                                  "w-full justify-between",
-                                  !field.value && "text-muted-foreground"
+                                  'w-full justify-between',
+                                  !field.value && 'text-muted-foreground'
                                 )}
                               >
                                 {field.value
@@ -487,16 +487,16 @@ function ReportEditForm({
                                       (category: any) =>
                                         category.name === field.value
                                     )?.name
-                                  : "Select category"}
-                                <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                  : 'Select category'}
+                                <CaretSortIcon className='ml-2 h-4 w-4 shrink-0 opacity-50' />
                               </Button>
                             </FormControl>
                           </PopoverTrigger>
-                          <PopoverContent className="p-0">
+                          <PopoverContent className='p-0'>
                             <Command>
                               <CommandInput
-                                placeholder="Search categories..."
-                                className="h-9"
+                                placeholder='Search categories...'
+                                className='h-9'
                               />
                               <CommandList>
                                 <CommandEmpty>No category found.</CommandEmpty>
@@ -507,7 +507,7 @@ function ReportEditForm({
                                       key={category.uuid}
                                       onSelect={() => {
                                         form.setValue(
-                                          "category",
+                                          'category',
                                           category.name
                                         );
                                       }}
@@ -515,10 +515,10 @@ function ReportEditForm({
                                       {category.name}
                                       <CheckIcon
                                         className={cn(
-                                          "ml-auto h-4 w-4",
+                                          'ml-auto h-4 w-4',
                                           category.name === field.value
-                                            ? "opacity-100"
-                                            : "opacity-0"
+                                            ? 'opacity-100'
+                                            : 'opacity-0'
                                         )}
                                       />
                                     </CommandItem>
@@ -535,21 +535,21 @@ function ReportEditForm({
                 />
                 <FormField
                   control={form.control}
-                  name="subjects"
+                  name='subjects'
                   render={() => (
-                    <FormItem className="grid grid-cols-4 items-center gap-2">
+                    <FormItem className='grid grid-cols-4 items-center gap-2'>
                       <FormLabel>Subjects</FormLabel>
-                      <div className="col-span-3 relative">
-                        <div className="flex flex-wrap items-center gap-2">
+                      <div className='col-span-3 relative'>
+                        <div className='flex flex-wrap items-center gap-2'>
                           {subjects.map((subject, index) => (
                             <div
                               key={index}
-                              className="flex items-center bg-blue-500 text-white px-2 py-1 rounded-full"
+                              className='flex items-center bg-blue-500 text-white px-2 py-1 rounded-full'
                             >
                               <span>{subject}</span>
                               <button
-                                type="button"
-                                className="ml-2"
+                                type='button'
+                                className='ml-2'
                                 onClick={() => removeSubject(index)}
                               >
                                 <CircleX size={16} />
@@ -560,13 +560,13 @@ function ReportEditForm({
                             value={inputSubject}
                             onChange={(e) => setInputSubject(e.target.value)}
                             onKeyDown={(e) => {
-                              if (e.key === "Enter") {
+                              if (e.key === 'Enter') {
                                 e.preventDefault();
                                 addSubject();
                               }
                             }}
-                            placeholder="Add a subject and press Enter"
-                            className="flex-grow"
+                            placeholder='Add a subject and press Enter'
+                            className='flex-grow'
                           />
                         </div>
                         <FormMessage />
@@ -576,21 +576,21 @@ function ReportEditForm({
                 />
                 <FormField
                   control={form.control}
-                  name="tags"
+                  name='tags'
                   render={() => (
-                    <FormItem className="grid grid-cols-4 items-center gap-2">
+                    <FormItem className='grid grid-cols-4 items-center gap-2'>
                       <FormLabel>Tags</FormLabel>
-                      <div className="col-span-3 relative">
-                        <div className="flex flex-wrap items-center gap-2">
+                      <div className='col-span-3 relative'>
+                        <div className='flex flex-wrap items-center gap-2'>
                           {tags.map((tag, index) => (
                             <div
                               key={index}
-                              className="flex items-center bg-blue-500 text-white px-2 py-1 rounded-full"
+                              className='flex items-center bg-blue-500 text-white px-2 py-1 rounded-full'
                             >
                               <span>{tag.name}</span>
                               <button
-                                type="button"
-                                className="ml-2"
+                                type='button'
+                                className='ml-2'
                                 onClick={() => removeTag(index)}
                               >
                                 <CircleX size={16} />
@@ -601,13 +601,13 @@ function ReportEditForm({
                             value={inputTag}
                             onChange={(e) => setInputTag(e.target.value)}
                             onKeyDown={(e) => {
-                              if (e.key === "Enter") {
+                              if (e.key === 'Enter') {
                                 e.preventDefault();
                                 addTag();
                               }
                             }}
-                            placeholder="Add a tag and press Enter"
-                            className="flex-grow"
+                            placeholder='Add a tag and press Enter'
+                            className='flex-grow'
                           />
                         </div>
                         <FormMessage />
@@ -617,32 +617,32 @@ function ReportEditForm({
                 />
                 <FormField
                   control={form.control}
-                  name="published_at"
+                  name='published_at'
                   render={({ field }) => (
-                    <FormItem className="grid grid-cols-4 items-center gap-2">
+                    <FormItem className='grid grid-cols-4 items-center gap-2'>
                       <FormLabel>Published At</FormLabel>
                       <Popover>
-                        <PopoverTrigger asChild className="col-span-3">
+                        <PopoverTrigger asChild className='col-span-3'>
                           <FormControl>
                             <Button
-                              variant={"outline"}
+                              variant={'outline'}
                               className={cn(
-                                "w-full justify-start text-left font-normal",
-                                !field.value && "text-muted-foreground"
+                                'w-full justify-start text-left font-normal',
+                                !field.value && 'text-muted-foreground'
                               )}
                             >
-                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              <CalendarIcon className='mr-2 h-4 w-4' />
                               {field.value ? (
-                                format(field.value, "PPP")
+                                format(field.value, 'PPP')
                               ) : (
                                 <span>Pick a date</span>
                               )}
                             </Button>
                           </FormControl>
                         </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
+                        <PopoverContent className='w-auto p-0' align='start'>
                           <Calendar
-                            mode="single"
+                            mode='single'
                             selected={field.value}
                             onSelect={field.onChange}
                             initialFocus
@@ -656,7 +656,7 @@ function ReportEditForm({
               </ScrollArea>
             </div>
             <DialogFooter>
-              <Button type="submit">Save</Button>
+              <Button type='submit'>Save</Button>
             </DialogFooter>
           </form>
         </Form>

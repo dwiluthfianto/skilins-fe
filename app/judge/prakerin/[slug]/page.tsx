@@ -83,7 +83,7 @@ export default async function ReportDetail({ params }: any) {
                     </div>
                     <Button variant={'default'}>
                       <BookText width={16} className='mr-2' />
-                      <Link href={report.file_url}>Read book</Link>
+                      <Link href={report.file}>Read book</Link>
                     </Button>
                   </div>
                   <p className='mt-1 md:mt-6 text text-lg max-w-xl lg:max-w-xl leading-relaxed tracking-tight font-medium'>

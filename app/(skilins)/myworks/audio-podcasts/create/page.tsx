@@ -112,7 +112,7 @@ export default function AudioCreate() {
     formData.append('genres', JSON.stringify(data.genres));
     formData.append('category_name', data.category);
     formData.append('duration', String(data.duration));
-    if (file) formData.append('file_url', file);
+    if (file) formData.append('file', file);
     if (user) formData.append('creator_uuid', user?.data.uuid);
     formData.append('tags', JSON.stringify(data.tags));
 

@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { ChartColumnStacked } from "lucide-react";
+import { ChartColumnStacked } from 'lucide-react';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 
 import {
   Dialog,
@@ -12,13 +12,13 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 
-import * as React from "react";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import * as React from 'react';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Form,
   FormControl,
@@ -26,16 +26,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../../../ui/form";
+} from '../../../ui/form';
 
-import axios from "@/utils/axios";
-import { toast } from "@/hooks/use-toast";
-import { mutate } from "swr";
-import Compressor from "compressorjs";
-import { AxiosError } from "axios";
+import axios from '@/utils/axios';
+import { toast } from '@/hooks/use-toast';
+import { mutate } from 'swr';
+import Compressor from 'compressorjs';
+import { AxiosError } from 'axios';
 
 const CategorySchema = z.object({
-  name: z.string().min(1, { message: "Name is required." }),
+  name: z.string().min(1, { message: 'Name is required.' }),
   description: z.string().optional(),
   avatar: z.instanceof(File).optional(),
 });
@@ -44,8 +44,8 @@ function CategoryForm() {
   const form = useForm<z.infer<typeof CategorySchema>>({
     resolver: zodResolver(CategorySchema),
     defaultValues: {
-      name: "",
-      description: "",
+      name: '',
+      description: '',
       avatar: undefined,
     },
   });
@@ -55,8 +55,8 @@ function CategoryForm() {
   React.useEffect(() => {
     if (!open) {
       form.reset({
-        name: "",
-        description: "",
+        name: '',
+        description: '',
         avatar: undefined,
       });
     }
@@ -81,7 +81,7 @@ function CategoryForm() {
           setAvatar(compressedFile);
         },
         error(err) {
-          console.error("Compression failed:", err.message);
+          console.error('Compression failed:', err.message);
         },
       });
     }
@@ -90,40 +90,40 @@ function CategoryForm() {
   async function onSubmit(data: z.infer<typeof CategorySchema>) {
     const formData = new FormData();
     formData.append(
-      "name",
+      'name',
       data.name.charAt(0).toUpperCase() + data.name.slice(1)
     );
-    formData.append("description", data.description || "");
-    if (avatar) formData.append("avatar_url", avatar);
+    formData.append('description', data.description || '');
+    if (avatar) formData.append('avatar', avatar);
 
     try {
-      const { data: categoryData } = await axios.post("/categories", formData, {
+      const { data: categoryData } = await axios.post('/categories', formData, {
         headers: {
-          "Content-Type": "multipart/form-data",
+          'Content-Type': 'multipart/form-data',
         },
       });
       toast({
-        title: "Major Added Successfully!",
+        title: 'Major Added Successfully!',
         description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">
+          <pre className='mt-2 w-[340px] rounded-md bg-slate-950 p-4'>
+            <code className='text-white'>
               {JSON.stringify(categoryData.message, null, 2)}
             </code>
           </pre>
         ),
       });
 
-      mutate("/categories");
+      mutate('/categories');
 
       setOpen(false);
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
         toast({
-          title: "Error!",
+          title: 'Error!',
           description:
             JSON.stringify(error?.message) ||
-            "An error occurred while add the category.",
-          variant: "destructive",
+            'An error occurred while add the category.',
+          variant: 'destructive',
         });
       }
       setOpen(false);
@@ -133,7 +133,7 @@ function CategoryForm() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button>
-          <ChartColumnStacked width={16} className="mr-2" /> Add category
+          <ChartColumnStacked width={16} className='mr-2' /> Add category
         </Button>
       </DialogTrigger>
       <DialogContent>
@@ -146,16 +146,16 @@ function CategoryForm() {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="grid gap-4 py-4"
+            className='grid gap-4 py-4'
           >
             <FormField
               control={form.control}
-              name="avatar"
+              name='avatar'
               render={() => (
-                <FormItem className="grid grid-cols-4 items-center gap-2">
+                <FormItem className='grid grid-cols-4 items-center gap-2'>
                   <FormLabel>Avatar</FormLabel>
-                  <FormControl className="col-span-3">
-                    <Input type="file" onChange={handleAvatarChange} />
+                  <FormControl className='col-span-3'>
+                    <Input type='file' onChange={handleAvatarChange} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -163,12 +163,12 @@ function CategoryForm() {
             />
             <FormField
               control={form.control}
-              name="name"
+              name='name'
               render={({ field }) => (
-                <FormItem className="grid grid-cols-4 items-center gap-2">
+                <FormItem className='grid grid-cols-4 items-center gap-2'>
                   <FormLabel>Name</FormLabel>
-                  <FormControl className="col-span-3">
-                    <Input {...field} type="text" />
+                  <FormControl className='col-span-3'>
+                    <Input {...field} type='text' />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -176,19 +176,19 @@ function CategoryForm() {
             />
             <FormField
               control={form.control}
-              name="description"
+              name='description'
               render={({ field }) => (
-                <FormItem className="grid grid-cols-4 items-center gap-2">
+                <FormItem className='grid grid-cols-4 items-center gap-2'>
                   <FormLabel>Description</FormLabel>
-                  <FormControl className="col-span-3">
-                    <Input {...field} type="text" />
+                  <FormControl className='col-span-3'>
+                    <Input {...field} type='text' />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
             <DialogFooter>
-              <Button type="submit">Save</Button>
+              <Button type='submit'>Save</Button>
             </DialogFooter>
           </form>
         </Form>

@@ -110,7 +110,7 @@ export default async function EbookDetail({ params }: any) {
                     </div>
                     <Button variant={'default'}>
                       <BookText width={16} className='mr-2' />
-                      <Link href={ebook.file_url}>Read book</Link>
+                      <Link href={ebook.file}>Read book</Link>
                     </Button>
                     {/* <ShareButton
                       title={ebook.title}

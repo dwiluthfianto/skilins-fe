@@ -1,6 +1,6 @@
-import { FC } from "react";
-import { Button } from "./ui/button";
-import { cn } from "@/lib/utils";
+import { FC } from 'react';
+import { Button } from './ui/button';
+import { cn } from '@/lib/utils';
 
 interface TabProps {
   className?: string;
@@ -10,22 +10,22 @@ interface TabProps {
 
 const TabsStatus: FC<TabProps> = ({ status, onUpdateStatus, className }) => {
   return (
-    <div className={cn("flex flex-wrap gap-2 py-8", className)}>
+    <div className={cn('flex flex-wrap gap-2 py-8', className)}>
       <Button
-        variant={status === "APPROVED" ? "default" : "outline"}
-        onClick={() => onUpdateStatus("APPROVED")}
+        variant={status === 'approved' ? 'default' : 'outline'}
+        onClick={() => onUpdateStatus('approved')}
       >
-        Approved
+        approved
       </Button>
       <Button
-        variant={status === "PENDING" ? "default" : "outline"}
-        onClick={() => onUpdateStatus("PENDING")}
+        variant={status === 'pending' ? 'default' : 'outline'}
+        onClick={() => onUpdateStatus('pending')}
       >
-        Pending
+        pending
       </Button>
       <Button
-        variant={status === "REJECTED" ? "default" : "outline"}
-        onClick={() => onUpdateStatus("REJECTED")}
+        variant={status === 'REJECTED' ? 'default' : 'outline'}
+        onClick={() => onUpdateStatus('REJECTED')}
       >
         Rejected
       </Button>

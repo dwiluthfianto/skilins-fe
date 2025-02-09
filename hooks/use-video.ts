@@ -1,35 +1,84 @@
 import { fetcher } from '@/utils/fetcher';
 import useSWR from 'swr';
 
-export function useVideo(page: number) {
+type VideoFilter = {
+  page: number;
+  limit: number;
+  search?: string;
+  category?: string;
+  tag?: string;
+  genre?: string;
+  type?: string;
+  latest?: boolean;
+  status?: string;
+};
+
+export function useVideo({
+  page,
+  limit,
+  search,
+  category,
+  tag,
+  genre,
+  type,
+  latest,
+}: VideoFilter) {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    limit: limit.toString(),
+  });
+  if (search) params.append('search', search);
+  if (category) params.append('category', category);
+  if (tag) params.append('tag', tag);
+  if (genre) params.append('genre', genre);
+  if (type) params.append('type', type);
+  if (latest) params.append('latest', latest.toString());
+
   const { data, error, mutate } = useSWR(
-    `/contents/videos?page=${page}&limit=25`,
+    `/contents/videos?${params.toString()}`,
     fetcher
   );
 
   return {
     videos: data?.data,
-    totalPages: data?.lastPage || 1,
+    last_page: data?.pagination.last_page || 1,
     isLoading: !error && !data,
     isError: error,
     mutate,
   };
 }
 
-export function useVideoLatest(
-  page: number,
-  limit: number,
-  week: number,
-  status: string
-) {
+export function useVideoByStaff({
+  page,
+  limit,
+  search,
+  category,
+  tag,
+  genre,
+  type,
+  latest,
+  status,
+}: VideoFilter) {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    limit: limit.toString(),
+  });
+  if (search) params.append('search', search);
+  if (category) params.append('category', category);
+  if (tag) params.append('tag', tag);
+  if (genre) params.append('genre', genre);
+  if (type) params.append('type', type);
+  if (latest) params.append('latest', latest.toString());
+  if (status) params.append('status', status);
+
   const { data, error, mutate } = useSWR(
-    `/contents/videos/latest?page=${page}&limit=${limit}&week=${week}&status=${status}`,
+    `/contents/videos/staff?${params.toString()}`,
     fetcher
   );
 
   return {
     videos: data?.data,
-    totalPages: data?.lastPage || 1,
+    last_page: data?.pagination.last_page || 1,
     isLoading: !error && !data,
     isError: error,
     mutate,

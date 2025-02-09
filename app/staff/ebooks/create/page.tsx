@@ -114,7 +114,7 @@ export default function CreateEbooks() {
     formData.append('genres', JSON.stringify(data.genres));
     formData.append('category_name', data.category);
     formData.append('pages', String(data.pages));
-    if (file) formData.append('file_url', file);
+    if (file) formData.append('file', file);
     formData.append('author', data.author);
     formData.append('publication', data.publication || '');
     formData.append('isbn', data.isbn || '');
