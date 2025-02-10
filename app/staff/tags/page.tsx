@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 import Link from 'next/link';
+import { useInView } from 'react-intersection-observer';
 
 import { ContentLayout } from '@/components/staff-panel/content-layout';
 import {
@@ -23,7 +24,22 @@ import TagEditForm from '@/components/staff-panel/forms/tag/tag-edit-form';
 export default function TagsPage() {
   const [editUuid, setEditUuid] = React.useState<string | null>(null);
   const [deleteUuid, setDeleteUuid] = React.useState<string | null>(null);
-  const { tags, isLoading, isError } = useTag();
+  const { ref, inView } = useInView();
+  const {
+    tags,
+    isLoading,
+    isError,
+    isLoadingMore,
+    isReachingEnd,
+    loadMore
+  } = useTag();
+
+  // Trigger loadMore when the last element is visible
+  React.useEffect(() => {
+    if (inView && !isLoadingMore && !isReachingEnd) {
+      loadMore();
+    }
+  }, [inView, isLoadingMore, isReachingEnd]);
 
   if (isLoading) return <h1>Loading..</h1>;
   if (isError) return <h1>Error cuy</h1>;
@@ -65,13 +81,17 @@ export default function TagsPage() {
             >
               <div>
                 <div className='h-10 w-10 relative'>
-                  <Image
-                    src={tag.avatar}
-                    alt='avatar tags'
-                    layout='fill'
-                    objectFit='cover'
-                    priority={false}
-                  />
+                  {tag?.avatar ? (
+                    <Image
+                      src={tag.avatar}
+                      alt='avatar tags'
+                      layout='fill'
+                      objectFit='cover'
+                      priority={false}
+                    />
+                  ) : (
+                    ''
+                  )}
                 </div>
                 <h3 className='mb-1 mt-2 font-medium'>#{tag.name}</h3>
                 <p className='text-sm text-muted-foreground line-clamp-3'>
@@ -96,6 +116,18 @@ export default function TagsPage() {
               />
             </div>
           ))}
+        </div>
+
+        {/* Loading indicator */}
+        <div ref={ref} className="w-full py-4 flex justify-center">
+          {!isReachingEnd && (
+            isLoadingMore ? (
+              <p>Loading more...</p>
+            ) : (
+              <p>Scroll for more</p>
+            )
+          )}
+          {isReachingEnd && <p>No more tags to load</p>}
         </div>
       </section>
     </ContentLayout>

@@ -32,7 +32,7 @@ export function useCompetition({
 
   return {
     competitions: data?.data,
-    last_page: data?.pagination.last_page,
+    last_page: data?.pagination.last_page || 1,
     isLoading: !error && !data,
     isError: error,
     mutate,

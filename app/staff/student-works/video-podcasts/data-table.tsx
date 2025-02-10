@@ -223,7 +223,7 @@ export function DataTable<TData, TValue>({
           </Select>
         </div>
 
-        <div>
+        <div className='flex items-center gap-2'>
           <span className='font-semibold text-sm mr-4'>
             Page {pagination.pageIndex + 1} of {last_page}
           </span>
@@ -235,6 +235,42 @@ export function DataTable<TData, TValue>({
           >
             Previous
           </Button>
+          <div className='flex items-center gap-1'>
+            {last_page > 0 && [...Array(last_page)].map((_, idx) => {
+              const pageNumber = idx + 1;
+              const isCurrentPage = pagination.pageIndex + 1 === pageNumber;
+              
+              // Show first page, last page, current page, and pages around current page
+              if (
+                pageNumber === 1 ||
+                pageNumber === last_page ||
+                (pageNumber >= pagination.pageIndex + 1 - 1 &&
+                  pageNumber <= pagination.pageIndex + 1 + 1)
+              ) {
+                return (
+                  <Button
+                    key={idx}
+                    variant={isCurrentPage ? 'default' : 'outline'}
+                    size='sm'
+                    onClick={() => setPagination({ ...pagination, pageIndex: idx })}
+                    className='w-8'
+                  >
+                    {pageNumber}
+                  </Button>
+                );
+              }
+
+              // Show dots if there's a gap
+              if (
+                pageNumber === 2 ||
+                pageNumber === last_page - 1
+              ) {
+                return <span key={idx}>...</span>;
+              }
+
+              return null;
+            })}
+          </div>
           <Button
             variant='outline'
             size='sm'

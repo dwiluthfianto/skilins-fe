@@ -6,6 +6,7 @@ type StudentFilter = {
   limit: number;
   nis?: string;
   name?: string;
+  search?: string;
   major?: string;
   status?: boolean;
 };
@@ -17,19 +18,23 @@ export function useStudent({
   name,
   major,
   status,
+  search,
 }: StudentFilter) {
   const params = new URLSearchParams({
     page: page.toString(),
+
     limit: limit.toString(),
   });
   if (nis) params.append('nis', nis);
   if (name) params.append('name', name);
   if (major) params.append('major', major);
   if (status) params.append('status', status.toString());
+  if (search) params.append('search', search);
   const { data, error, mutate } = useSWR(
     `/students?${params.toString()}`,
     fetcher
   );
+
 
   return {
     student: data?.data,

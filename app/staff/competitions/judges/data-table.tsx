@@ -69,11 +69,12 @@ export function DataTable<TData, TValue>({
   });
   const debouncedSearch = useDebounce(search, 1000);
 
-  const { judges, isLoading, isError, totalPages } = useJudge(
-    pagination.pageIndex + 1,
-    parseInt(limit, 10),
-    debouncedSearch
-  );
+  const { judges, isLoading, isError, last_page } = useJudge({
+    page: pagination.pageIndex + 1,
+    limit: parseInt(limit, 10),
+    search: debouncedSearch,
+  });
+
 
   React.useEffect(() => {
     setPagination({ ...pagination, pageIndex: 0 });
@@ -98,7 +99,7 @@ export function DataTable<TData, TValue>({
     },
 
     manualPagination: true,
-    pageCount: totalPages,
+    pageCount: last_page,
     state: {
       sorting,
       columnFilters,
@@ -125,34 +126,7 @@ export function DataTable<TData, TValue>({
           value={search}
           onChange={(event) => setSearch(event.target.value)}
           className="max-w-sm"
-        />
-
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Columns <ChevronDownIcon className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+          />
       </div>
 
       <div className="rounded-md border">
@@ -229,21 +203,57 @@ export function DataTable<TData, TValue>({
           </Select>
         </div>
 
-        <div>
-          <span className="font-semibold text-sm mr-4">
-            Page {pagination.pageIndex + 1} of {totalPages}
+        <div className='flex items-center gap-2'>
+          <span className='font-semibold text-sm mr-4'>
+            Page {pagination.pageIndex + 1} of {last_page}
           </span>
           <Button
-            variant="outline"
-            size="sm"
+            variant='outline'
+            size='sm'
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
             Previous
           </Button>
+          <div className='flex items-center gap-1'>
+            {last_page > 0 && [...Array(last_page)].map((_, idx) => {
+              const pageNumber = idx + 1;
+              const isCurrentPage = pagination.pageIndex + 1 === pageNumber;
+              
+              // Show first page, last page, current page, and pages around current page
+              if (
+                pageNumber === 1 ||
+                pageNumber === last_page ||
+                (pageNumber >= pagination.pageIndex + 1 - 1 &&
+                  pageNumber <= pagination.pageIndex + 1 + 1)
+              ) {
+                return (
+                  <Button
+                    key={idx}
+                    variant={isCurrentPage ? 'default' : 'outline'}
+                    size='sm'
+                    onClick={() => setPagination({ ...pagination, pageIndex: idx })}
+                    className='w-8'
+                  >
+                    {pageNumber}
+                  </Button>
+                );
+              }
+
+              // Show dots if there's a gap
+              if (
+                pageNumber === 2 ||
+                pageNumber === last_page - 1
+              ) {
+                return <span key={idx}>...</span>;
+              }
+
+              return null;
+            })}
+          </div>
           <Button
-            variant="outline"
-            size="sm"
+            variant='outline'
+            size='sm'
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
