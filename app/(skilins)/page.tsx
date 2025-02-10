@@ -13,10 +13,10 @@ import { useVideo } from '@/hooks/use-video';
 
 export default function Home() {
   const { stories } = useStory({ page: 1, limit: 10, status: 'approved' });
-  const { ebooks } = useEbook({ page: 1, limit: 10, status: 'approved' });
+  const { ebooks } = useEbook({ page: 1, limit: 10 });
   const { audios } = useAudio({ page: 1, limit: 10, status: 'approved' });
   const { videos } = useVideo({ page: 1, limit: 10, status: 'approved' });
-  const { blogs } = useBlog({ page: 1, limit: 10, status: 'approved' });
+  const { blogs } = useBlog({ page: 1, limit: 10 });
 
   return (
     <ContentLayout title='Home'>

@@ -3,7 +3,7 @@ import { SheetMenu } from '@/components/user-panel/sheet-menu';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
-import { CalendarDays, Library, LogOut, User } from 'lucide-react';
+import { CalendarDays, Library, LogOut, User, Search } from 'lucide-react';
 
 import { useUser } from '@/hooks/use-user';
 import {
@@ -20,7 +20,7 @@ import { ModeToggle } from '../mode-toggle';
 import { format } from 'date-fns';
 import { logout } from '@/utils/auth-service';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { GetFirstLetterStr } from '@/utils/get-first-letter-str';
 import {
   NavigationMenu,
@@ -30,7 +30,8 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from '../ui/navigation-menu';
-import React from 'react';
+import React, { useState } from 'react';
+import { Input } from '../ui/input';
 
 interface NavbarProps {
   title: string;
@@ -39,6 +40,15 @@ interface NavbarProps {
 export function Navbar({ title }: NavbarProps) {
   const { user, isLoading, mutate } = useUser();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!searchQuery.trim()) return;
+    
+    router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
+  };
 
   const handleLogout = async () => {
     try {
@@ -60,6 +70,20 @@ export function Navbar({ title }: NavbarProps) {
             <h1 className='font-bold line-clamp-1'>{title}</h1>
           </div>
           <div className='flex flex-1 items-center justify-end space-x-4'>
+            <form onSubmit={handleSearch} className="flex-1 max-w-md mx-4">
+              <div className="relative">
+                <Input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search content by title, creator, tags, genres, or majors..."
+                  className="w-full px-4 py-1.5 pr-8"
+                />
+                <button type="submit" className="absolute right-2 top-1/2 -translate-y-1/2">
+                  <Search className="w-4 h-4 text-muted-foreground" />
+                </button>
+              </div>
+            </form>
             <Button variant='ghost'>
               <Link href={'/auth/user/register'}>Sign up</Link>
             </Button>
@@ -80,6 +104,20 @@ export function Navbar({ title }: NavbarProps) {
           <h1 className='font-bold line-clamp-1'>{title}</h1>
         </div>
         <div className='flex flex-1 items-center justify-end space-x-4'>
+          <form onSubmit={handleSearch} className="flex-1 max-w-md mx-4">
+            <div className="relative">
+              <Input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search content by title, creator, tags, genres, or majors..."
+                className="w-full px-4 py-2"
+              />
+              <button type="submit" className="absolute right-2 top-1/2 -translate-y-1/2">
+                <Search className="w-4 h-4 text-muted-foreground" />
+              </button>
+            </div>
+          </form>
           <Button variant={'outline'} className='hidden md:flex'>
             <CalendarDays className='mr-2' width={18} />{' '}
             {format(new Date(), 'dd MMM yy')}
@@ -110,23 +148,23 @@ export function Navbar({ title }: NavbarProps) {
                                 Stories
                               </div>
                               <p className='text-sm leading-tight text-muted-foreground'>
-                                {`Share the captivating stories you’ve created,
+                                {`Share the captivating stories you've created,
                                 filled with inspiration and imagination.`}
                               </p>
                             </a>
                           </NavigationMenuLink>
                         </li>
                         <ListItem href='/myworks/audio-podcasts' title='Audio'>
-                          {`Share the audio works you’ve crafted, from music to
+                          {`Share the audio works you've crafted, from music to
                           engaging podcasts.`}
                         </ListItem>
                         <ListItem href='/myworks/video-podcasts' title='Video'>
-                          {`Share the creative videos you’ve produced, showcasing your
+                          {`Share the creative videos you've produced, showcasing your
                           ideas and stories.`}
                         </ListItem>
                         <ListItem href='/myworks/prakerin' title='Prakerin'>
                           {`Explore your internship experiences and the projects
-                          you’ve worked on during that time.`}
+                          you've worked on during that time.`}
                         </ListItem>
                       </ul>
                     </NavigationMenuContent>

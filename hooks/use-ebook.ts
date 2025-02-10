@@ -10,7 +10,6 @@ type EbookFilter = {
   genre?: string;
   type?: string;
   latest?: boolean;
-  status?: string;
 };
 
 export function useEbook({
@@ -22,7 +21,6 @@ export function useEbook({
   genre,
   type,
   latest,
-  status,
 }: EbookFilter) {
   const params = new URLSearchParams({
     page: page.toString(),
@@ -34,7 +32,6 @@ export function useEbook({
   if (genre) params.append('genre', genre);
   if (type) params.append('type', type);
   if (latest) params.append('latest', latest.toString());
-  if (status) params.append('status', status);
 
   const { data, error, mutate } = useSWR(
     `/contents/ebooks?${params.toString()}`,
