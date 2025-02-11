@@ -25,14 +25,8 @@ export default function TagsPage() {
   const [editUuid, setEditUuid] = React.useState<string | null>(null);
   const [deleteUuid, setDeleteUuid] = React.useState<string | null>(null);
   const { ref, inView } = useInView();
-  const {
-    tags,
-    isLoading,
-    isError,
-    isLoadingMore,
-    isReachingEnd,
-    loadMore
-  } = useTag();
+  const { tags, isLoading, isError, isLoadingMore, isReachingEnd, loadMore } =
+    useTag();
 
   // Trigger loadMore when the last element is visible
   React.useEffect(() => {
@@ -119,14 +113,9 @@ export default function TagsPage() {
         </div>
 
         {/* Loading indicator */}
-        <div ref={ref} className="w-full py-4 flex justify-center">
-          {!isReachingEnd && (
-            isLoadingMore ? (
-              <p>Loading more...</p>
-            ) : (
-              <p>Scroll for more</p>
-            )
-          )}
+        <div ref={ref} className='w-full py-4 flex justify-center'>
+          {!isReachingEnd &&
+            (isLoadingMore ? <p>Loading more...</p> : <p>Scroll for more</p>)}
           {isReachingEnd && <p>No more tags to load</p>}
         </div>
       </section>

@@ -2,14 +2,25 @@
 'use client';
 
 import { Badge } from '@/components/ui/badge';
-import { useEbook } from '@/hooks/use-ebook';
+import { useEbookInfinite } from '@/hooks/use-ebook';
 import { LoadingContent } from './skeletons/skeleton-card';
 import ContentCard from '@/components/content-card';
+import { useInView } from 'react-intersection-observer';
+import React from 'react';
 
 export function Ebooks() {
-  const { ebooks, isLoading } = useEbook({ page: 1, limit: 15 });
+  const { ebooks, isLoading, isError, isLoadingMore, isReachingEnd, loadMore } =
+    useEbookInfinite();
+  const { ref, inView } = useInView();
+
+  React.useEffect(() => {
+    if (inView && !isLoadingMore && !isReachingEnd) {
+      loadMore();
+    }
+  }, [inView, isLoadingMore, isReachingEnd]);
 
   if (isLoading) return <LoadingContent />;
+  if (isError) return <h1>Error</h1>;
   return (
     <section className='py-2'>
       <div className='flex flex-col gap-10 mb-8'>
@@ -39,6 +50,11 @@ export function Ebooks() {
             />
           );
         })}
+      </div>
+      <div ref={ref} className='w-full py-4 flex justify-center'>
+        {!isReachingEnd &&
+          (isLoadingMore ? <p>Loading more...</p> : <p>Scroll for more</p>)}
+        {isReachingEnd && <p>No more ebooks to load</p>}
       </div>
     </section>
   );

@@ -1,5 +1,6 @@
 import { fetcher } from '@/utils/fetcher';
 import useSWR from 'swr';
+import useSWRInfinite from 'swr/infinite';
 
 type CompetitionFilter = {
   page: number;
@@ -46,6 +47,41 @@ export function useCompetitionBySlug(slug: string) {
     competition: data?.data,
     isLoading: !error && !data,
     isError: error,
+    mutate,
+  };
+}
+
+export function useCompetitionInfinite() {
+  const getKey = (pageIndex: number, previousPageData: any) => {
+    if (previousPageData && !previousPageData.data) return null;
+
+    if (pageIndex === 0) return `/competitions?page=1&limit=12`;
+    return `/competitions?page=${pageIndex + 1}&limit=12`;
+  };
+
+  const { data, error, size, setSize, isLoading, mutate } = useSWRInfinite(
+    getKey,
+    fetcher
+  );
+
+  const competitions = data ? [].concat(...data.map((page) => page.data)) : [];
+  const isLoadingMore =
+    isLoading || (size > 0 && data && typeof data[size - 1] === 'undefined');
+  const isEmpty = data?.[0]?.data?.length === 0;
+  const isReachingEnd =
+    isEmpty ||
+    (data &&
+      data[data.length - 1]?.pagination?.page >=
+        data[data.length - 1]?.pagination?.last_page);
+
+  return {
+    competitions,
+    isLoading: !error && !data,
+    isError: error,
+    isLoadingMore,
+    isEmpty,
+    isReachingEnd,
+    loadMore: () => setSize(size + 1),
     mutate,
   };
 }

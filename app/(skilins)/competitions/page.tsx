@@ -2,17 +2,33 @@
 'use client';
 import { Badge } from '@/components/ui/badge';
 import { ContentLayout } from '@/components/user-panel/content-layout';
-import { useCompetition } from '@/hooks/use-competition';
+import {
+  useCompetition,
+  useCompetitionInfinite,
+} from '@/hooks/use-competition';
 import Image from 'next/image';
+import React from 'react';
+import { useInView } from 'react-intersection-observer';
 
 export default function CompetitionPage() {
-  const { competitions, isLoading } = useCompetition({
-    page: 1,
-    limit: 15,
-    status: true,
-  });
+  const {
+    competitions,
+    isLoading,
+    isError,
+    isLoadingMore,
+    isReachingEnd,
+    loadMore,
+  } = useCompetitionInfinite();
+  const { ref, inView } = useInView();
+
+  React.useEffect(() => {
+    if (inView && !isLoadingMore && !isReachingEnd) {
+      loadMore();
+    }
+  }, [inView, isLoadingMore, isReachingEnd]);
 
   if (isLoading) return <h1>loading...</h1>;
+  if (isError) return <h1>Error</h1>;
   return (
     <ContentLayout title=''>
       {' '}
@@ -71,6 +87,11 @@ export default function CompetitionPage() {
               </div>
             );
           })}
+        </div>
+        <div ref={ref} className='w-full py-4 flex justify-center'>
+          {!isReachingEnd &&
+            (isLoadingMore ? <p>Loading more...</p> : <p>Scroll for more</p>)}
+          {isReachingEnd && <p>No more competitions to load</p>}
         </div>
       </section>
     </ContentLayout>

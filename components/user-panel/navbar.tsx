@@ -32,6 +32,7 @@ import {
 } from '../ui/navigation-menu';
 import React, { useState } from 'react';
 import { Input } from '../ui/input';
+import { SearchModal } from '@/components/user-panel/search-modal';
 
 interface NavbarProps {
   title: string;
@@ -42,11 +43,11 @@ export function Navbar({ title }: NavbarProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
-    
     router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
   };
 
@@ -61,65 +62,93 @@ export function Navbar({ title }: NavbarProps) {
     }
   };
 
+  const searchForm = (
+    <form
+      onSubmit={handleSearch}
+      className='relative flex-1 max-w-[400px] sm:max-w-md'
+    >
+      <Input
+        type='text'
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        placeholder='Search content...'
+        className='w-full px-3 py-1.5 text-sm sm:px-4 sm:py-2 sm:text-base pr-8'
+      />
+      <button
+        type='submit'
+        className='absolute right-2 top-1/2 -translate-y-1/2'
+      >
+        <Search className='w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground' />
+      </button>
+    </form>
+  );
+
   if (!user) {
     return (
       <header className='sticky top-0 z-20 w-full bg-background/95 shadow backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:shadow-secondary'>
-        <div className='mx-4 sm:mx-8 flex h-14 items-center'>
-          <div className='flex items-center space-x-4 lg:space-x-0'>
+        <div className='mx-2 sm:mx-4 md:mx-8 flex h-14 items-center'>
+          <div className='flex items-center space-x-2 sm:space-x-4 lg:space-x-0'>
             <SheetMenu />
-            <h1 className='font-bold line-clamp-1'>{title}</h1>
+            <h1 className='text-sm sm:text-base font-bold line-clamp-1'>
+              {title}
+            </h1>
           </div>
-          <div className='flex flex-1 items-center justify-end space-x-4'>
-            <form onSubmit={handleSearch} className="flex-1 max-w-md mx-4">
-              <div className="relative">
-                <Input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search content by title, creator, tags, genres, or majors..."
-                  className="w-full px-4 py-1.5 pr-8"
-                />
-                <button type="submit" className="absolute right-2 top-1/2 -translate-y-1/2">
-                  <Search className="w-4 h-4 text-muted-foreground" />
-                </button>
-              </div>
-            </form>
-            <Button variant='ghost'>
+          <div className='flex flex-1 items-center justify-end space-x-2 sm:space-x-4'>
+            <div className='hidden sm:block mx-2 sm:mx-4'>{searchForm}</div>
+            <Button
+              variant='ghost'
+              size='icon'
+              className='sm:hidden'
+              onClick={() => setIsSearchModalOpen(true)}
+            >
+              <Search className='h-4 w-4 sm:h-5 sm:w-5' />
+            </Button>
+            <Button variant='ghost' size='sm' className='text-sm sm:text-base'>
               <Link href={'/auth/user/register'}>Sign up</Link>
             </Button>
-            <Button variant='default'>
+            <Button
+              variant='default'
+              size='sm'
+              className='text-sm sm:text-base'
+            >
               <Link href={'/auth/user/login'}>Log in</Link>
             </Button>
           </div>
         </div>
+        <SearchModal
+          isOpen={isSearchModalOpen}
+          onClose={() => setIsSearchModalOpen(false)}
+          initialQuery={searchQuery}
+        />
       </header>
     );
   }
 
   return (
     <header className='sticky top-0 z-20 w-full bg-background/95 shadow backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:shadow-secondary'>
-      <div className='mx-4 sm:mx-8 flex h-14 items-center'>
-        <div className='flex items-center space-x-4 lg:space-x-0'>
+      <div className='mx-2 sm:mx-4 md:mx-8 flex h-14 items-center'>
+        <div className='flex items-center space-x-2 sm:space-x-4 lg:space-x-0'>
           <SheetMenu />
-          <h1 className='font-bold line-clamp-1'>{title}</h1>
+          <h1 className='text-sm sm:text-base font-bold line-clamp-1'>
+            {title}
+          </h1>
         </div>
-        <div className='flex flex-1 items-center justify-end space-x-4'>
-          <form onSubmit={handleSearch} className="flex-1 max-w-md mx-4">
-            <div className="relative">
-              <Input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search content by title, creator, tags, genres, or majors..."
-                className="w-full px-4 py-2"
-              />
-              <button type="submit" className="absolute right-2 top-1/2 -translate-y-1/2">
-                <Search className="w-4 h-4 text-muted-foreground" />
-              </button>
-            </div>
-          </form>
-          <Button variant={'outline'} className='hidden md:flex'>
-            <CalendarDays className='mr-2' width={18} />{' '}
+        <div className='flex flex-1 items-center justify-end space-x-2 sm:space-x-4'>
+          <div className='hidden sm:block mx-2 sm:mx-4'>{searchForm}</div>
+          <Button
+            variant='ghost'
+            size='icon'
+            className='sm:hidden'
+            onClick={() => setIsSearchModalOpen(true)}
+          >
+            <Search className='h-4 w-4 sm:h-5 sm:w-5' />
+          </Button>
+          <Button
+            variant={'outline'}
+            size='sm'
+            className='hidden md:flex text-sm'
+          >
+            <CalendarDays className='mr-2' width={16} />{' '}
             {format(new Date(), 'dd MMM yy')}
           </Button>
           <NavigationMenu>
@@ -241,6 +270,11 @@ export function Navbar({ title }: NavbarProps) {
           )}
         </div>
       </div>
+      <SearchModal
+        isOpen={isSearchModalOpen}
+        onClose={() => setIsSearchModalOpen(false)}
+        initialQuery={searchQuery}
+      />
     </header>
   );
 }
