@@ -6,6 +6,7 @@ import React from 'react';
 import { useInView } from 'react-intersection-observer';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { Badge } from '@/components/ui/badge';
 
 export default function TagsPage() {
   const router = useRouter();
@@ -41,11 +42,18 @@ export default function TagsPage() {
   if (isError) return <h1>Error cuy</h1>;
   return (
     <ContentLayout title=''>
-      <section className='py-8 space-y-8'>
+      <section className='py-4 space-y-8'>
         <div className='flex flex-col items-start md:items-center md:flex-row justify-between gap-4'>
-          <div>
-            <p className='font-bold text-4xl'>Tags</p>
-            <p className='text-sm'>Linking Ideas, Creating Connections.</p>
+          <div className='space-y-2'>
+            <div>
+              <Badge>Groups</Badge>
+            </div>
+            <h2 className='text-3xl md:text-5xl tracking-tighter max-w-xl font-regular text-left'>
+              Tags
+            </h2>
+            <p className='text-lg max-w-xl lg:max-w-lg leading-relaxed tracking-tight text-muted-foreground  text-left'>
+              Linking Ideas, Creating Connections.
+            </p>
           </div>
           <div className='w-full md:w-64'>
             <Input

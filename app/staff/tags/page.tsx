@@ -20,6 +20,7 @@ import DeleteDialog from '@/components/staff-panel/delete-dialog';
 import TagForm from '@/components/staff-panel/forms/tag/tag-form';
 import Image from 'next/image';
 import TagEditForm from '@/components/staff-panel/forms/tag/tag-edit-form';
+import { Badge } from '@/components/ui/badge';
 
 export default function TagsPage() {
   const [editUuid, setEditUuid] = React.useState<string | null>(null);

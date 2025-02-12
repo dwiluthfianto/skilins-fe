@@ -1,38 +1,40 @@
-"use client";
+'use client';
 
-import { MinimalTiptapEditor } from "@/components/minimal-tiptap";
-import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Tag, TagInput } from "emblor";
-import { Button } from "@/components/ui/button";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "@/utils/axios";
-import { toast } from "@/hooks/use-toast";
-import { AxiosError } from "axios";
+import { MinimalTiptapEditor } from '@/components/minimal-tiptap';
+import { useState } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Tag, TagInput } from 'emblor';
+import { Button } from '@/components/ui/button';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import axios from '@/utils/axios';
+import { toast } from '@/hooks/use-toast';
+import { AxiosError } from 'axios';
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from "@/components/ui/form";
-import ImageUploader from "@/components/imageUploader";
-import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
-import { ContentLayout } from "@/components/staff-panel/content-layout";
-import { useTag } from "@/hooks/use-tag";
-import { AutoComplete } from "@/components/autocomplete";
-import { useCategorySearch } from "@/hooks/use-category";
-import { AutosizeTextarea } from "@/components/autosize-textarea";
+} from '@/components/ui/form';
+import ImageUploader from '@/components/imageUploader';
+import { useRouter } from 'next/navigation';
+import { Loader2 } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
+import { ContentLayout } from '@/components/staff-panel/content-layout';
+import { useTag } from '@/hooks/use-tag';
+import { AutoComplete } from '@/components/autocomplete';
+import { useCategorySearch } from '@/hooks/use-category';
+import { AutosizeTextarea } from '@/components/autosize-textarea';
+import { handleAxiosError } from '@/utils/handle-axios-error';
+
 const BlogSchema = z.object({
   title: z
     .string()
-    .min(5, { message: "Title must be longer than or equal to 5 characters" }),
+    .min(5, { message: 'Title must be longer than or equal to 5 characters' }),
   thumbnail: z.instanceof(File).optional().nullable(),
-  description: z.string().min(1, { message: "Description is required." }),
+  description: z.string().min(1, { message: 'Description is required.' }),
   tags: z
     .array(
       z.object({
@@ -41,18 +43,18 @@ const BlogSchema = z.object({
       })
     )
     .optional(),
-  category: z.string().min(1, { message: "Category is required." }),
+  category: z.string().min(1, { message: 'Category is required.' }),
 });
 
 export default function CreateBlogs() {
   const form = useForm<z.infer<typeof BlogSchema>>({
     resolver: zodResolver(BlogSchema),
     defaultValues: {
-      title: "",
+      title: '',
       thumbnail: undefined,
-      description: "",
+      description: '',
       tags: [],
-      category: "",
+      category: '',
     },
   });
   const { autocompleteTags } = useTag();
@@ -61,76 +63,67 @@ export default function CreateBlogs() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const { categories, isLoading } = useCategorySearch(form.watch("category"));
+  const { categories, isLoading } = useCategorySearch(form.watch('category'));
 
   async function onSubmit(data: z.infer<typeof BlogSchema>) {
     setLoading(true);
 
     const formData = new FormData();
-    if (data.thumbnail) formData.append("thumbnail", data.thumbnail);
-    formData.append("title", data.title);
-    formData.append("description", data.description);
-    formData.append("tags", JSON.stringify(data.tags));
-    formData.append("category_name", data.category);
+    if (data.thumbnail) formData.append('thumbnail', data.thumbnail);
+    formData.append('title', data.title);
+    formData.append('description', data.description);
+    formData.append('tags', JSON.stringify(data.tags));
+    formData.append('category_name', data.category);
 
     try {
-      const { data: blogData } = await axios.post("/contents/blogs", formData, {
+      const { data: blogData } = await axios.post('/contents/blogs', formData, {
         headers: {
-          "Content-Type": "multipart/form-data",
+          'Content-Type': 'multipart/form-data',
         },
       });
 
       toast({
-        title: "Success!",
+        title: 'Success!',
         description: blogData.message,
       });
 
-      router.push("/staff/blogs");
+      router.push('/staff/blogs');
     } catch (error) {
-      if (error instanceof AxiosError && error.response) {
-        toast({
-          title: "Error!",
-          description:
-            error?.response.data.message ||
-            error?.response.data.error ||
-            "An error occurred while add the blog.",
-          variant: "destructive",
-        });
-      }
+      handleAxiosError(error, 'An error occurred while adding the blog.');
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <ContentLayout title="">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="font-semibold mb-4">Create Blog</h1>
+    <ContentLayout title=''>
+      <div className='max-w-4xl mx-auto'>
+        <h1 className='font-semibold mb-4'>Create Blog</h1>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <Card>
-              <CardContent className="p-0">
-                <div className="m-8 space-y-4">
+              <CardContent className='p-0'>
+                <div className='m-8 space-y-4'>
                   <FormField
                     control={form.control}
-                    name="thumbnail"
+                    name='thumbnail'
                     render={() => (
                       <ImageUploader
-                        onChange={(file) => form.setValue("thumbnail", file)}
+                        onChange={(file) => form.setValue('thumbnail', file)}
                         ratioImage={16 / 9}
                       />
                     )}
                   />
                   <FormField
                     control={form.control}
-                    name="title"
+                    name='title'
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
                           <AutosizeTextarea
                             {...field}
-                            placeholder="New blog title here..."
-                            className="outline-none w-full text-4xl p-0 border-none  shadow-none focus-visible:ring-0  font-bold placeholder:text-slate-700 h-full resize-none overflow-hidden "
+                            placeholder='New blog title here...'
+                            className='outline-none w-full text-4xl p-0 border-none  shadow-none focus-visible:ring-0  font-bold placeholder:text-slate-700 h-full resize-none overflow-hidden '
                           />
                         </FormControl>
                         <FormMessage />
@@ -140,12 +133,12 @@ export default function CreateBlogs() {
                   <Separator />
                   <FormField
                     control={form.control}
-                    name="category"
+                    name='category'
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
                           <AutoComplete
-                            selectedValue={form.watch("category")}
+                            selectedValue={form.watch('category')}
                             onSelectedValueChange={(value) =>
                               field.onChange(value)
                             }
@@ -153,8 +146,8 @@ export default function CreateBlogs() {
                             onSearchValueChange={field.onChange}
                             items={categories ?? []}
                             isLoading={isLoading}
-                            placeholder="Category name here..."
-                            emptyMessage="No category found."
+                            placeholder='Category name here...'
+                            emptyMessage='No category found.'
                           />
                         </FormControl>
                         <FormMessage />
@@ -164,7 +157,7 @@ export default function CreateBlogs() {
                   <Separator />
                   <FormField
                     control={form.control}
-                    name="tags"
+                    name='tags'
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
@@ -173,18 +166,18 @@ export default function CreateBlogs() {
                             tags={tags}
                             setTags={(newTags) => {
                               setTags(newTags);
-                              form.setValue("tags", newTags as [Tag, ...Tag[]]);
+                              form.setValue('tags', newTags as [Tag, ...Tag[]]);
                             }}
-                            placeholder="Add up to 4 tags..."
+                            placeholder='Add up to 4 tags...'
                             styleClasses={{
                               input:
-                                "w-full h-fit outline-none border-none shadow-none  text-base p-0",
-                              inlineTagsContainer: "border-none p-0",
+                                'w-full h-fit outline-none border-none shadow-none  text-base p-0',
+                              inlineTagsContainer: 'border-none p-0',
                               autoComplete: {
-                                command: "[&>div]:border-none",
-                                popoverContent: "p-4",
-                                commandList: "list-none",
-                                commandGroup: "font-bold",
+                                command: '[&>div]:border-none',
+                                popoverContent: 'p-4',
+                                commandList: 'list-none',
+                                commandGroup: 'font-bold',
                               },
                             }}
                             activeTagIndex={activeTagIndex}
@@ -202,19 +195,19 @@ export default function CreateBlogs() {
                 </div>
                 <FormField
                   control={form.control}
-                  name="description"
+                  name='description'
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
                         <MinimalTiptapEditor
                           {...field}
-                          className="w-full"
-                          editorContentClassName="px-8 py-4 shadow-none"
-                          output="html"
-                          placeholder="Type your description here..."
+                          className='w-full'
+                          editorContentClassName='px-8 py-4 shadow-none'
+                          output='html'
+                          placeholder='Type your description here...'
                           autofocus={true}
                           editable={true}
-                          editorClassName="focus:outline-none"
+                          editorClassName='focus:outline-none'
                         />
                       </FormControl>
                     </FormItem>
@@ -222,13 +215,13 @@ export default function CreateBlogs() {
                 />
               </CardContent>
             </Card>
-            <Button className="mt-6" disabled={loading}>
+            <Button className='mt-6' disabled={loading}>
               {loading ? (
                 <>
-                  <Loader2 className="animate-spin" /> {`Publishing...`}
+                  <Loader2 className='animate-spin' /> {`Publishing...`}
                 </>
               ) : (
-                "Publish"
+                'Publish'
               )}
             </Button>
           </form>

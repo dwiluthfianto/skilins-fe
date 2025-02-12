@@ -51,9 +51,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function AudioDetail({ params }: any) {
   const { slug } = params;
-  const res = (await axios.get(`/contents/audios/${slug}`)).data;
-
-  const audio = res.data;
+  const res = (await axios.get(`/contents/audios/${slug}`)).data.data;
 
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
@@ -62,15 +60,17 @@ export default async function AudioDetail({ params }: any) {
   };
 
   const track = {
-    src: audio.file,
-    title: audio.title,
-    category: audio.category,
-    image: audio.thumbnail,
-    creator: audio.creator,
+    src: res.audio_podcast.file_attachment.file,
+    title: res.title,
+    category: res.category.name,
+    image: res.thumbnail,
+    creator: res.audio_podcast.creator.name,
   };
 
+  console.log(res);
+
   return (
-    <ContentLayout title={audio.title}>
+    <ContentLayout title={res.title}>
       <section className='md:py-2'>
         <div className='md:container'>
           <Breadcrumb>
@@ -88,7 +88,7 @@ export default async function AudioDetail({ params }: any) {
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage>{audio.title}</BreadcrumbPage>
+                <BreadcrumbPage>{res.title}</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -96,7 +96,7 @@ export default async function AudioDetail({ params }: any) {
             <div className='relative'>
               <AspectRatio ratio={1 / 1}>
                 <Image
-                  src={audio.thumbnail}
+                  src={res.thumbnail}
                   alt='placeholder'
                   layout='fill'
                   objectFit='cover'
@@ -109,17 +109,15 @@ export default async function AudioDetail({ params }: any) {
             <div className='col-span-3 '>
               <Card className='rounded-lg '>
                 <CardContent className='p-6'>
-                  <p className='text-lg text-muted-foreground'>
-                    {audio.creator}
-                  </p>
+                  <p className='text-lg text-muted-foreground'>{res.creator}</p>
                   <h2 className='text-3xl font-medium text-balance md:text-5xl'>
-                    {audio.title}
+                    {res.title}
                   </h2>
                   <p className='max-w-xl mt-1 text-lg font-medium leading-relaxed tracking-tight md:mt-6 text lg:max-w-xl'>
                     Description
                   </p>
                   <MinimalTiptapPreview
-                    value={audio.description}
+                    value={res.description}
                     editable={false}
                   />
 
@@ -140,7 +138,7 @@ export default async function AudioDetail({ params }: any) {
                       </DialogHeader>
                       <ScrollArea className='max-h-[600px] pr-4'>
                         <MinimalTiptapPreview
-                          value={audio.description}
+                          value={res.description}
                           editable={false}
                         />
                       </ScrollArea>
@@ -159,7 +157,7 @@ export default async function AudioDetail({ params }: any) {
                             <p className='text-sm text-muted-foreground'>
                               Category
                             </p>
-                            <p>{audio.category}</p>
+                            <p>{res.category.name}</p>
                           </div>
                         </div>
                         <div className='flex flex-row items-start gap-6'>
@@ -167,7 +165,7 @@ export default async function AudioDetail({ params }: any) {
                             <p className='text-sm text-muted-foreground'>
                               Duration
                             </p>
-                            <p>{formatTime(audio.duration)} </p>
+                            <p>{formatTime(res.audio_podcast.duration)} </p>
                           </div>
                         </div>
                         <div className='flex flex-row items-start gap-6'>
@@ -175,7 +173,7 @@ export default async function AudioDetail({ params }: any) {
                             <p className='text-sm text-muted-foreground'>
                               Release Date
                             </p>
-                            <p>{format(audio.created_at, 'dd MMM yyyy')}</p>
+                            <p>{format(res.created_at, 'dd MMM yyyy')}</p>
                           </div>
                         </div>
                         <div className='flex flex-row items-start gap-6'>
@@ -184,7 +182,7 @@ export default async function AudioDetail({ params }: any) {
                               Genres
                             </p>
                             <p>
-                              {audio.genres.map((genre: any, index: number) => (
+                              {res.genre.map((genre: any, index: number) => (
                                 <Badge key={index} className='mr-2'>
                                   {genre.text}
                                 </Badge>
@@ -198,7 +196,7 @@ export default async function AudioDetail({ params }: any) {
                               Tags
                             </p>
                             <p>
-                              {audio.tags.map((tag: any, index: number) => (
+                              {res.tag.map((tag: any, index: number) => (
                                 <Badge
                                   key={index}
                                   className='items-center mr-2'
@@ -217,12 +215,12 @@ export default async function AudioDetail({ params }: any) {
             </div>
           </div>
           <FeedbackComponent
-            contentUuid={audio.uuid}
-            shareUrl={`${process.env.NEXT_PUBLIC_FRONTEND_URL}/audio-podcasts/${audio.slug}`}
-            titleContent={audio.title}
-            comments={audio.comments}
-            avgRating={Number(audio.avg_rating)}
-            creator={audio.creator}
+            contentUuid={res.uuid}
+            shareUrl={`${process.env.NEXT_PUBLIC_FRONTEND_URL}/audio-podcasts/${res.slug}`}
+            titleContent={res.title}
+            comments={res.comment}
+            avgRating={Number(res.avg_rating)}
+            creator={res.audio_podcast.creator.name}
             className='my-8 lg:my-16 antialiased'
           />
         </div>
