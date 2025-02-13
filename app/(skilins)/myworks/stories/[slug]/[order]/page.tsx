@@ -24,6 +24,8 @@ import MinimalTiptapOne from '@/components/minimal-tiptap/minimal-tiptap-one';
 import { ContentLayout } from '@/components/user-panel/content-layout';
 import { useStoryEpisode } from '@/hooks/use-story';
 import { Input } from '@/components/ui/input';
+import { handleAxiosError } from '@/utils/handle-axios-error';
+import { ContentUpdateSkeleton } from '@/components/skeletons/content-update-skeleton';
 const ContentSchema = z.object({
   title: z
     .string()
@@ -74,23 +76,13 @@ export default function StoryCreate() {
       router.back();
     } catch (error) {
       console.log(error);
-
-      if (error instanceof AxiosError && error.response) {
-        toast({
-          title: 'Error!',
-          description:
-            error?.response.data.message ||
-            error?.response.data.error ||
-            'An error occurred while submit the competition.',
-          variant: 'destructive',
-        });
-      }
+      handleAxiosError(error, 'An error occurred while update story.');
     } finally {
       setLoading(false);
     }
   }
 
-  if (isLoading) return <h1>loading...</h1>;
+  if (isLoading) return <ContentUpdateSkeleton />;
 
   return (
     <ContentLayout title=''>

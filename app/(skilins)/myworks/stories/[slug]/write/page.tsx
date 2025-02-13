@@ -24,6 +24,8 @@ import MinimalTiptapOne from '@/components/minimal-tiptap/minimal-tiptap-one';
 import { ContentLayout } from '@/components/user-panel/content-layout';
 import { useStoryBySlug } from '@/hooks/use-story';
 import { Input } from '@/components/ui/input';
+import { handleAxiosError } from '@/utils/handle-axios-error';
+import { Loading } from '@/components/loading';
 const ContentSchema = z.object({
   title: z
     .string()
@@ -62,22 +64,13 @@ export default function StoryCreate() {
 
       router.back();
     } catch (error) {
-      if (error instanceof AxiosError && error.response) {
-        toast({
-          title: 'Error!',
-          description:
-            error?.response.data.message ||
-            error?.response.data.error ||
-            'An error occurred while submit the competition.',
-          variant: 'destructive',
-        });
-      }
+      handleAxiosError(error, 'An error occurred while submit the story.');
     } finally {
       setLoading(false);
     }
   }
 
-  if (isLoading) return <h1>loading...</h1>;
+  if (isLoading) return <Loading />;
 
   return (
     <ContentLayout title=''>

@@ -37,7 +37,8 @@ import {
 import Cookies from 'js-cookie';
 import Compressor from 'compressorjs';
 import { Label } from './ui/label';
-
+import { handleAxiosError } from '@/utils/handle-axios-error';
+import { Loading } from './loading';
 const PasswordSchema = z.object({
   currentPassword: z.string().min(1, {
     message: 'current password must be filled',
@@ -128,15 +129,7 @@ export default function AccountSetting() {
       router.refresh();
       mutate(); // Pastikan mutate di sini agar perubahan segera tampil
     } catch (error) {
-      if (error instanceof AxiosError && error.response) {
-        toast({
-          title: 'Error!',
-          description:
-            JSON.stringify(error?.response.data.message) ||
-            'An error occurred while update profile image.',
-          variant: 'destructive',
-        });
-      }
+      handleAxiosError(error, 'An error occurred while change profile.');
     }
   }
 
@@ -163,15 +156,7 @@ export default function AccountSetting() {
 
       mutate();
     } catch (error) {
-      if (error instanceof AxiosError && error.response) {
-        toast({
-          title: 'Error!',
-          description:
-            JSON.stringify(error?.response.data.message) ||
-            'An error occurred while change password.',
-          variant: 'destructive',
-        });
-      }
+      handleAxiosError(error, 'An error occurred while change password.');
     }
   }
   async function onDelete() {
@@ -187,15 +172,7 @@ export default function AccountSetting() {
       router.push('/');
       mutate(null, false);
     } catch (error) {
-      if (error instanceof AxiosError && error.response) {
-        toast({
-          title: 'Error!',
-          description:
-            JSON.stringify(error?.response.data.message) ||
-            'An error occurred while delete account.',
-          variant: 'destructive',
-        });
-      }
+      handleAxiosError(error, 'An error occurred while delete account.');
     }
   }
 
@@ -205,7 +182,7 @@ export default function AccountSetting() {
     }
   }, [user, isLoading, router]);
 
-  if (isLoading || !user) return <p>Redirecting...</p>;
+  if (isLoading || !user) return <Loading />;
   return (
     <div className='md:container '>
       <Card>

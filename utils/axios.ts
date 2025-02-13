@@ -1,5 +1,5 @@
-import axios, { InternalAxiosRequestConfig } from "axios";
-import Cookies from "js-cookie";
+import axios, { InternalAxiosRequestConfig } from 'axios';
+import Cookies from 'js-cookie';
 
 // Buat instance axios
 const api = axios.create({
@@ -8,9 +8,9 @@ const api = axios.create({
 });
 
 api.interceptors.request.use(async (config: InternalAxiosRequestConfig) => {
-  const accessToken = Cookies.get("accessToken");
+  const accessToken = Cookies.get('access_token');
   if (accessToken) {
-    config.headers["Authorization"] = `Bearer ${accessToken}`;
+    config.headers['Authorization'] = `Bearer ${accessToken}`;
   }
 
   return config;
@@ -36,18 +36,18 @@ api.interceptors.response.use(
             { withCredentials: true }
           );
 
-          Cookies.set("accessToken", data.accessToken, {
+          Cookies.set('access_token', data.access_token, {
             expires: 15 / 1440,
           });
 
           originalRequest.headers[
-            "Authorization"
-          ] = `Bearer ${data.accessToken}`;
+            'Authorization'
+          ] = `Bearer ${data.access_token}`;
 
           // Setelah refresh token berhasil, lakukan permintaan ulang
           return axios(originalRequest);
         } catch (refreshError) {
-          console.error("Refresh token failed", refreshError);
+          console.error('Refresh token failed', refreshError);
         } finally {
           // Reset status refreshing setelah proses selesai
           originalRequest._refreshing = false;

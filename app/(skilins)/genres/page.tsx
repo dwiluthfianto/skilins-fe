@@ -1,4 +1,6 @@
 'use client';
+import { Loading } from '@/components/loading';
+import { Error } from '@/components/error';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { ContentLayout } from '@/components/user-panel/content-layout';
@@ -39,8 +41,8 @@ export default function GenrePage() {
     }
   };
 
-  if (isLoading) return <h1>Loading..</h1>;
-  if (isError) return <h1>Error cuy</h1>;
+  if (isLoading) return <Loading />;
+  if (isError) return <Error />;
   return (
     <ContentLayout title=''>
       <section className='py-4 space-y-8'>

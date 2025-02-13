@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   ColumnDef,
@@ -10,9 +10,9 @@ import {
   ColumnFiltersState,
   getFilteredRowModel,
   VisibilityState,
-} from "@tanstack/react-table";
+} from '@tanstack/react-table';
 
-import * as React from "react";
+import * as React from 'react';
 
 import {
   Table,
@@ -21,20 +21,20 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table';
 
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from '@/components/ui/dropdown-menu';
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ChevronDownIcon } from "lucide-react";
-import JudgeForm from "@/components/staff-panel/forms/judge/judge-form";
-import { useJudge } from "@/hooks/use-judge";
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { ChevronDownIcon } from 'lucide-react';
+import JudgeForm from '@/components/staff-panel/forms/judge/judge-form';
+import { useJudge } from '@/hooks/use-judge';
 import {
   Select,
   SelectContent,
@@ -42,9 +42,10 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import useDebounce from "@/lib/debounce";
-
+} from '@/components/ui/select';
+import useDebounce from '@/lib/debounce';
+import { Loading } from '@/components/loading';
+import { Error } from '@/components/error';
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
 }
@@ -61,8 +62,8 @@ export function DataTable<TData, TValue>({
 
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const [search, setSearch] = React.useState("");
-  const [limit, setLimit] = React.useState("10");
+  const [search, setSearch] = React.useState('');
+  const [limit, setLimit] = React.useState('10');
   const [pagination, setPagination] = React.useState({
     pageIndex: 0,
     pageSize: parseInt(limit, 10),
@@ -74,7 +75,6 @@ export function DataTable<TData, TValue>({
     limit: parseInt(limit, 10),
     search: debouncedSearch,
   });
-
 
   React.useEffect(() => {
     setPagination({ ...pagination, pageIndex: 0 });
@@ -94,7 +94,7 @@ export function DataTable<TData, TValue>({
     initialState: {
       columnPinning: {
         left: [],
-        right: ["actions"],
+        right: ['actions'],
       },
     },
 
@@ -110,26 +110,26 @@ export function DataTable<TData, TValue>({
     onPaginationChange: setPagination,
   });
 
-  if (isLoading) return <h1>Loading..</h1>;
-  if (isError) return <h1>Error</h1>;
+  if (isLoading) return <Loading />;
+  if (isError) return <Error />;
   return (
-    <div className="bg-white dark:bg-black border rounded-md p-6 aspect-square lg:aspect-auto flex  flex-col">
-      <div className="flex flex-col items-start md:items-center md:flex-row justify-between gap-4">
+    <div className='bg-white dark:bg-black border rounded-md p-6 aspect-square lg:aspect-auto flex  flex-col'>
+      <div className='flex flex-col items-start md:items-center md:flex-row justify-between gap-4'>
         <div>
-          <p className="font-bold text-4xl">Judges</p>
+          <p className='font-bold text-4xl'>Judges</p>
         </div>
         <JudgeForm />
       </div>
-      <div className="flex items-center py-4">
+      <div className='flex items-center py-4'>
         <Input
-          placeholder="Filter name..."
+          placeholder='Filter name...'
           value={search}
           onChange={(event) => setSearch(event.target.value)}
-          className="max-w-sm"
-          />
+          className='max-w-sm'
+        />
       </div>
 
-      <div className="rounded-md border">
+      <div className='rounded-md border'>
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -154,15 +154,15 @@ export function DataTable<TData, TValue>({
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
+                  data-state={row.getIsSelected() && 'selected'}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}
                       className={
                         cell.column.getIsPinned()
-                          ? "sticky right-0 z-50 bg-white dark:bg-black"
-                          : ""
+                          ? 'sticky right-0 z-50 bg-white dark:bg-black'
+                          : ''
                       }
                     >
                       {flexRender(
@@ -177,7 +177,7 @@ export function DataTable<TData, TValue>({
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center"
+                  className='h-24 text-center'
                 >
                   No results.
                 </TableCell>
@@ -186,18 +186,18 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-between space-x-2 py-4">
-        <div className="flex flex-wrap md:space-x-2 items-center">
-          <p className="font-semibold text-sm">Rows per page</p>
-          <Select onValueChange={(value) => setLimit(value)} defaultValue="10">
-            <SelectTrigger className="w-fit">
-              <SelectValue defaultValue={"10"} />
+      <div className='flex items-center justify-between space-x-2 py-4'>
+        <div className='flex flex-wrap md:space-x-2 items-center'>
+          <p className='font-semibold text-sm'>Rows per page</p>
+          <Select onValueChange={(value) => setLimit(value)} defaultValue='10'>
+            <SelectTrigger className='w-fit'>
+              <SelectValue defaultValue={'10'} />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectItem value="10">10</SelectItem>
-                <SelectItem value="25">25</SelectItem>
-                <SelectItem value="50">40</SelectItem>
+                <SelectItem value='10'>10</SelectItem>
+                <SelectItem value='25'>25</SelectItem>
+                <SelectItem value='50'>40</SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>
@@ -216,40 +216,40 @@ export function DataTable<TData, TValue>({
             Previous
           </Button>
           <div className='flex items-center gap-1'>
-            {last_page > 0 && [...Array(last_page)].map((_, idx) => {
-              const pageNumber = idx + 1;
-              const isCurrentPage = pagination.pageIndex + 1 === pageNumber;
-              
-              // Show first page, last page, current page, and pages around current page
-              if (
-                pageNumber === 1 ||
-                pageNumber === last_page ||
-                (pageNumber >= pagination.pageIndex + 1 - 1 &&
-                  pageNumber <= pagination.pageIndex + 1 + 1)
-              ) {
-                return (
-                  <Button
-                    key={idx}
-                    variant={isCurrentPage ? 'default' : 'outline'}
-                    size='sm'
-                    onClick={() => setPagination({ ...pagination, pageIndex: idx })}
-                    className='w-8'
-                  >
-                    {pageNumber}
-                  </Button>
-                );
-              }
+            {last_page > 0 &&
+              [...Array(last_page)].map((_, idx) => {
+                const pageNumber = idx + 1;
+                const isCurrentPage = pagination.pageIndex + 1 === pageNumber;
 
-              // Show dots if there's a gap
-              if (
-                pageNumber === 2 ||
-                pageNumber === last_page - 1
-              ) {
-                return <span key={idx}>...</span>;
-              }
+                // Show first page, last page, current page, and pages around current page
+                if (
+                  pageNumber === 1 ||
+                  pageNumber === last_page ||
+                  (pageNumber >= pagination.pageIndex + 1 - 1 &&
+                    pageNumber <= pagination.pageIndex + 1 + 1)
+                ) {
+                  return (
+                    <Button
+                      key={idx}
+                      variant={isCurrentPage ? 'default' : 'outline'}
+                      size='sm'
+                      onClick={() =>
+                        setPagination({ ...pagination, pageIndex: idx })
+                      }
+                      className='w-8'
+                    >
+                      {pageNumber}
+                    </Button>
+                  );
+                }
 
-              return null;
-            })}
+                // Show dots if there's a gap
+                if (pageNumber === 2 || pageNumber === last_page - 1) {
+                  return <span key={idx}>...</span>;
+                }
+
+                return null;
+              })}
           </div>
           <Button
             variant='outline'

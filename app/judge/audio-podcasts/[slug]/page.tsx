@@ -29,13 +29,13 @@ import { useAudioBySlug } from '@/hooks/use-audio';
 import FeedbackJudge from '@/components/judge-panel/feedback';
 import { useState } from 'react';
 import JudgeAudioPlayer from '@/components/judge-panel/judge-audio-player';
-
+import { Loading } from '@/components/loading';
 export default function AudioDetail({ params }: any) {
   const { slug } = params;
   const { audio, isLoading: audioLoading } = useAudioBySlug(slug);
   const [hasPlayed, setHasPlayed] = useState(false);
 
-  if (audioLoading) return <h1>loading...</h1>;
+  if (audioLoading) return <Loading />;
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);

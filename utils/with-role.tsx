@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import { ComponentType } from 'react';
-
+import { Loading } from '@/components/loading';
 const withRole = <P extends object>(
   WrappedComponent: ComponentType<P>,
   allowedRoles: string[],
@@ -12,7 +12,7 @@ const withRole = <P extends object>(
   const WithRole: React.FC<P> = (props) => {
     const router = useRouter();
     const [loading, setLoading] = React.useState(true);
-    const userRole = Cookies.get('userRole');
+    const userRole = Cookies.get('user_role');
 
     useEffect(() => {
       if (!userRole) {
@@ -29,7 +29,7 @@ const withRole = <P extends object>(
     }, [userRole, allowedRoles, router, loginRedirectPath]);
 
     if (loading) {
-      return <div>Loading...</div>;
+      return <Loading />;
     }
 
     return userRole && allowedRoles.includes(userRole) ? (

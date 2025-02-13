@@ -1,28 +1,28 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import Cookies from "js-cookie";
-import axios from "@/utils/axios";
-import jwt from "jsonwebtoken";
+import Cookies from 'js-cookie';
+import axios from '@/utils/axios';
+import jwt from 'jsonwebtoken';
 export const login = async (email: string, password: string) => {
-  const response = await axios.post("/auth/login", { email, password });
+  const response = await axios.post('/auth/login', { email, password });
 
-  const { accessToken } = response.data;
+  const { access_token } = response.data.data;
   if (response.status === 200) {
-    const decodedToken = jwt.decode(accessToken) as jwt.JwtPayload;
+    const decodedToken = jwt.decode(access_token) as jwt.JwtPayload;
 
     if (decodedToken && decodedToken.role) {
       const userRole = decodedToken.role;
 
-      Cookies.set("userRole", userRole, {
+      Cookies.set('user_role', userRole, {
         expires: 7,
-        sameSite: "Lax",
+        sameSite: 'Lax',
       });
 
-      Cookies.set("accessToken", accessToken, {
+      Cookies.set('access_token', access_token, {
         expires: 15 / 1440,
-        sameSite: "Lax",
+        sameSite: 'Lax',
       });
     } else {
-      console.error("Failed to decode JWT or missing role.");
+      console.error('Failed to decode JWT or missing role.');
     }
   }
 
@@ -35,7 +35,7 @@ export const register = async (data: {
   fullName: string;
 }) => {
   const { email, password, fullName } = data;
-  const response = await axios.post("/auth/register", {
+  const response = await axios.post('/auth/register', {
     email,
     password,
     full_name: fullName,
@@ -66,7 +66,7 @@ export const registerStudent = async (data: {
     birthdate,
     sex,
   } = data;
-  const response = await axios.post("/auth/register-student", {
+  const response = await axios.post('/auth/register-student', {
     email,
     password,
     full_name: fullName,
@@ -82,13 +82,13 @@ export const registerStudent = async (data: {
 };
 
 export const resetPassword = async (email: string) => {
-  const response = await axios.post("/auth/forgot-password", { email });
+  const response = await axios.post('/auth/forgot-password', { email });
 
   return response.data;
 };
 
 export const logout = async () => {
-  await axios.post("/auth/logout");
-  Cookies.remove("accessToken");
-  Cookies.remove("userRole");
+  await axios.post('/auth/logout');
+  Cookies.remove('access_token');
+  Cookies.remove('user_role');
 };

@@ -34,15 +34,16 @@ import {
 import { Button } from '@/components/ui/button';
 import DeleteDialog from '@/components/staff-panel/delete-dialog';
 import MajorEditForm from '@/components/staff-panel/forms/major/major-edit-form';
-
+import { Loading } from '@/components/loading';
+import { Error } from '@/components/error';
 function Majors() {
   const [editUuid, setEditUuid] = React.useState<string | null>(null);
   const [deleteUuid, setDeleteUuid] = React.useState<string | null>(null);
 
   const { major, isLoading, isError } = useMajor();
 
-  if (isLoading) return <h1>Loading...</h1>;
-  if (isError) return <h1>Major page error</h1>;
+  if (isLoading) return <Loading />;
+  if (isError) return <Error />;
   return (
     <ContentLayout title='Dashboard'>
       <Breadcrumb>

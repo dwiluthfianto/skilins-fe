@@ -38,7 +38,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-
+import { Loading } from '@/components/loading';
+import { Error } from '@/components/error';
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
 }
@@ -80,8 +81,8 @@ export function DataTable<TData, TValue>({
     },
   });
 
-  if (isLoading) return <h1>Loading..</h1>;
-  if (isError) return <h1>Error</h1>;
+  if (isLoading) return <Loading />;
+  if (isError) return <Error />;
 
   return (
     <Card className='flex flex-col h-full overflow-auto rounded-md lg:col-span-2 lg:aspect-auto'>

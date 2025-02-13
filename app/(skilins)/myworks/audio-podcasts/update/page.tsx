@@ -33,6 +33,8 @@ import FileUploader from '@/components/file-uploader';
 import { useUser } from '@/hooks/use-user';
 import { ContentLayout } from '@/components/user-panel/content-layout';
 import { useAudioBySlug } from '@/hooks/use-audio';
+import { handleAxiosError } from '@/utils/handle-axios-error';
+import { ContentUpdateSkeleton } from '@/components/skeletons/content-update-skeleton';
 const ContentSchema = z.object({
   title: z
     .string()
@@ -157,22 +159,13 @@ export default function AudioUpdate() {
       mutate();
       router.push(`/myworks/audio-podcasts`);
     } catch (error) {
-      if (error instanceof AxiosError && error.response) {
-        toast({
-          title: 'Error!',
-          description:
-            error?.response.data.message ||
-            error?.response.data.error ||
-            'An error occurred while submit the competition.',
-          variant: 'destructive',
-        });
-      }
+      handleAxiosError(error, 'An error occurred while update audio.');
     } finally {
       setLoading(false);
     }
   }
 
-  if (audioLoading || !audio) return <h1>loading...</h1>;
+  if (audioLoading || !audio) return <ContentUpdateSkeleton />;
   return (
     <ContentLayout title=''>
       <div className='max-w-4xl mx-auto'>

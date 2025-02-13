@@ -7,7 +7,8 @@ import { useInView } from 'react-intersection-observer';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
-
+import { Loading } from '@/components/loading';
+import { Error } from '@/components/error';
 export default function TagsPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -38,8 +39,8 @@ export default function TagsPage() {
     }
   };
 
-  if (isLoading) return <h1>Loading..</h1>;
-  if (isError) return <h1>Error cuy</h1>;
+  if (isLoading) return <Loading />;
+  if (isError) return <Error />;
   return (
     <ContentLayout title=''>
       <section className='py-4 space-y-8'>

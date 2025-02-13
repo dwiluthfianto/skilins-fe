@@ -40,6 +40,8 @@ import { useGenre } from '@/hooks/use-genre';
 import MinimalTiptapOne from '@/components/minimal-tiptap/minimal-tiptap-one';
 import FileUploader from '@/components/file-uploader';
 import { useEbookBySlug } from '@/hooks/use-ebook';
+import { ContentUpdateSkeleton } from '@/components/skeletons/content-update-skeleton';
+import { handleAxiosError } from '@/utils/handle-axios-error';
 const ContentSchema = z.object({
   title: z
     .string()
@@ -167,22 +169,13 @@ export default function UpdateEbooks() {
       mutate();
       router.push('/staff/ebooks');
     } catch (error) {
-      if (error instanceof AxiosError && error.response) {
-        toast({
-          title: 'Error!',
-          description:
-            error?.response.data.message ||
-            error?.response.data.error ||
-            'An error occurred while add the ebook.',
-          variant: 'destructive',
-        });
-      }
+      handleAxiosError(error, 'An error occurred while update the ebook.');
     } finally {
       setLoading(false);
     }
   }
 
-  if (ebookLoading || !ebook) return <h1>loading...</h1>;
+  if (ebookLoading || !ebook) return <ContentUpdateSkeleton />;
   return (
     <ContentLayout title=''>
       <div className='max-w-4xl mx-auto'>

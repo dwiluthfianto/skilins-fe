@@ -36,7 +36,8 @@ import { Newspaper } from 'lucide-react';
 import { useBlog } from '@/hooks/use-blog';
 import Link from 'next/link';
 import useDebounce from '@/lib/debounce';
-
+import { Loading } from '@/components/loading';
+import { Error } from '@/components/error';
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
 }
@@ -103,8 +104,8 @@ export function DataTable<TData, TValue>({
     onPaginationChange: setPagination,
   });
 
-  if (isLoading) return <h1>Loading..</h1>;
-  if (isError) return <h1>Error</h1>;
+  if (isLoading) return <Loading />;
+  if (isError) return <Error />;
   return (
     <div className='bg-white dark:bg-black border rounded-md p-6 aspect-square lg:aspect-auto flex justify-between flex-col'>
       <div className='flex flex-col items-start md:items-center md:flex-row justify-between gap-4'>
@@ -214,40 +215,40 @@ export function DataTable<TData, TValue>({
             Previous
           </Button>
           <div className='flex items-center gap-1'>
-            {last_page > 0 && [...Array(last_page)].map((_, idx) => {
-              const pageNumber = idx + 1;
-              const isCurrentPage = pagination.pageIndex + 1 === pageNumber;
-              
-              // Show first page, last page, current page, and pages around current page
-              if (
-                pageNumber === 1 ||
-                pageNumber === last_page ||
-                (pageNumber >= pagination.pageIndex + 1 - 1 &&
-                  pageNumber <= pagination.pageIndex + 1 + 1)
-              ) {
-                return (
-                  <Button
-                    key={idx}
-                    variant={isCurrentPage ? 'default' : 'outline'}
-                    size='sm'
-                    onClick={() => setPagination({ ...pagination, pageIndex: idx })}
-                    className='w-8'
-                  >
-                    {pageNumber}
-                  </Button>
-                );
-              }
+            {last_page > 0 &&
+              [...Array(last_page)].map((_, idx) => {
+                const pageNumber = idx + 1;
+                const isCurrentPage = pagination.pageIndex + 1 === pageNumber;
 
-              // Show dots if there's a gap
-              if (
-                pageNumber === 2 ||
-                pageNumber === last_page - 1
-              ) {
-                return <span key={idx}>...</span>;
-              }
+                // Show first page, last page, current page, and pages around current page
+                if (
+                  pageNumber === 1 ||
+                  pageNumber === last_page ||
+                  (pageNumber >= pagination.pageIndex + 1 - 1 &&
+                    pageNumber <= pagination.pageIndex + 1 + 1)
+                ) {
+                  return (
+                    <Button
+                      key={idx}
+                      variant={isCurrentPage ? 'default' : 'outline'}
+                      size='sm'
+                      onClick={() =>
+                        setPagination({ ...pagination, pageIndex: idx })
+                      }
+                      className='w-8'
+                    >
+                      {pageNumber}
+                    </Button>
+                  );
+                }
 
-              return null;
-            })}
+                // Show dots if there's a gap
+                if (pageNumber === 2 || pageNumber === last_page - 1) {
+                  return <span key={idx}>...</span>;
+                }
+
+                return null;
+              })}
           </div>
           <Button
             variant='outline'

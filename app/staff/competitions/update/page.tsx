@@ -39,6 +39,7 @@ import { Tag, TagInput } from 'emblor';
 import { useJudge } from '@/hooks/use-judge';
 import { Input } from '@/components/ui/input';
 import { useCompetitionBySlug } from '@/hooks/use-competition';
+import { Loading } from '@/components/loading';
 const ContentSchema = z.object({
   title: z
     .string()
@@ -137,7 +138,7 @@ export default function CreateCompetition() {
 
   const [judges, setJudges] = useState<Tag[]>(competition?.Judges || []);
   const [activeJudgeIndex, setActiveJudgeIndex] = useState<number | null>(null);
-  const { autocompleteJudges } = useJudge();
+  const { autocompleteJudges } = useJudge({});
   const parameters = form.watch('parameters');
   const addParameter = () => {
     const newParameter = { parameterName: '', weight: '' };
@@ -218,7 +219,7 @@ export default function CreateCompetition() {
     }
   }
 
-  if (compeLoading || !competition) return <h1>loading...</h1>;
+  if (compeLoading || !competition) return <Loading />;
   return (
     <ContentLayout title=''>
       <div className='max-w-4xl mx-auto'>

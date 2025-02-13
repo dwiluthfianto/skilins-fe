@@ -28,6 +28,7 @@ import { ContentLayout } from '@/components/user-panel/content-layout';
 import FileUploader from '@/components/file-uploader';
 import { Input } from '@/components/ui/input';
 import { useReportBySlug } from '@/hooks/use-report';
+import { ContentUpdateSkeleton } from '@/components/skeletons/content-update-skeleton';
 const ContentSchema = z.object({
   title: z
     .string()
@@ -134,7 +135,7 @@ export default function PrakerinUpdate() {
     }
   }
 
-  if (prakerinLoading || !prakerin) return <h1>loading...</h1>;
+  if (prakerinLoading || !prakerin) return <ContentUpdateSkeleton />;
   return (
     <ContentLayout title=''>
       <div className='max-w-4xl mx-auto'>

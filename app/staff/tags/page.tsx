@@ -21,7 +21,8 @@ import TagForm from '@/components/staff-panel/forms/tag/tag-form';
 import Image from 'next/image';
 import TagEditForm from '@/components/staff-panel/forms/tag/tag-edit-form';
 import { Badge } from '@/components/ui/badge';
-
+import { Loading } from '@/components/loading';
+import { Error } from '@/components/error';
 export default function TagsPage() {
   const [editUuid, setEditUuid] = React.useState<string | null>(null);
   const [deleteUuid, setDeleteUuid] = React.useState<string | null>(null);
@@ -36,8 +37,8 @@ export default function TagsPage() {
     }
   }, [inView, isLoadingMore, isReachingEnd]);
 
-  if (isLoading) return <h1>Loading..</h1>;
-  if (isError) return <h1>Error cuy</h1>;
+  if (isLoading) return <Loading />;
+  if (isError) return <Error />;
   return (
     <ContentLayout title='Tags'>
       <Breadcrumb>

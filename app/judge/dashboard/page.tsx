@@ -8,7 +8,8 @@ import { useJudgeSubmission, useJudgeUser } from '@/hooks/use-judge';
 import { format } from 'date-fns';
 import { Badge, BadgeCheck, BadgePercent, CalendarClock } from 'lucide-react';
 import { useState } from 'react';
-
+import { Loading } from '@/components/loading';
+import { Error } from '@/components/error';
 export default function JudgeDashboard() {
   const [scored, setScored] = useState(true);
   const { judge } = useJudgeUser();
@@ -16,8 +17,8 @@ export default function JudgeDashboard() {
     scored,
     judge && judge?.Judges[0].competition.uuid
   );
-  if (isLoading) return <h1>loading...</h1>;
-  if (isError) return <h1>error</h1>;
+  if (isLoading) return <Loading />;
+  if (isError) return <Error />;
   return (
     <ContentLayout>
       <div className='md:container'>

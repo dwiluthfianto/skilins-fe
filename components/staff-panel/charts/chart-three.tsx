@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
+'use client';
 
-import * as React from "react";
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
+import * as React from 'react';
+import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
 
 import {
   Card,
@@ -10,26 +10,27 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart";
-import { useFeedbackStats } from "@/hooks/use-analytics";
-
+} from '@/components/ui/chart';
+import { useFeedbackStats } from '@/hooks/use-analytics';
+import { Loading } from '@/components/loading';
+import { Error } from '@/components/error';
 const chartConfig = {
   feedbacks: {
-    label: "Page feedbacks",
+    label: 'Page feedbacks',
   },
   comment: {
-    label: "Comments",
-    color: "hsl(var(--chart-1))",
+    label: 'Comments',
+    color: 'hsl(var(--chart-1))',
   },
   rating: {
-    label: "Ratings",
-    color: "hsl(var(--chart-2))",
+    label: 'Ratings',
+    color: 'hsl(var(--chart-2))',
   },
 } satisfies ChartConfig;
 
@@ -45,7 +46,7 @@ export default function ChartThree() {
   );
 
   const [activeChart, setActiveChart] =
-    React.useState<keyof typeof chartConfig>("comment");
+    React.useState<keyof typeof chartConfig>('comment');
 
   const total = React.useMemo(
     () => ({
@@ -61,31 +62,31 @@ export default function ChartThree() {
     [chartData]
   );
 
-  if (isLoading) return <p>Loading...</p>;
-  if (isError) return <p>Error loading data</p>;
+  if (isLoading) return <Loading />;
+  if (isError) return <Error />;
   return (
-    <Card className="flex flex-col justify-between h-full rounded-md lg:col-span-2 lg:aspect-auto">
-      <CardHeader className="flex flex-col items-stretch p-0 space-y-0 border-b md:flex-row">
-        <div className="flex flex-col justify-center flex-1 gap-1 px-6 py-5 sm:py-6">
+    <Card className='flex flex-col justify-between h-full rounded-md lg:col-span-2 lg:aspect-auto'>
+      <CardHeader className='flex flex-col items-stretch p-0 space-y-0 border-b md:flex-row'>
+        <div className='flex flex-col justify-center flex-1 gap-1 px-6 py-5 sm:py-6'>
           <CardTitle>User Interactions</CardTitle>
           <CardDescription>
             Showing total interactions for the last 3 months
           </CardDescription>
         </div>
-        <div className="flex">
-          {["comment", "rating"].map((key) => {
+        <div className='flex'>
+          {['comment', 'rating'].map((key) => {
             const chart = key as keyof typeof chartConfig;
             return (
               <button
                 key={chart}
                 data-active={activeChart === chart}
-                className="relative z-30 flex flex-1 flex-col justify-center gap-1 border-t px-6 py-4 text-left even:border-l data-[active=true]:bg-muted/50 sm:border-l sm:border-t-0 sm:px-8 sm:py-6"
+                className='relative z-30 flex flex-1 flex-col justify-center gap-1 border-t px-6 py-4 text-left even:border-l data-[active=true]:bg-muted/50 sm:border-l sm:border-t-0 sm:px-8 sm:py-6'
                 onClick={() => setActiveChart(chart)}
               >
-                <span className="text-xs text-muted-foreground">
+                <span className='text-xs text-muted-foreground'>
                   {chartConfig[chart]?.label}
                 </span>
-                <span className="text-lg font-bold leading-none sm:text-3xl">
+                <span className='text-lg font-bold leading-none sm:text-3xl'>
                   {total[key as keyof typeof total]?.toLocaleString()}
                 </span>
               </button>
@@ -93,10 +94,10 @@ export default function ChartThree() {
           })}
         </div>
       </CardHeader>
-      <CardContent className="px-2 sm:p-6">
+      <CardContent className='px-2 sm:p-6'>
         <ChartContainer
           config={chartConfig}
-          className="aspect-auto h-[250px] w-full"
+          className='aspect-auto h-[250px] w-full'
         >
           <BarChart
             accessibilityLayer
@@ -108,29 +109,29 @@ export default function ChartThree() {
           >
             <CartesianGrid vertical={false} />
             <XAxis
-              dataKey="date"
+              dataKey='date'
               tickLine={false}
               axisLine={false}
               tickMargin={8}
               minTickGap={32}
               tickFormatter={(value) => {
                 const date = new Date(value);
-                return date.toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
+                return date.toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
                 });
               }}
             />
             <ChartTooltip
               content={
                 <ChartTooltipContent
-                  className="w-[150px]"
-                  nameKey="feedbacks"
+                  className='w-[150px]'
+                  nameKey='feedbacks'
                   labelFormatter={(value) => {
-                    return new Date(value).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
+                    return new Date(value).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
                     });
                   }}
                 />

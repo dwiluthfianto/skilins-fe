@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
+import { Loading } from '@/components/loading';
 import { Badge } from '@/components/ui/badge';
 import { ContentLayout } from '@/components/user-panel/content-layout';
 import {
@@ -27,7 +28,7 @@ export default function CompetitionPage() {
     }
   }, [inView, isLoadingMore, isReachingEnd]);
 
-  if (isLoading) return <h1>loading...</h1>;
+  if (isLoading) return <Loading />;
   if (isError) return <h1>Error</h1>;
   return (
     <ContentLayout title=''>

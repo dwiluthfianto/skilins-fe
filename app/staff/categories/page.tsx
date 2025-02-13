@@ -19,7 +19,8 @@ import Image from 'next/image';
 import { useCategory } from '@/hooks/use-category';
 import CategoryForm from '@/components/staff-panel/forms/category/category-form';
 import CategoryEditForm from '@/components/staff-panel/forms/category/category-edit-form';
-
+import { Loading } from '@/components/loading';
+import { Error } from '@/components/error';
 export default function CategoriesPage() {
   const [editCategoryUuid, setEditCategoryUuid] = React.useState<string | null>(
     null
@@ -30,8 +31,8 @@ export default function CategoriesPage() {
 
   const { categories, isLoading, isError } = useCategory();
 
-  if (isLoading) return <h1>Loading..</h1>;
-  if (isError) return <h1>Error cuy</h1>;
+  if (isLoading) return <Loading />;
+  if (isError) return <Error />;
   return (
     <ContentLayout title='categories'>
       <Breadcrumb>

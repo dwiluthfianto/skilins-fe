@@ -7,12 +7,13 @@ import React from 'react';
 import Image from 'next/image';
 import { useCategory } from '@/hooks/use-category';
 import { Badge } from '@/components/ui/badge';
-
+import { Loading } from '@/components/loading';
+import { Error } from '@/components/error';
 export default function CategoriesPage() {
   const { categories, isLoading, isError } = useCategory();
 
-  if (isLoading) return <h1>Loading..</h1>;
-  if (isError) return <h1>Error cuy</h1>;
+  if (isLoading) return <Loading />;
+  if (isError) return <Error />;
   return (
     <ContentLayout title=''>
       <section className='py-4 space-y-8'>
