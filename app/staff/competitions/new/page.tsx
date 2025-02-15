@@ -38,6 +38,8 @@ import { Label } from '@/components/ui/label';
 import { Tag, TagInput } from 'emblor';
 import { useJudge } from '@/hooks/use-judge';
 import { Input } from '@/components/ui/input';
+import { handleAxiosError } from '@/utils/handle-axios-error';
+
 const ContentSchema = z.object({
   title: z
     .string()
@@ -157,18 +159,7 @@ export default function CreateCompetition() {
 
       router.push('/staff/competitions/list');
     } catch (error) {
-      console.log(error);
-
-      if (error instanceof AxiosError && error.response) {
-        toast({
-          title: 'Error!',
-          description:
-            error?.response.data.message ||
-            error?.response.data.error ||
-            'An error occurred while add the competition.',
-          variant: 'destructive',
-        });
-      }
+      handleAxiosError(error, 'An error occurred while create competition.');
     } finally {
       setLoading(false);
     }

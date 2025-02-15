@@ -15,17 +15,17 @@ const TabsStatus: FC<TabProps> = ({ status, onUpdateStatus, className }) => {
         variant={status === 'approved' ? 'default' : 'outline'}
         onClick={() => onUpdateStatus('approved')}
       >
-        approved
+        Approved
       </Button>
       <Button
         variant={status === 'pending' ? 'default' : 'outline'}
         onClick={() => onUpdateStatus('pending')}
       >
-        pending
+        Pending
       </Button>
       <Button
-        variant={status === 'REJECTED' ? 'default' : 'outline'}
-        onClick={() => onUpdateStatus('REJECTED')}
+        variant={status === 'rejected' ? 'default' : 'outline'}
+        onClick={() => onUpdateStatus('rejected')}
       >
         Rejected
       </Button>

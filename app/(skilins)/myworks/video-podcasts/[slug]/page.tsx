@@ -12,24 +12,13 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
-import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import MinimalTiptapPreview from '@/components/minimal-tiptap/minimal-tiptap-preview';
-
+import { Loader, Signature, CircleOff } from 'lucide-react';
 export default async function VideoDetail({ params }: any) {
   const { slug } = params;
-  const res = (await axios.get(`/contents/videos/${slug}`)).data;
-
-  const video = res.data;
+  const video = (await axios.get(`/contents/videos/${slug}`)).data.data;
 
   function convertToEmbedLink(youtubeUrl: any) {
     const regex =
@@ -45,31 +34,39 @@ export default async function VideoDetail({ params }: any) {
     }
   }
 
-  const embedUrl = convertToEmbedLink(video.file);
+  const embedUrl = convertToEmbedLink(video.video_podcast.link);
 
   return (
     <ContentLayout title={video.title}>
       <section className='md:py-2'>
         <div className='md:container'>
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link href='/'>Home</Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link href='/audio-podcasts'>videos</Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>{video.title}</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
+          <div>
+            {video.status === 'pending' ? (
+              <Badge
+                className='bg-yellow-600 p-2 text-white transition-transform transform hover:scale-105'
+                variant={'outline'}
+              >
+                <Loader width={18} className='mr-2 animate-spin' />
+                {video.status}
+              </Badge>
+            ) : video.status === 'approved' ? (
+              <Badge
+                className='bg-green-600 text-white p-2 transition-transform transform hover:scale-105'
+                variant={'outline'}
+              >
+                <Signature width={18} className='mr-2' />
+                {video.status}
+              </Badge>
+            ) : (
+              <Badge
+                className='bg-red-600 text-white p-2 transition-transform transform hover:scale-105'
+                variant={'destructive'}
+              >
+                <CircleOff width={18} className='mr-2' />
+                {video.status}
+              </Badge>
+            )}
+          </div>
           <div className='mt-4'>
             <AspectRatio ratio={16 / 9}>
               <iframe
@@ -88,7 +85,7 @@ export default async function VideoDetail({ params }: any) {
               <Card className=' rounded-lg '>
                 <CardContent className='p-6'>
                   <p className=' text-lg text-muted-foreground'>
-                    {video.creator}
+                    {video.video_podcast.creator.name}
                   </p>
                   <h2 className='text-balance text-3xl font-medium md:text-5xl'>
                     {video.title}
@@ -136,7 +133,7 @@ export default async function VideoDetail({ params }: any) {
                             <p className='text-muted-foreground text-sm'>
                               Category
                             </p>
-                            <p>{video.category}</p>
+                            <p>{video.category.name}</p>
                           </div>
                         </div>
                         <div className='flex flex-row gap-6 items-start'>
@@ -153,7 +150,7 @@ export default async function VideoDetail({ params }: any) {
                               Genres
                             </p>
                             <p>
-                              {video.genres.map((genre: any, index: number) => (
+                              {video.genre.map((genre: any, index: number) => (
                                 <Badge key={index} className='mr-2'>
                                   {genre.text}
                                 </Badge>
@@ -167,7 +164,7 @@ export default async function VideoDetail({ params }: any) {
                               Tags
                             </p>
                             <p>
-                              {video.tags.map((tag: any, index: number) => (
+                              {video.tag.map((tag: any, index: number) => (
                                 <Badge
                                   key={index}
                                   className='mr-2 items-center'

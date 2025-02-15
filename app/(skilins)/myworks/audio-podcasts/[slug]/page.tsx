@@ -21,9 +21,7 @@ import { CircleOff, Loader, Signature } from 'lucide-react';
 
 export default async function AudioDetail({ params }: any) {
   const { slug } = params;
-  const res = (await axios.get(`/contents/audios/${slug}`)).data;
-
-  const audio = res.data;
+  const res = (await axios.get(`/contents/audios/${slug}`)).data.data;
 
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
@@ -32,38 +30,41 @@ export default async function AudioDetail({ params }: any) {
   };
 
   const track = {
-    src: audio.file,
-    title: audio.title,
-    category: audio.category,
-    image: audio.thumbnail,
-    creator: audio.creator,
+    src: res.audio_podcast.file_attachment.file,
+    title: res.title,
+    category: res.category.name,
+    image: res.thumbnail,
+    creator: res.audio_podcast.creator.name,
   };
 
   return (
-    <ContentLayout title={audio.title}>
+    <ContentLayout title={res.title}>
       <section className='md:py-2'>
         <div className='md:container'>
           <div>
-            {audio.status === 'pending' ? (
+            {res.status === 'pending' ? (
               <Badge
-                className='bg-yellow-600 p-2 text-white'
+                className='bg-yellow-600 p-2 text-white transition-transform transform hover:scale-105'
                 variant={'outline'}
               >
-                <Loader width={18} className='mr-2' />
-                {audio.status}
+                <Loader width={18} className='mr-2 animate-spin' />
+                {res.status}
               </Badge>
-            ) : audio.status === 'approved' ? (
+            ) : res.status === 'approved' ? (
               <Badge
-                className='bg-green-600 text-white p-2'
+                className='bg-green-600 text-white p-2 transition-transform transform hover:scale-105'
                 variant={'outline'}
               >
                 <Signature width={18} className='mr-2' />
-                {audio.status}
+                {res.status}
               </Badge>
             ) : (
-              <Badge variant={'destructive'}>
+              <Badge
+                className='bg-red-600 text-white p-2 transition-transform transform hover:scale-105'
+                variant={'destructive'}
+              >
                 <CircleOff width={18} className='mr-2' />
-                {audio.status}
+                {res.status}
               </Badge>
             )}
           </div>
@@ -71,7 +72,7 @@ export default async function AudioDetail({ params }: any) {
             <div className='relative'>
               <AspectRatio ratio={1 / 1}>
                 <Image
-                  src={audio.thumbnail}
+                  src={res.thumbnail}
                   alt='placeholder'
                   layout='fill'
                   objectFit='cover'
@@ -85,16 +86,16 @@ export default async function AudioDetail({ params }: any) {
               <Card className='rounded-lg '>
                 <CardContent className='p-6'>
                   <p className='text-lg text-muted-foreground'>
-                    {audio.creator}
+                    {res.audio_podcast.creator.name}
                   </p>
                   <h2 className='text-3xl font-medium text-balance md:text-5xl'>
-                    {audio.title}
+                    {res.title}
                   </h2>
                   <p className='max-w-xl mt-1 text-lg font-medium leading-relaxed tracking-tight md:mt-6 text lg:max-w-xl'>
                     Description
                   </p>
                   <MinimalTiptapPreview
-                    value={audio.description}
+                    value={res.description}
                     editable={false}
                   />
 
@@ -115,7 +116,7 @@ export default async function AudioDetail({ params }: any) {
                       </DialogHeader>
                       <ScrollArea className='max-h-[600px] pr-4'>
                         <MinimalTiptapPreview
-                          value={audio.description}
+                          value={res.description}
                           editable={false}
                         />
                       </ScrollArea>
@@ -134,7 +135,7 @@ export default async function AudioDetail({ params }: any) {
                             <p className='text-sm text-muted-foreground'>
                               Category
                             </p>
-                            <p>{audio.category}</p>
+                            <p>{res.category.name}</p>
                           </div>
                         </div>
                         <div className='flex flex-row items-start gap-6'>
@@ -142,7 +143,7 @@ export default async function AudioDetail({ params }: any) {
                             <p className='text-sm text-muted-foreground'>
                               Duration
                             </p>
-                            <p>{formatTime(audio.duration)} </p>
+                            <p>{formatTime(res.audio_podcast.duration)} </p>
                           </div>
                         </div>
                         <div className='flex flex-row items-start gap-6'>
@@ -150,7 +151,7 @@ export default async function AudioDetail({ params }: any) {
                             <p className='text-sm text-muted-foreground'>
                               Release Date
                             </p>
-                            <p>{format(audio.created_at, 'dd MMM yyyy')}</p>
+                            <p>{format(res.created_at, 'dd MMM yyyy')}</p>
                           </div>
                         </div>
                         <div className='flex flex-row items-start gap-6'>
@@ -159,7 +160,7 @@ export default async function AudioDetail({ params }: any) {
                               Genres
                             </p>
                             <p>
-                              {audio.genres.map((genre: any, index: number) => (
+                              {res.genre.map((genre: any, index: number) => (
                                 <Badge key={index} className='mr-2'>
                                   {genre.text}
                                 </Badge>
@@ -173,7 +174,7 @@ export default async function AudioDetail({ params }: any) {
                               Tags
                             </p>
                             <p>
-                              {audio.tags.map((tag: any, index: number) => (
+                              {res.tag.map((tag: any, index: number) => (
                                 <Badge
                                   key={index}
                                   className='items-center mr-2'

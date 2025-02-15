@@ -25,13 +25,15 @@ import { Card, CardContent } from '@/components/ui/card';
 import { useUserReport } from '@/hooks/use-report';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import Image from 'next/image';
+import { Loading } from '@/components/loading';
+import { Error } from '@/components/error';
 
 function PrakerinStudent() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const { prakerin, isLoading, isError } = useUserReport(1, 1);
 
-  if (isLoading) return <h1>loading..</h1>;
-  if (isError) return <h1>error..</h1>;
+  if (isLoading) return <Loading />;
+  if (isError) return <Error />;
 
   return (
     <ContentLayout title=''>
@@ -134,4 +136,4 @@ function PrakerinStudent() {
   );
 }
 
-export default withRole(PrakerinStudent, ['Student'], '/auth/user/login');
+export default withRole(PrakerinStudent, ['student'], '/auth/user/login');

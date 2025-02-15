@@ -40,6 +40,8 @@ import { useJudge } from '@/hooks/use-judge';
 import { Input } from '@/components/ui/input';
 import { useCompetitionBySlug } from '@/hooks/use-competition';
 import { Loading } from '@/components/loading';
+import { handleAxiosError } from '@/utils/handle-axios-error';
+
 const ContentSchema = z.object({
   title: z
     .string()
@@ -202,18 +204,7 @@ export default function CreateCompetition() {
       mutate();
       router.push('/staff/competitions/list');
     } catch (error) {
-      console.log(error);
-
-      if (error instanceof AxiosError && error.response) {
-        toast({
-          title: 'Error!',
-          description:
-            error?.response.data.message ||
-            error?.response.data.error ||
-            'An error occurred while add the competition.',
-          variant: 'destructive',
-        });
-      }
+      handleAxiosError(error, 'An error occurred while update competition.');
     } finally {
       setLoading(false);
     }

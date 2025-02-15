@@ -114,16 +114,7 @@ export default function PrakerinSubmission() {
 
       router.push(`/competitions/${params.type}/${params.slug}`);
     } catch (error) {
-      if (error instanceof AxiosError && error.response) {
-        toast({
-          title: 'Error!',
-          description:
-            error?.response.data.message ||
-            error?.response.data.error ||
-            'An error occurred while submit the competition.',
-          variant: 'destructive',
-        });
-      }
+      handleAxiosError(error, 'An error occurred while submit the prakerin.');
     } finally {
       setLoading(false);
     }

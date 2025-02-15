@@ -20,7 +20,7 @@ import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { CustomCalendar } from '@/components/ui/custom-calendar';
 import { format } from 'date-fns';
-import { CalendarIcon, Loader2, UserRound } from 'lucide-react';
+import { CalendarIcon, Loader2, UserRound, Eye, EyeOff } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import {
   Popover,
@@ -112,6 +112,7 @@ export default function RegisterStudent() {
 
   const { major, isLoading, isError } = useMajor();
   const [loading, setLoading] = useState(false);
+  const [see, setSee] = useState(false);
 
   async function onSubmit(data: z.infer<typeof StudentSchema>) {
     setLoading(true);
@@ -179,11 +180,26 @@ export default function RegisterStudent() {
                 <FormItem className='grid gap-2'>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input
-                      type='password'
-                      placeholder='Enter your password'
-                      {...field}
-                    />
+                    <div className='relative'>
+                      <Input
+                        type={see ? 'text' : 'password'}
+                        placeholder='Enter your password'
+                        {...field}
+                      />
+                      <div className='absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer'>
+                        {see ? (
+                          <Eye
+                            onClick={() => setSee(false)}
+                            className='h-4 w-4 text-muted-foreground'
+                          />
+                        ) : (
+                          <EyeOff
+                            onClick={() => setSee(true)}
+                            className='h-4 w-4 text-muted-foreground'
+                          />
+                        )}
+                      </div>
+                    </div>
                   </FormControl>
                   <FormDescription>
                     Your password must be at least 6 characters long.

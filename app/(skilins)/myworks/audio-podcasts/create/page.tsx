@@ -9,7 +9,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from '@/utils/axios';
 import { toast } from '@/hooks/use-toast';
-import { AxiosError } from 'axios';
 import {
   Form,
   FormControl,
@@ -30,8 +29,14 @@ import { AutosizeTextarea } from '@/components/autosize-textarea';
 import { useGenre } from '@/hooks/use-genre';
 import MinimalTiptapOne from '@/components/minimal-tiptap/minimal-tiptap-one';
 import FileUploader from '@/components/file-uploader';
-import { useUser } from '@/hooks/use-user';
 import { ContentLayout } from '@/components/user-panel/content-layout';
+import { handleAxiosError } from '@/utils/handle-axios-error';
+import {
+  GuidedFormLayout,
+  useGuidedField,
+} from '@/components/form-guidance/guided-form-layout';
+import { AUDIO_PODCAST_TOOLTIPS } from '@/app/(skilins)/constants/tooltips';
+
 const ContentSchema = z.object({
   title: z
     .string()
@@ -61,8 +66,11 @@ const ContentSchema = z.object({
     .instanceof(File)
     .refine(
       (file) =>
-        file && ['audio/mpeg', 'audio/ogg', 'audio/wav'].includes(file.type),
-      { message: 'Invalid image file type' }
+        file &&
+        ['audio/mpeg', 'audio/ogg', 'audio/wav', 'audio/mp3'].includes(
+          file.type
+        ),
+      { message: 'Invalid audio file type' }
     ),
   genres: z
     .array(
@@ -100,8 +108,6 @@ export default function AudioCreate() {
 
   const { categories, isLoading } = useCategorySearch(form.watch('category'));
 
-  const { user } = useUser();
-
   async function onSubmit(data: z.infer<typeof ContentSchema>) {
     setLoading(true);
 
@@ -113,7 +119,6 @@ export default function AudioCreate() {
     formData.append('category_name', data.category);
     formData.append('duration', String(data.duration));
     if (file) formData.append('file', file);
-    if (user) formData.append('creator_uuid', user?.data.uuid);
     formData.append('tags', JSON.stringify(data.tags));
 
     try {
@@ -134,16 +139,7 @@ export default function AudioCreate() {
 
       router.push(`/myworks/audio-podcasts`);
     } catch (error) {
-      if (error instanceof AxiosError && error.response) {
-        toast({
-          title: 'Error!',
-          description:
-            error?.response.data.message ||
-            error?.response.data.error ||
-            'An error occurred while submit the competition.',
-          variant: 'destructive',
-        });
-      }
+      handleAxiosError(error, 'An error occurred while submit the audio.');
     } finally {
       setLoading(false);
     }
@@ -151,226 +147,232 @@ export default function AudioCreate() {
 
   return (
     <ContentLayout title=''>
-      <div className='max-w-4xl mx-auto'>
-        <h1 className='font-semibold mb-4'>Create Audio</h1>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <Card>
-              <CardContent className='p-0'>
-                <div className='m-8 space-y-4'>
-                  <FormField
-                    control={form.control}
-                    name='thumbnail'
-                    render={() => (
-                      <ImageUploader
-                        onChange={(file) =>
-                          file && form.setValue('thumbnail', file)
-                        }
-                        ratioImage={1 / 1}
-                      />
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name='title'
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <AutosizeTextarea
-                            {...field}
-                            placeholder='New audio title here...'
-                            className='outline-none w-full text-4xl p-0 border-none  shadow-none focus-visible:ring-0  font-bold placeholder:text-slate-700 h-full resize-none overflow-hidden '
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Separator />
-                  <FormField
-                    control={form.control}
-                    name='category'
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <AutoComplete
-                            selectedValue={form.watch('category')}
-                            onSelectedValueChange={(value) =>
-                              field.onChange(value)
-                            }
-                            searchValue={field.value}
-                            onSearchValueChange={field.onChange}
-                            items={categories ?? []}
-                            isLoading={isLoading}
-                            placeholder='Category name here...'
-                            emptyMessage='No category found.'
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Separator />
-                  <FormField
-                    control={form.control}
-                    name='tags'
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <TagInput
-                            {...field}
-                            tags={tags}
-                            setTags={(newTags) => {
-                              setTags(newTags);
-                              form.setValue('tags', newTags as [Tag, ...Tag[]]);
-                            }}
-                            placeholder='Add up to 4 tags...'
-                            styleClasses={{
-                              input:
-                                'w-full h-fit outline-none border-none shadow-none  text-base p-0',
-                              inlineTagsContainer: 'border-none p-0',
-                              autoComplete: {
-                                command: '[&>div]:border-none',
-                                popoverContent: 'p-4',
-                                commandList: 'list-none',
-                                commandGroup: 'font-bold',
-                              },
-                            }}
-                            activeTagIndex={activeTagIndex}
-                            setActiveTagIndex={setActiveTagIndex}
-                            enableAutocomplete={true}
-                            autocompleteOptions={autocompleteTags}
-                            restrictTagsToAutocompleteOptions={true}
-                            maxTags={4}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <FormField
-                  control={form.control}
-                  name='description'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <MinimalTiptapOne
-                          {...field}
-                          className='w-full'
-                          editorContentClassName='px-8 py-4 shadow-none'
-                          output='html'
-                          placeholder='Type your description here...'
-                          autofocus={true}
-                          editable={true}
-                          editorClassName='focus:outline-none'
+      <GuidedFormLayout tooltips={AUDIO_PODCAST_TOOLTIPS}>
+        <div className='max-w-4xl mx-auto'>
+          <h1 className='font-semibold mb-4'>Create Audio</h1>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              <Card>
+                <CardContent className='p-0'>
+                  <div className='m-8 space-y-4'>
+                    <FormField
+                      control={form.control}
+                      name='thumbnail'
+                      render={() => (
+                        <ImageUploader
+                          onChange={(file) =>
+                            file && form.setValue('thumbnail', file)
+                          }
+                          ratioImage={1 / 1}
                         />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-                <div className='m-8 space-y-4'>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name='title'
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <AutosizeTextarea
+                              {...field}
+                              {...useGuidedField('title')}
+                              placeholder='New audio title here...'
+                              className='outline-none w-full text-4xl p-0 border-none  shadow-none focus-visible:ring-0  font-bold placeholder:text-slate-700 h-full resize-none overflow-hidden '
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Separator />
+                    <FormField
+                      control={form.control}
+                      name='category'
+                      render={({ field }) => (
+                        <FormItem {...useGuidedField('category')}>
+                          <FormControl>
+                            <AutoComplete
+                              selectedValue={form.watch('category')}
+                              onSelectedValueChange={(value) =>
+                                field.onChange(value)
+                              }
+                              searchValue={field.value}
+                              onSearchValueChange={field.onChange}
+                              items={categories ?? []}
+                              isLoading={isLoading}
+                              placeholder='Category name here...'
+                              emptyMessage='No category found.'
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Separator />
+                    <FormField
+                      control={form.control}
+                      name='tags'
+                      render={({ field }) => (
+                        <FormItem {...useGuidedField('tags')}>
+                          <FormControl>
+                            <TagInput
+                              {...field}
+                              tags={tags}
+                              setTags={(newTags) => {
+                                setTags(newTags);
+                                form.setValue(
+                                  'tags',
+                                  newTags as [Tag, ...Tag[]]
+                                );
+                              }}
+                              placeholder='Add up to 4 tags...'
+                              styleClasses={{
+                                input:
+                                  'w-full h-fit outline-none border-none shadow-none  text-base p-0',
+                                inlineTagsContainer: 'border-none p-0',
+                                autoComplete: {
+                                  command: '[&>div]:border-none',
+                                  popoverContent: 'p-4',
+                                  commandList: 'list-none',
+                                  commandGroup: 'font-bold',
+                                },
+                              }}
+                              activeTagIndex={activeTagIndex}
+                              setActiveTagIndex={setActiveTagIndex}
+                              enableAutocomplete={true}
+                              autocompleteOptions={autocompleteTags}
+                              restrictTagsToAutocompleteOptions={true}
+                              maxTags={4}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                   <FormField
                     control={form.control}
-                    name='tags'
+                    name='description'
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem {...useGuidedField('description')}>
                         <FormControl>
-                          <TagInput
+                          <MinimalTiptapOne
                             {...field}
-                            tags={genres}
-                            setTags={(newTags) => {
-                              setGenres(newTags);
-                              form.setValue(
-                                'genres',
-                                newTags as [Tag, ...Tag[]]
-                              );
-                            }}
-                            placeholder='Add up to 4 genres...'
-                            styleClasses={{
-                              input:
-                                'w-full h-fit outline-none border-none shadow-none  text-base p-0',
-                              inlineTagsContainer: 'border-none p-0',
-                              autoComplete: {
-                                command: '[&>div]:border-none',
-                                popoverContent: 'p-4',
-                                commandList: 'list-none',
-                                commandGroup: 'font-bold',
-                              },
-                            }}
-                            activeTagIndex={activeGenreIndex}
-                            setActiveTagIndex={setActiveGenreIndex}
-                            enableAutocomplete={true}
-                            autocompleteOptions={autocompleteGenres}
-                            restrictTagsToAutocompleteOptions={true}
-                            maxTags={4}
+                            className='w-full'
+                            editorContentClassName='px-8 py-4 shadow-none'
+                            output='html'
+                            placeholder='Type your description here...'
+                            autofocus={true}
+                            editable={true}
+                            editorClassName='focus:outline-none'
                           />
                         </FormControl>
-                        <FormMessage />
                       </FormItem>
                     )}
                   />
-                  <Separator />
-                  <FormField
-                    control={form.control}
-                    name='file'
-                    render={({ field }) => (
-                      <FileUploader
-                        onChange={(file) => {
-                          field.onChange(file);
-                          setFile(file);
-                        }}
-                        accept='audio/mp3'
-                        onDurationChange={(duration) =>
-                          form.setValue('duration', duration ?? 0)
-                        }
-                        label='Add an Audio file'
-                        initialFileName={field.value ? field.value.name : ''}
-                        initialFileUrl={
-                          field.value ? URL.createObjectURL(field.value) : ''
-                        }
-                      />
-                    )}
-                  />
-                  <Separator />
-                  <FormField
-                    control={form.control}
-                    name='duration'
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className='font-normal text-base text-muted-foreground'>
-                          Duration
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            value={new Date(1000 * field.value)
-                              .toISOString()
-                              .substring(11, 19)
-                              .replace(/^[0:]+/, '')}
-                            type='text'
-                            readOnly
-                            className='border-none outline-none shadow-none text-base p-0 focus-visible:ring-0 focus:border-none '
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-            <Button className='mt-6' disabled={loading}>
-              {loading ? (
-                <>
-                  <Loader2 className='animate-spin' /> {`Publishing...`}
-                </>
-              ) : (
-                'Publish'
-              )}
-            </Button>
-          </form>
-        </Form>
-      </div>
+                  <div className='m-8 space-y-4'>
+                    <FormField
+                      control={form.control}
+                      name='tags'
+                      render={({ field }) => (
+                        <FormItem {...useGuidedField('genres')}>
+                          <FormControl>
+                            <TagInput
+                              {...field}
+                              tags={genres}
+                              setTags={(newTags) => {
+                                setGenres(newTags);
+                                form.setValue(
+                                  'genres',
+                                  newTags as [Tag, ...Tag[]]
+                                );
+                              }}
+                              placeholder='Add up to 4 genres...'
+                              styleClasses={{
+                                input:
+                                  'w-full h-fit outline-none border-none shadow-none  text-base p-0',
+                                inlineTagsContainer: 'border-none p-0',
+                                autoComplete: {
+                                  command: '[&>div]:border-none',
+                                  popoverContent: 'p-4',
+                                  commandList: 'list-none',
+                                  commandGroup: 'font-bold',
+                                },
+                              }}
+                              activeTagIndex={activeGenreIndex}
+                              setActiveTagIndex={setActiveGenreIndex}
+                              enableAutocomplete={true}
+                              autocompleteOptions={autocompleteGenres}
+                              restrictTagsToAutocompleteOptions={true}
+                              maxTags={4}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Separator />
+                    <FormField
+                      control={form.control}
+                      name='file'
+                      render={({ field }) => (
+                        <FileUploader
+                          onChange={(file) => {
+                            field.onChange(file);
+                            setFile(file);
+                          }}
+                          accept='audio/mp3'
+                          onDurationChange={(duration) =>
+                            form.setValue('duration', duration ?? 0)
+                          }
+                          label='Add an Audio file'
+                          initialFileName={field.value ? field.value.name : ''}
+                          initialFileUrl={
+                            field.value ? URL.createObjectURL(field.value) : ''
+                          }
+                        />
+                      )}
+                    />
+                    <Separator />
+                    <FormField
+                      control={form.control}
+                      name='duration'
+                      render={({ field }) => (
+                        <FormItem {...useGuidedField('duration')}>
+                          <FormLabel className='font-normal text-base text-muted-foreground'>
+                            Duration
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              value={new Date(1000 * field.value)
+                                .toISOString()
+                                .substring(11, 19)
+                                .replace(/^[0:]+/, '')}
+                              type='text'
+                              readOnly
+                              className='border-none outline-none shadow-none text-base p-0 focus-visible:ring-0 focus:border-none '
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+              <Button className='mt-6' disabled={loading}>
+                {loading ? (
+                  <>
+                    <Loader2 className='animate-spin' /> {`Publishing...`}
+                  </>
+                ) : (
+                  'Publish'
+                )}
+              </Button>
+            </form>
+          </Form>
+        </div>
+      </GuidedFormLayout>
     </ContentLayout>
   );
 }

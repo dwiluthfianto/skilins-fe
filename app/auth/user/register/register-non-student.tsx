@@ -13,7 +13,6 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { ToastAction } from '@/components/ui/toast';
 import { register } from '@/utils/auth-service';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
@@ -24,8 +23,9 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { UserRound } from 'lucide-react';
+import { UserRound, Eye, EyeOff } from 'lucide-react';
 import { handleAxiosError } from '@/utils/handle-axios-error';
+import { useState } from 'react';
 
 const allowedDomains = ['@gmail.com', '@skilins.com'];
 
@@ -57,7 +57,7 @@ const LoginSchema = z.object({
 
 export default function RegisterNonStudent() {
   const router = useRouter();
-  const { toast } = useToast();
+  const [see, setSee] = useState(false);
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     defaultValues: { email: '', password: '', fullName: '' },
@@ -123,11 +123,26 @@ export default function RegisterNonStudent() {
                 <FormItem className='grid gap-2'>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input
-                      type='password'
-                      placeholder='Enter your password'
-                      {...field}
-                    />
+                    <div className='relative'>
+                      <Input
+                        type={see ? 'text' : 'password'}
+                        placeholder='Enter your password'
+                        {...field}
+                      />
+                      <div className='absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer'>
+                        {see ? (
+                          <Eye
+                            onClick={() => setSee(false)}
+                            className='h-4 w-4 text-muted-foreground'
+                          />
+                        ) : (
+                          <EyeOff
+                            onClick={() => setSee(true)}
+                            className='h-4 w-4 text-muted-foreground'
+                          />
+                        )}
+                      </div>
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>

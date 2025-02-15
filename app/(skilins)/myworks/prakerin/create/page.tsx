@@ -27,6 +27,7 @@ import { useUser } from '@/hooks/use-user';
 import { ContentLayout } from '@/components/user-panel/content-layout';
 import FileUploader from '@/components/file-uploader';
 import { Input } from '@/components/ui/input';
+import { handleAxiosError } from '@/utils/handle-axios-error';
 const ContentSchema = z.object({
   title: z
     .string()
@@ -96,18 +97,7 @@ export default function PrakerinCreate() {
 
       router.push(`/myworks/prakerin`);
     } catch (error) {
-      console.log(error);
-
-      if (error instanceof AxiosError && error.response) {
-        toast({
-          title: 'Error!',
-          description:
-            error?.response.data.message ||
-            error?.response.data.error ||
-            'An error occurred while submit the competition.',
-          variant: 'destructive',
-        });
-      }
+      handleAxiosError(error, 'An error occurred while submit the prakerin.');
     } finally {
       setLoading(false);
     }

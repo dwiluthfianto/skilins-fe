@@ -36,9 +36,9 @@ export function useTag(search?: string) {
       data[data.length - 1]?.pagination?.page >=
         data[data.length - 1]?.pagination?.last_page);
 
-  const autocompleteTags = tags?.map((tag: { id: string; text: string }) => ({
-    id: tag.id,
-    text: tag.text,
+  const autocompleteTags = tags?.map((tag: { uuid: string; name: string }) => ({
+    id: tag.uuid,
+    text: tag.name,
   }));
 
   return {

@@ -67,8 +67,6 @@ export default async function AudioDetail({ params }: any) {
     creator: res.audio_podcast.creator.name,
   };
 
-  console.log(res);
-
   return (
     <ContentLayout title={res.title}>
       <section className='md:py-2'>

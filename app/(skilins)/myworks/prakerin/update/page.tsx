@@ -29,6 +29,8 @@ import FileUploader from '@/components/file-uploader';
 import { Input } from '@/components/ui/input';
 import { useReportBySlug } from '@/hooks/use-report';
 import { ContentUpdateSkeleton } from '@/components/skeletons/content-update-skeleton';
+import { handleAxiosError } from '@/utils/handle-axios-error';
+
 const ContentSchema = z.object({
   title: z
     .string()
@@ -118,18 +120,7 @@ export default function PrakerinUpdate() {
       mutate();
       router.push(`/myworks/prakerin`);
     } catch (error) {
-      console.log(error);
-
-      if (error instanceof AxiosError && error.response) {
-        toast({
-          title: 'Error!',
-          description:
-            error?.response.data.message ||
-            error?.response.data.error ||
-            'An error occurred while submit the competition.',
-          variant: 'destructive',
-        });
-      }
+      handleAxiosError(error, 'An error occurred while update the prakerin.');
     } finally {
       setLoading(false);
     }

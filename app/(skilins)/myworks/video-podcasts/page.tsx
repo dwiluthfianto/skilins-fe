@@ -17,15 +17,28 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import DeleteDialog from '@/components/staff-panel/delete-dialog';
-import { useUserVideo } from '@/hooks/use-video';
+import { useVideoByStudent } from '@/hooks/use-video';
+import { Loading } from '@/components/loading';
+import { Error } from '@/components/error';
 
 function VideoStudent() {
   const [contentStatus, setContentStatus] = useState('approved');
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const { videos, isLoading, isError } = useUserVideo(1, 10, contentStatus);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [deleteData, setDeleteData] = useState<{
+    isOpen: boolean;
+    uuid: string | null;
+  }>({
+    isOpen: false,
+    uuid: null,
+  });
+  const { videos, isLoading, isError, last_page } = useVideoByStudent({
+    page: currentPage,
+    limit: 12,
+    status: contentStatus,
+  });
 
-  if (isLoading) return <h1>loading..</h1>;
-  if (isError) return <h1>error..</h1>;
+  if (isLoading) return <Loading />;
+  if (isError) return <Error />;
 
   return (
     <ContentLayout title=''>
@@ -79,23 +92,103 @@ function VideoStudent() {
                   </Link>
                   <DropdownMenuItem
                     className='cursor-pointer'
-                    onClick={() => setIsDeleteDialogOpen(true)}
+                    onClick={() =>
+                      setDeleteData({ isOpen: true, uuid: item.uuid })
+                    }
                   >
                     <Trash2 className='mr-2' width={16} /> Delete
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
               <DeleteDialog
-                open={isDeleteDialogOpen}
-                onOpenChange={setIsDeleteDialogOpen}
-                pathApi={`/contents/videos/${item.uuid}`}
+                open={deleteData.isOpen}
+                onOpenChange={(isOpen) => setDeleteData({ isOpen, uuid: null })}
+                pathApi={`/contents/videos/${deleteData.uuid}`}
               />
             </div>
           );
         })}
       </div>
+      {last_page > 1 && (
+        <div className='flex justify-center items-center mt-4'>
+          <Button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            className='mr-2'
+          >
+            Previous
+          </Button>
+          {last_page > 5 ? (
+            <>
+              {currentPage > 3 && (
+                <>
+                  <Button onClick={() => setCurrentPage(1)} className='mx-1'>
+                    1
+                  </Button>
+                  {currentPage > 4 && <span className='mx-1'>...</span>}
+                </>
+              )}
+              {Array.from({ length: Math.min(5, last_page) }, (_, index) => {
+                const pageIndex = index + Math.max(1, currentPage - 2);
+                if (pageIndex <= last_page) {
+                  return (
+                    <Button
+                      key={pageIndex}
+                      onClick={() => setCurrentPage(pageIndex)}
+                      className={`mx-1 ${
+                        currentPage === pageIndex
+                          ? 'bg-blue-500 text-white'
+                          : 'bg-gray-200'
+                      }`}
+                    >
+                      {pageIndex}
+                    </Button>
+                  );
+                }
+                return null;
+              })}
+              {currentPage < last_page - 2 && (
+                <>
+                  {currentPage < last_page - 3 && (
+                    <span className='mx-1'>...</span>
+                  )}
+                  <Button
+                    onClick={() => setCurrentPage(last_page)}
+                    className='mx-1'
+                  >
+                    {last_page}
+                  </Button>
+                </>
+              )}
+            </>
+          ) : (
+            Array.from({ length: last_page }, (_, index) => (
+              <Button
+                key={index + 1}
+                onClick={() => setCurrentPage(index + 1)}
+                className={`mx-1 ${
+                  currentPage === index + 1
+                    ? 'bg-blue-500 text-white'
+                    : 'bg-gray-200'
+                }`}
+              >
+                {index + 1}
+              </Button>
+            ))
+          )}
+          <Button
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, last_page))
+            }
+            disabled={currentPage === last_page}
+            className='ml-2'
+          >
+            Next
+          </Button>
+        </div>
+      )}
     </ContentLayout>
   );
 }
 
-export default withRole(VideoStudent, ['Student'], '/auth/user/login');
+export default withRole(VideoStudent, ['student'], '/auth/user/login');

@@ -122,26 +122,47 @@ export function useVideoByStaff({
   };
 }
 
-export function useVideoBySlug(slug: string) {
-  const { data, error, mutate } = useSWR(`/contents/videos/${slug}`, fetcher);
+export function useVideoByStudent({
+  page,
+  limit,
+  search,
+  category,
+  tag,
+  genre,
+  type,
+  latest,
+  status,
+}: VideoFilter) {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    limit: limit.toString(),
+  });
+  if (search) params.append('search', search);
+  if (category) params.append('category', category);
+  if (tag) params.append('tag', tag);
+  if (genre) params.append('genre', genre);
+  if (type) params.append('type', type);
+  if (latest) params.append('latest', latest.toString());
+  if (status) params.append('status', status);
+  const { data, error, mutate } = useSWR(
+    `/contents/videos/student?${params.toString()}`,
+    fetcher
+  );
 
   return {
-    video: data?.data,
+    videos: data?.data,
+    last_page: data?.pagination.last_page || 1,
     isLoading: !error && !data,
     isError: error,
     mutate,
   };
 }
 
-export function useUserVideo(page?: number, limit?: number, status?: string) {
-  const { data, error, mutate } = useSWR(
-    `/contents/videos/student?page=${page}&limit=${limit}&status=${status}`,
-    fetcher
-  );
+export function useVideoBySlug(slug: string) {
+  const { data, error, mutate } = useSWR(`/contents/videos/${slug}`, fetcher);
 
   return {
-    videos: data?.data,
-    totalPages: data?.lastPage || 1,
+    video: data?.data,
     isLoading: !error && !data,
     isError: error,
     mutate,

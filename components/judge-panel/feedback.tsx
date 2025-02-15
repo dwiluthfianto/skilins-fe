@@ -31,7 +31,7 @@ import { CommentRatings } from '../ratings';
 import { AutosizeTextarea } from '../autosize-textarea';
 import { useEvaluationParameter, useJudgeUser } from '@/hooks/use-judge';
 import { ScrollArea } from '../ui/scroll-area';
-
+import { handleAxiosError } from '@/utils/handle-axios-error';
 const FeedbackSchema = z.object({
   parameter_scores: z.array(
     z.object({
@@ -91,16 +91,7 @@ const FeedbackJudge: FC<FeedbackJudgeProps> = ({
         description: judgeData.message,
       });
     } catch (error) {
-      if (error instanceof AxiosError && error.response) {
-        toast({
-          title: 'Error!',
-          description:
-            error?.response.data.message ||
-            error?.response.data.error ||
-            'An error occurred while add the blog.',
-          variant: 'destructive',
-        });
-      }
+      handleAxiosError(error, 'An error occurred while judge submission.');
     } finally {
       setLoading(false);
     }

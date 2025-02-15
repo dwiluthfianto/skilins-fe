@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
+'use client';
 
-import { CalendarIcon } from "@radix-ui/react-icons";
-import { format } from "date-fns";
+import { CalendarIcon } from '@radix-ui/react-icons';
+import { format } from 'date-fns';
 
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from '@/components/ui/popover';
 
 import {
   Dialog,
@@ -20,22 +20,22 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 
-import * as React from "react";
-import { RadioGroup, RadioGroupItem } from "../../../ui/radio-group";
+import * as React from 'react';
+import { RadioGroup, RadioGroupItem } from '../../../ui/radio-group';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../../ui/select";
-import { useMajor } from "@/hooks/use-major";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+} from '../../../ui/select';
+import { useMajor } from '@/hooks/use-major';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Form,
   FormControl,
@@ -43,26 +43,26 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../../../ui/form";
+} from '../../../ui/form';
 
-import axios from "@/utils/axios";
-import { toast } from "@/hooks/use-toast";
-import { mutate } from "swr";
-import Image from "next/image";
-import { AspectRatio } from "../../../ui/aspect-ratio";
-import Compressor from "compressorjs";
-import { AxiosError } from "axios";
+import axios from '@/utils/axios';
+import { toast } from '@/hooks/use-toast';
+import { mutate } from 'swr';
+import Image from 'next/image';
+import { AspectRatio } from '../../../ui/aspect-ratio';
+import Compressor from 'compressorjs';
+import { handleAxiosError } from '@/utils/handle-axios-error';
 
 const StudentSchema = z.object({
   image: z.instanceof(File).optional(),
-  nis: z.number().min(1, { message: "NIS is required." }),
-  name: z.string().min(1, { message: "Name is required." }),
-  birthplace: z.string().min(1, { message: "Birthplace is required." }),
-  birthdate: z.date({ required_error: "A date of birth is required." }),
-  sex: z.enum(["male", "female"], {
-    errorMap: () => ({ message: "Sex is required." }),
+  nis: z.number().min(1, { message: 'NIS is required.' }),
+  name: z.string().min(1, { message: 'Name is required.' }),
+  birthplace: z.string().min(1, { message: 'Birthplace is required.' }),
+  birthdate: z.date({ required_error: 'A date of birth is required.' }),
+  sex: z.enum(['male', 'female'], {
+    errorMap: () => ({ message: 'Sex is required.' }),
   }),
-  major: z.string().min(1, { message: "Major is required." }),
+  major: z.string().min(1, { message: 'Major is required.' }),
 });
 
 function StudentEditForm({
@@ -75,11 +75,11 @@ function StudentEditForm({
     defaultValues: {
       image: undefined,
       nis: parseInt(student?.nis, 10),
-      name: student?.name || "",
-      birthplace: student?.birthplace || "",
+      name: student?.name || '',
+      birthplace: student?.birthplace || '',
       birthdate: student?.birthdate ? new Date(student.birthdate) : undefined,
-      sex: student?.sex || "male",
-      major: student?.major || "",
+      sex: student?.sex || 'male',
+      major: student?.major || '',
     },
   });
 
@@ -88,11 +88,11 @@ function StudentEditForm({
       form.reset({
         image: undefined,
         nis: parseInt(student?.nis, 10),
-        name: student?.name || "",
-        birthplace: student?.birthplace || "",
+        name: student?.name || '',
+        birthplace: student?.birthplace || '',
         birthdate: student?.birthdate ? new Date(student.birthdate) : undefined,
-        sex: student?.sex || "male",
-        major: student?.major || "",
+        sex: student?.sex || 'male',
+        major: student?.major || '',
       });
       setImageUrl(student?.image_url || null); // Reset image URL
     }
@@ -128,7 +128,7 @@ function StudentEditForm({
           reader.readAsDataURL(compressedFile);
         },
         error(err) {
-          console.error("Compression failed:", err.message);
+          console.error('Compression failed:', err.message);
         },
       });
     }
@@ -141,17 +141,17 @@ function StudentEditForm({
   async function onSubmit(data: z.infer<typeof StudentSchema>) {
     const formData = new FormData();
     if (image) {
-      formData.append("image_url", image);
+      formData.append('image_url', image);
     } else if (imageUrl) {
-      formData.append("image_url", imageUrl);
+      formData.append('image_url', imageUrl);
     }
-    formData.append("nis", String(data.nis));
-    formData.append("name", data.name);
-    formData.append("birthplace", data.birthplace);
-    formData.append("birthdate", data.birthdate.toISOString());
-    formData.append("sex", data.sex);
-    formData.append("major", data.major);
-    formData.append("status", "true");
+    formData.append('nis', String(data.nis));
+    formData.append('name', data.name);
+    formData.append('birthplace', data.birthplace);
+    formData.append('birthdate', data.birthdate.toISOString());
+    formData.append('sex', data.sex);
+    formData.append('major', data.major);
+    formData.append('status', 'true');
 
     try {
       const { data: studentData } = await axios.patch(
@@ -159,35 +159,27 @@ function StudentEditForm({
         formData,
         {
           headers: {
-            "Content-Type": "multipart/form-data",
+            'Content-Type': 'multipart/form-data',
           },
         }
       );
 
       toast({
-        title: "Student Updated Successfully!",
+        title: 'Student Updated Successfully!',
         description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">
+          <pre className='mt-2 w-[340px] rounded-md bg-slate-950 p-4'>
+            <code className='text-white'>
               {JSON.stringify(studentData.message, null, 2)}
             </code>
           </pre>
         ),
       });
 
-      mutate("/students");
+      mutate('/students');
 
       setIsEditDialogOpen(false);
     } catch (error) {
-      if (error instanceof AxiosError && error.response) {
-        toast({
-          title: "Error!",
-          description:
-            JSON.stringify(error?.message) ||
-            "An error occurred while edit the student.",
-          variant: "destructive",
-        });
-      }
+      handleAxiosError(error, 'An error occurred while update the student.');
     }
   }
   return (
@@ -205,16 +197,16 @@ function StudentEditForm({
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="grid gap-4 py-4"
+            className='grid gap-4 py-4'
           >
             {imageUrl && (
-              <div className="grid grid-cols-4 items-center gap-2">
-                <div className="col-span-1">
+              <div className='grid grid-cols-4 items-center gap-2'>
+                <div className='col-span-1'>
                   <AspectRatio ratio={1 / 1}>
                     <Image
                       src={imageUrl}
-                      alt="Current student image"
-                      className="object-cover"
+                      alt='Current student image'
+                      className='object-cover'
                       fill
                     />
                   </AspectRatio>
@@ -223,15 +215,15 @@ function StudentEditForm({
             )}
             <FormField
               control={form.control}
-              name="image"
+              name='image'
               render={() => (
-                <FormItem className="grid grid-cols-4 items-center gap-2">
+                <FormItem className='grid grid-cols-4 items-center gap-2'>
                   <FormLabel>Image</FormLabel>
-                  <div className="col-span-3">
+                  <div className='col-span-3'>
                     <FormControl>
                       <Input
-                        type="file"
-                        accept="image/*"
+                        type='file'
+                        accept='image/*'
                         onChange={handleImageChange}
                       />
                     </FormControl>
@@ -242,15 +234,15 @@ function StudentEditForm({
             />
             <FormField
               control={form.control}
-              name="nis"
+              name='nis'
               render={({ field }) => (
-                <FormItem className="grid grid-cols-4 items-center gap-2">
+                <FormItem className='grid grid-cols-4 items-center gap-2'>
                   <FormLabel>NIS</FormLabel>
-                  <div className="col-span-3">
+                  <div className='col-span-3'>
                     <FormControl>
                       <Input
                         {...field}
-                        type="text"
+                        type='text'
                         onChange={(e) =>
                           field.onChange(parseInt(e.target.value, 10))
                         }
@@ -263,13 +255,13 @@ function StudentEditForm({
             />
             <FormField
               control={form.control}
-              name="name"
+              name='name'
               render={({ field }) => (
-                <FormItem className="grid grid-cols-4 items-center gap-2">
+                <FormItem className='grid grid-cols-4 items-center gap-2'>
                   <FormLabel>Name</FormLabel>
-                  <div className="col-span-3">
+                  <div className='col-span-3'>
                     <FormControl>
-                      <Input {...field} type="text" />
+                      <Input {...field} type='text' />
                     </FormControl>
                     <FormMessage />
                   </div>
@@ -278,13 +270,13 @@ function StudentEditForm({
             />
             <FormField
               control={form.control}
-              name="birthplace"
+              name='birthplace'
               render={({ field }) => (
-                <FormItem className="grid grid-cols-4 items-center gap-2">
+                <FormItem className='grid grid-cols-4 items-center gap-2'>
                   <FormLabel>Birthplace</FormLabel>
-                  <div className="col-span-3">
+                  <div className='col-span-3'>
                     <FormControl>
-                      <Input {...field} type="text" />
+                      <Input {...field} type='text' />
                     </FormControl>
                     <FormMessage />
                   </div>
@@ -293,33 +285,33 @@ function StudentEditForm({
             />
             <FormField
               control={form.control}
-              name="birthdate"
+              name='birthdate'
               render={({ field }) => (
-                <FormItem className="grid grid-cols-4 items-center gap-2">
+                <FormItem className='grid grid-cols-4 items-center gap-2'>
                   <FormLabel>Date of birth</FormLabel>
-                  <div className="col-span-3">
+                  <div className='col-span-3'>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
-                            variant={"outline"}
+                            variant={'outline'}
                             className={cn(
-                              "w-full justify-start text-left font-normal",
-                              !field.value && "text-muted-foreground"
+                              'w-full justify-start text-left font-normal',
+                              !field.value && 'text-muted-foreground'
                             )}
                           >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            <CalendarIcon className='mr-2 h-4 w-4' />
                             {field.value ? (
-                              format(field.value, "PPP")
+                              format(field.value, 'PPP')
                             ) : (
                               <span>Pick a date</span>
                             )}
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
+                      <PopoverContent className='w-auto p-0' align='start'>
                         <Calendar
-                          mode="single"
+                          mode='single'
                           selected={field.value}
                           onSelect={field.onChange}
                           initialFocus
@@ -333,26 +325,26 @@ function StudentEditForm({
             />
             <FormField
               control={form.control}
-              name="sex"
+              name='sex'
               render={({ field }) => (
-                <FormItem className="grid grid-cols-4 items-center gap-2">
+                <FormItem className='grid grid-cols-4 items-center gap-2'>
                   <FormLabel>Sex</FormLabel>
                   <div>
                     <FormControl>
                       <RadioGroup
                         onValueChange={field.onChange}
                         defaultValue={field.value}
-                        className="flex items-center"
+                        className='flex items-center'
                       >
-                        <FormItem className="flex items-center">
+                        <FormItem className='flex items-center'>
                           <FormControl>
-                            <RadioGroupItem value="male" />
+                            <RadioGroupItem value='male' />
                           </FormControl>
-                          <FormLabel className="m-0">Male</FormLabel>
+                          <FormLabel className='m-0'>Male</FormLabel>
                         </FormItem>
-                        <FormItem className="flex items-center space-x-2">
+                        <FormItem className='flex items-center space-x-2'>
                           <FormControl>
-                            <RadioGroupItem value="female" />
+                            <RadioGroupItem value='female' />
                           </FormControl>
                           <FormLabel>Female</FormLabel>
                         </FormItem>
@@ -365,18 +357,18 @@ function StudentEditForm({
             />
             <FormField
               control={form.control}
-              name="major"
+              name='major'
               render={({ field }) => (
-                <FormItem className="grid grid-cols-4 items-center gap-2">
+                <FormItem className='grid grid-cols-4 items-center gap-2'>
                   <FormLabel>Major</FormLabel>
-                  <div className="col-span-3">
+                  <div className='col-span-3'>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select a major" />
+                          <SelectValue placeholder='Select a major' />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -395,7 +387,7 @@ function StudentEditForm({
               )}
             />
             <DialogFooter>
-              <Button type="submit">Save</Button>
+              <Button type='submit'>Save</Button>
             </DialogFooter>
           </form>
         </Form>

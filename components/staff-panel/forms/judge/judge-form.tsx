@@ -24,7 +24,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Eye, EyeOff, Loader2, SquareUserRound } from 'lucide-react';
 import { useState } from 'react';
 import axios from '@/utils/axios';
-import { AxiosError } from 'axios';
+import { handleAxiosError } from '@/utils/handle-axios-error';
 
 const allowedDomains = ['@gmail.com', '@skilins.com'];
 
@@ -93,18 +93,7 @@ export default function JudgeForm() {
         description: judgeData.message,
       });
     } catch (error) {
-      console.log(error);
-
-      if (error instanceof AxiosError && error.response) {
-        toast({
-          title: 'Error!',
-          description:
-            error?.response.data.message ||
-            error?.response.data.error ||
-            'An error occurred while add the ebook.',
-          variant: 'destructive',
-        });
-      }
+      handleAxiosError(error, 'An error occurred while add the judge.');
     } finally {
       setLoading(false);
       setOpen(false);

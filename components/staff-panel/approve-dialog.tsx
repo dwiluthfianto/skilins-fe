@@ -12,12 +12,11 @@ import {
 import { toast } from '@/hooks/use-toast';
 import { mutate } from 'swr';
 import axios from '../../utils/axios';
-import { AxiosError } from 'axios';
 import React, { FC, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
+import { handleAxiosError } from '@/utils/handle-axios-error';
 interface ApprovedDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -49,16 +48,7 @@ const ApprovedDialog: FC<ApprovedDialogProps> = ({
 
       mutate(`${process.env.NEXT_PUBLIC_API_URL}/${path}`);
     } catch (error) {
-      if (error instanceof AxiosError && error.response) {
-        toast({
-          title: 'Error!',
-          description:
-            error?.response.data.message ||
-            error?.response.data.error ||
-            'An error occurred while approve the content.',
-          variant: 'destructive',
-        });
-      }
+      handleAxiosError(error, 'An error occurred while approve the content.');
       onOpenChange(false);
     } finally {
       router.refresh();

@@ -32,7 +32,7 @@ import axios from '@/utils/axios';
 import { toast } from '@/hooks/use-toast';
 import { mutate } from 'swr';
 import Compressor from 'compressorjs';
-import { AxiosError } from 'axios';
+import { handleAxiosError } from '@/utils/handle-axios-error';
 
 const TagSchema = z.object({
   name: z.string().min(1, { message: 'Name is required.' }),
@@ -114,15 +114,7 @@ function TagForm() {
 
       setOpen(false);
     } catch (error) {
-      if (error instanceof AxiosError && error.response) {
-        toast({
-          title: 'Error!',
-          description:
-            JSON.stringify(error?.message) ||
-            'An error occurred while add the tag.',
-          variant: 'destructive',
-        });
-      }
+      handleAxiosError(error, 'An error occurred while add the tag.');
 
       setOpen(false);
     }

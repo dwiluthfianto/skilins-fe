@@ -1,19 +1,23 @@
-import { cn } from "@/lib/utils";
-import Image from "next/image";
-import { FC } from "react";
+import { cn } from '@/lib/utils';
+import Image from 'next/image';
+import { FC } from 'react';
 
 const cardVariants = {
   default: {
-    ratio: "aspect-[3/4]",
-    width: "max-w-[250px]",
+    ratio: 'aspect-[3/4]',
+    width: 'max-w-[250px]',
   },
   video: {
-    ratio: "aspect-[4/3]",
-    width: "max-w-[352px]",
+    ratio: 'aspect-[4/3]',
+    width: 'max-w-[352px]',
   },
   audio: {
-    ratio: "aspect-[1/1]",
-    width: "max-w-[250px]",
+    ratio: 'aspect-[1/1]',
+    width: 'max-w-[250px]',
+  },
+  blog: {
+    ratio: 'aspect-[3/2]',
+    width: 'max-w-[452px]',
   },
 };
 
@@ -28,29 +32,30 @@ const ContentCard: FC<ContentProps> = ({
   href,
   imageSrc,
   title,
-  variant = "default",
+  variant = 'default',
   ...props
 }) => {
   return (
-    <div className={cn("pl-[20px]", cardVariants[variant].width)} {...props}>
-      <a href={href} className="group flex flex-col justify-between">
+    <div className={cn('pl-[20px]', cardVariants[variant].width)} {...props}>
+      <a href={href} className='group flex flex-col justify-between'>
         <div>
-          <div className={cn("flex text-clip", cardVariants[variant].ratio)}>
-            <div className="flex-1">
-              <div className="relative size-full origin-bottom transition duration-300 group-hover:scale-105">
+          <div className={cn('flex text-clip', cardVariants[variant].ratio)}>
+            <div className='flex-1'>
+              <div className='relative size-full origin-bottom transition duration-300 group-hover:scale-105'>
                 <Image
                   src={imageSrc}
                   alt={title}
-                  layout="fill"
-                  objectFit="cover"
-                  objectPosition="center"
-                  className="rounded-md"
+                  layout='fill'
+                  objectFit='cover'
+                  objectPosition='center'
+                  className='rounded-md'
+                  priority
                 />
               </div>
             </div>
           </div>
         </div>
-        <div className="mb-2 line-clamp-3 break-words pt-4 text-base font-semibold md:mb-3 md:pt-4 lg:pt-4 lg:text-md">
+        <div className='mb-2 line-clamp-3 break-words pt-4 text-base font-semibold md:mb-3 md:pt-4 lg:pt-4 lg:text-md'>
           {title}
         </div>
       </a>

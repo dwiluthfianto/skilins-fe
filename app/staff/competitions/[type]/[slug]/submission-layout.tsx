@@ -67,8 +67,8 @@ const SubmissionLayout: FC<SubmissionProps> = ({
           pending
         </Button>
         <Button
-          variant={status === 'REJECTED' ? 'default' : 'outline'}
-          onClick={() => onUpdateStatus('REJECTED')}
+          variant={status === 'rejected' ? 'default' : 'outline'}
+          onClick={() => onUpdateStatus('rejected')}
         >
           Rejected
         </Button>

@@ -11,6 +11,7 @@ import {
   CarouselItem,
 } from '@/components/ui/carousel';
 import Image from 'next/image';
+import ContentCard from '@/components/content-card';
 
 export function BlogCarousel({ data }: any) {
   const blogs = data || [];
@@ -87,37 +88,14 @@ export function BlogCarousel({ data }: any) {
         >
           <CarouselContent>
             {blogs?.map((item: any) => (
-              <CarouselItem
-                key={item.uuid}
-                className='pl-[20px] md:max-w-[452px]'
-              >
-                <a
+              <CarouselItem key={item.uuid}>
+                <ContentCard
+                  key={item.uuid}
+                  variant='blog'
                   href={`blogs/${item.slug}`}
-                  className='group flex flex-col justify-between'
-                >
-                  <div>
-                    <div className='flex aspect-[3/2] text-clip rounded-xl'>
-                      <div className='flex-1'>
-                        <div className='relative size-full origin-bottom transition duration-300 group-hover:scale-105'>
-                          <Image
-                            layout='fill'
-                            objectFit='cover'
-                            objectPosition='center'
-                            src={item.thumbnail}
-                            alt={item.title}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className='mb-2 line-clamp-3 break-words pt-4 text-lg font-medium md:mb-3 md:pt-4 md:text-xl lg:pt-4 lg:text-2xl'>
-                    {item.title}
-                  </div>
-                  <div className='flex items-center text-sm'>
-                    Read more{' '}
-                    <ArrowRight className='ml-2 size-5 transition-transform group-hover:translate-x-1' />
-                  </div>
-                </a>
+                  imageSrc={item.thumbnail}
+                  title={item.title}
+                />
               </CarouselItem>
             ))}
           </CarouselContent>

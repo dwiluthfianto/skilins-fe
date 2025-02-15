@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import { SquareUser } from "lucide-react";
+import { SquareUser } from 'lucide-react';
 
-import { CalendarIcon } from "@radix-ui/react-icons";
-import { format } from "date-fns";
+import { CalendarIcon } from '@radix-ui/react-icons';
+import { format } from 'date-fns';
 
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from '@/components/ui/popover';
 
 import {
   Dialog,
@@ -22,22 +22,22 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 
-import * as React from "react";
-import { RadioGroup, RadioGroupItem } from "../../../ui/radio-group";
+import * as React from 'react';
+import { RadioGroup, RadioGroupItem } from '../../../ui/radio-group';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../../ui/select";
-import { useMajor } from "@/hooks/use-major";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+} from '../../../ui/select';
+import { useMajor } from '@/hooks/use-major';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Form,
   FormControl,
@@ -45,24 +45,24 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../../../ui/form";
+} from '../../../ui/form';
 
-import axios from "@/utils/axios";
-import { toast } from "@/hooks/use-toast";
-import { mutate } from "swr";
-import Compressor from "compressorjs";
-import { AxiosError } from "axios";
+import axios from '@/utils/axios';
+import { toast } from '@/hooks/use-toast';
+import { mutate } from 'swr';
+import Compressor from 'compressorjs';
+import { handleAxiosError } from '@/utils/handle-axios-error';
 
 const StudentSchema = z.object({
   image: z.instanceof(File).optional(),
-  nis: z.string().min(1, { message: "NIS is required." }),
-  name: z.string().min(1, { message: "Name is required." }),
-  birthplace: z.string().min(1, { message: "Birthplace is required." }),
-  birthdate: z.date({ required_error: "A date of birth is required." }),
-  sex: z.enum(["male", "female"], {
-    errorMap: () => ({ message: "Sex is required." }),
+  nis: z.string().min(1, { message: 'NIS is required.' }),
+  name: z.string().min(1, { message: 'Name is required.' }),
+  birthplace: z.string().min(1, { message: 'Birthplace is required.' }),
+  birthdate: z.date({ required_error: 'A date of birth is required.' }),
+  sex: z.enum(['male', 'female'], {
+    errorMap: () => ({ message: 'Sex is required.' }),
   }),
-  major: z.string().min(1, { message: "Major is required." }),
+  major: z.string().min(1, { message: 'Major is required.' }),
 });
 
 function StudentForm() {
@@ -70,12 +70,12 @@ function StudentForm() {
     resolver: zodResolver(StudentSchema),
     defaultValues: {
       image: undefined,
-      nis: "",
-      name: "",
-      birthplace: "",
+      nis: '',
+      name: '',
+      birthplace: '',
       birthdate: undefined,
-      sex: "male",
-      major: "",
+      sex: 'male',
+      major: '',
     },
   });
 
@@ -85,12 +85,12 @@ function StudentForm() {
     if (!open) {
       form.reset({
         image: undefined,
-        nis: "",
-        name: "",
-        birthplace: "",
+        nis: '',
+        name: '',
+        birthplace: '',
         birthdate: undefined,
-        sex: "male",
-        major: "",
+        sex: 'male',
+        major: '',
       });
     }
   }, [open, form]);
@@ -115,7 +115,7 @@ function StudentForm() {
           setImage(compressedFile);
         },
         error(err) {
-          console.error("Compression failed:", err.message);
+          console.error('Compression failed:', err.message);
         },
       });
     }
@@ -127,53 +127,45 @@ function StudentForm() {
 
   async function onSubmit(data: z.infer<typeof StudentSchema>) {
     const formData = new FormData();
-    if (image) formData.append("image_url", image);
-    formData.append("nis", data.nis);
-    formData.append("name", data.name);
-    formData.append("birthplace", data.birthplace);
-    formData.append("birthdate", data.birthdate.toISOString());
-    formData.append("sex", data.sex);
-    formData.append("major", data.major);
-    formData.append("status", "true");
+    if (image) formData.append('image_url', image);
+    formData.append('nis', data.nis);
+    formData.append('name', data.name);
+    formData.append('birthplace', data.birthplace);
+    formData.append('birthdate', data.birthdate.toISOString());
+    formData.append('sex', data.sex);
+    formData.append('major', data.major);
+    formData.append('status', 'true');
 
     try {
-      const { data: studentData } = await axios.post("/students", formData, {
+      const { data: studentData } = await axios.post('/students', formData, {
         headers: {
-          "Content-Type": "multipart/form-data",
+          'Content-Type': 'multipart/form-data',
         },
       });
 
       toast({
-        title: "Student Added Successfully!",
+        title: 'Student Added Successfully!',
         description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">
+          <pre className='mt-2 w-[340px] rounded-md bg-slate-950 p-4'>
+            <code className='text-white'>
               {JSON.stringify(studentData.message, null, 2)}
             </code>
           </pre>
         ),
       });
 
-      mutate("/students");
+      mutate('/students');
 
       setOpen(false);
     } catch (error) {
-      if (error instanceof AxiosError && error.response) {
-        toast({
-          title: "Error!",
-          description:
-            JSON.stringify(error?.message) ||
-            "An error occurred while add the student.",
-          variant: "destructive",
-        });
-      }
+      handleAxiosError(error, 'An error occurred while add the student.');
     }
   }
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button>
-          <SquareUser className="mr-2" width={16} /> Add student
+          <SquareUser className='mr-2' width={16} /> Add student
         </Button>
       </DialogTrigger>
       <DialogContent>
@@ -186,18 +178,18 @@ function StudentForm() {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="grid gap-4 py-4"
+            className='grid gap-4 py-4'
           >
             <FormField
               control={form.control}
-              name="image"
+              name='image'
               render={() => (
-                <FormItem className="grid grid-cols-4 items-center gap-2">
+                <FormItem className='grid grid-cols-4 items-center gap-2'>
                   <FormLabel>Image</FormLabel>
-                  <FormControl className="col-span-3">
+                  <FormControl className='col-span-3'>
                     <Input
-                      type="file"
-                      accept="image/*"
+                      type='file'
+                      accept='image/*'
                       onChange={handleImageChange}
                     />
                   </FormControl>
@@ -207,12 +199,12 @@ function StudentForm() {
             />
             <FormField
               control={form.control}
-              name="nis"
+              name='nis'
               render={({ field }) => (
-                <FormItem className="grid grid-cols-4 items-center gap-2">
+                <FormItem className='grid grid-cols-4 items-center gap-2'>
                   <FormLabel>NIS</FormLabel>
-                  <FormControl className="col-span-3">
-                    <Input {...field} type="text" />
+                  <FormControl className='col-span-3'>
+                    <Input {...field} type='text' />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -220,12 +212,12 @@ function StudentForm() {
             />
             <FormField
               control={form.control}
-              name="name"
+              name='name'
               render={({ field }) => (
-                <FormItem className="grid grid-cols-4 items-center gap-2">
+                <FormItem className='grid grid-cols-4 items-center gap-2'>
                   <FormLabel>Name</FormLabel>
-                  <FormControl className="col-span-3">
-                    <Input {...field} type="text" />
+                  <FormControl className='col-span-3'>
+                    <Input {...field} type='text' />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -233,12 +225,12 @@ function StudentForm() {
             />
             <FormField
               control={form.control}
-              name="birthplace"
+              name='birthplace'
               render={({ field }) => (
-                <FormItem className="grid grid-cols-4 items-center gap-2">
+                <FormItem className='grid grid-cols-4 items-center gap-2'>
                   <FormLabel>Birthplace</FormLabel>
-                  <FormControl className="col-span-3">
-                    <Input {...field} type="text" />
+                  <FormControl className='col-span-3'>
+                    <Input {...field} type='text' />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -246,32 +238,32 @@ function StudentForm() {
             />
             <FormField
               control={form.control}
-              name="birthdate"
+              name='birthdate'
               render={({ field }) => (
-                <FormItem className="grid grid-cols-4 items-center gap-2">
+                <FormItem className='grid grid-cols-4 items-center gap-2'>
                   <FormLabel>Date of birth</FormLabel>
                   <Popover>
-                    <PopoverTrigger asChild className="col-span-3">
+                    <PopoverTrigger asChild className='col-span-3'>
                       <FormControl>
                         <Button
-                          variant={"outline"}
+                          variant={'outline'}
                           className={cn(
-                            "w-full justify-start text-left font-normal",
-                            !field.value && "text-muted-foreground"
+                            'w-full justify-start text-left font-normal',
+                            !field.value && 'text-muted-foreground'
                           )}
                         >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          <CalendarIcon className='mr-2 h-4 w-4' />
                           {field.value ? (
-                            format(field.value, "PPP")
+                            format(field.value, 'PPP')
                           ) : (
                             <span>Pick a date</span>
                           )}
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
+                    <PopoverContent className='w-auto p-0' align='start'>
                       <Calendar
-                        mode="single"
+                        mode='single'
                         selected={field.value}
                         onSelect={field.onChange}
                         initialFocus
@@ -284,25 +276,25 @@ function StudentForm() {
             />
             <FormField
               control={form.control}
-              name="sex"
+              name='sex'
               render={({ field }) => (
-                <FormItem className="grid grid-cols-4 items-center gap-2">
+                <FormItem className='grid grid-cols-4 items-center gap-2'>
                   <FormLabel>Sex</FormLabel>
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
                       defaultValue={field.value}
-                      className="flex items-center"
+                      className='flex items-center'
                     >
-                      <FormItem className="flex items-center">
+                      <FormItem className='flex items-center'>
                         <FormControl>
-                          <RadioGroupItem value="male" />
+                          <RadioGroupItem value='male' />
                         </FormControl>
-                        <FormLabel className="m-0">Male</FormLabel>
+                        <FormLabel className='m-0'>Male</FormLabel>
                       </FormItem>
-                      <FormItem className="flex items-center space-x-2">
+                      <FormItem className='flex items-center space-x-2'>
                         <FormControl>
-                          <RadioGroupItem value="female" />
+                          <RadioGroupItem value='female' />
                         </FormControl>
                         <FormLabel>Female</FormLabel>
                       </FormItem>
@@ -314,17 +306,17 @@ function StudentForm() {
             />
             <FormField
               control={form.control}
-              name="major"
+              name='major'
               render={({ field }) => (
-                <FormItem className="grid grid-cols-4 items-center gap-2">
+                <FormItem className='grid grid-cols-4 items-center gap-2'>
                   <FormLabel>Major</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
                     <FormControl>
-                      <SelectTrigger className="col-span-3">
-                        <SelectValue placeholder="Select a major" />
+                      <SelectTrigger className='col-span-3'>
+                        <SelectValue placeholder='Select a major' />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -340,7 +332,7 @@ function StudentForm() {
               )}
             />
             <DialogFooter>
-              <Button type="submit">Save</Button>
+              <Button type='submit'>Save</Button>
             </DialogFooter>
           </form>
         </Form>

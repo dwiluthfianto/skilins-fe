@@ -5,7 +5,7 @@ import TabsStatus from '@/components/tabs-status';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ContentLayout } from '@/components/user-panel/content-layout';
-import { useUserAudio } from '@/hooks/use-audio';
+import { useAudioByStudent } from '@/hooks/use-audio';
 import withRole from '@/utils/with-role';
 import { AudioLines, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 import Link from 'next/link';
@@ -18,14 +18,20 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import DeleteDialog from '@/components/staff-panel/delete-dialog';
+import { Loading } from '@/components/loading';
+import { Error } from '@/components/error';
 
 function AudioStudent() {
   const [contentStatus, setContentStatus] = useState('approved');
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const { audios, isLoading, isError } = useUserAudio(1, 10, contentStatus);
+  const { audios, isLoading, isError } = useAudioByStudent({
+    page: 1,
+    limit: 10,
+    status: contentStatus,
+  });
 
-  if (isLoading) return <h1>loading..</h1>;
-  if (isError) return <h1>error..</h1>;
+  if (isLoading) return <Loading />;
+  if (isError) return <Error />;
 
   return (
     <ContentLayout title=''>
@@ -98,4 +104,4 @@ function AudioStudent() {
   );
 }
 
-export default withRole(AudioStudent, ['Student'], '/auth/user/login');
+export default withRole(AudioStudent, ['student'], '/auth/user/login');

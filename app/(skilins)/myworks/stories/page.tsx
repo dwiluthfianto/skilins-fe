@@ -26,14 +26,16 @@ import {
 import DeleteDialog from '@/components/staff-panel/delete-dialog';
 import { useUserStory } from '@/hooks/use-story';
 import { Card, CardContent } from '@/components/ui/card';
+import { Loading } from '@/components/loading';
+import { Error } from '@/components/error';
 
 function StoryStudent() {
   const [contentStatus, setContentStatus] = useState('approved');
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const { stories, isLoading, isError } = useUserStory(1, 10, contentStatus);
 
-  if (isLoading) return <h1>loading..</h1>;
-  if (isError) return <h1>error..</h1>;
+  if (isLoading) return <Loading />;
+  if (isError) return <Error />;
 
   return (
     <ContentLayout title=''>
@@ -125,4 +127,4 @@ function StoryStudent() {
   );
 }
 
-export default withRole(StoryStudent, ['Student'], '/auth/user/login');
+export default withRole(StoryStudent, ['student'], '/auth/user/login');

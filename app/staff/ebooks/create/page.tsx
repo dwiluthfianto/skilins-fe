@@ -39,6 +39,8 @@ import { cn } from '@/lib/utils';
 import { useGenre } from '@/hooks/use-genre';
 import MinimalTiptapOne from '@/components/minimal-tiptap/minimal-tiptap-one';
 import FileUploader from '@/components/file-uploader';
+import { handleAxiosError } from '@/utils/handle-axios-error';
+
 const ContentSchema = z.object({
   title: z
     .string()
@@ -138,18 +140,7 @@ export default function CreateEbooks() {
 
       router.push('/staff/ebooks');
     } catch (error) {
-      console.log(error);
-
-      if (error instanceof AxiosError && error.response) {
-        toast({
-          title: 'Error!',
-          description:
-            error?.response.data.message ||
-            error?.response.data.error ||
-            'An error occurred while add the ebook.',
-          variant: 'destructive',
-        });
-      }
+      handleAxiosError(error, 'An error occurred while create ebook.');
     } finally {
       setLoading(false);
     }

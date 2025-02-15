@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { useSearchParams } from "next/navigation";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { useSearchParams } from 'next/navigation';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -14,95 +14,77 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { useToast } from "@/hooks/use-toast";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { useToast } from '@/hooks/use-toast';
 
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
-} from "@/components/ui/card";
-import { Library, UserRound } from "lucide-react";
-import { CardTitle } from "@/components/ui/card";
-import { ToastAction } from "@/components/ui/toast";
-import { Toaster } from "@/components/ui/toaster";
-import { resetPassword } from "@/utils/auth-service";
-import Link from "next/link";
-import { useState } from "react";
-import axios from "@/utils/axios";
-import { AxiosError } from "axios";
-
-export const dynamic = "force-dynamic";
+} from '@/components/ui/card';
+import { Library, UserRound } from 'lucide-react';
+import { CardTitle } from '@/components/ui/card';
+import { ToastAction } from '@/components/ui/toast';
+import { Toaster } from '@/components/ui/toaster';
+import { resetPassword } from '@/utils/auth-service';
+import Link from 'next/link';
+import { useState } from 'react';
+import axios from '@/utils/axios';
+import { AxiosError } from 'axios';
+import { handleAxiosError } from '@/utils/handle-axios-error';
+export const dynamic = 'force-dynamic';
 
 const ForgotSchema = z.object({
   email: z
     .string()
     .min(1, {
-      message: "This field has to be filled.",
+      message: 'This field has to be filled.',
     })
-    .email("This is not valid email"),
+    .email('This is not valid email'),
 });
 
 const ResetSchema = z.object({
   newPassword: z.string().min(6, {
-    message: "Password must be at least 6 characters.",
+    message: 'Password must be at least 6 characters.',
   }),
   confirmPassword: z.string().min(6, {
-    message: "Password must be at least 6 characters.",
+    message: 'Password must be at least 6 characters.',
   }),
 });
 
 export default function ResetPassword() {
   const searchParams = useSearchParams();
-  const token = searchParams.get("token");
+  const token = searchParams.get('token');
   const { toast } = useToast();
   const form = useForm<z.infer<typeof ForgotSchema>>({
     resolver: zodResolver(ForgotSchema),
     defaultValues: {
-      email: "",
+      email: '',
     },
   });
 
   const formReset = useForm<z.infer<typeof ResetSchema>>({
     resolver: zodResolver(ResetSchema),
     defaultValues: {
-      newPassword: "",
-      confirmPassword: "",
+      newPassword: '',
+      confirmPassword: '',
     },
   });
 
-  const [verificationStatus, setVerificationStatus] = useState("");
+  const [verificationStatus, setVerificationStatus] = useState('');
 
   async function onSubmit(data: z.infer<typeof ForgotSchema>) {
     try {
       await resetPassword(data.email);
 
       toast({
-        title: "Link has been send to your email!",
-        variant: "default",
+        title: 'Link has been send to your email!',
+        variant: 'default',
       });
     } catch (error) {
-      let errorMessage = "Something went wrong!";
-      let errorStatus: number | undefined;
-
-      if (error instanceof AxiosError && error.response) {
-        errorMessage = error.response.data?.message || errorMessage;
-        errorStatus = error.response.status;
-      }
-
-      toast({
-        title: "Password Reset Failed!",
-        description:
-          errorStatus === 401 ? (
-            <p>Invalid credentials. Please check your email or password.</p>
-          ) : (
-            errorMessage
-          ),
-        action: <ToastAction altText="Try again">Try again</ToastAction>,
-        variant: "destructive",
-      });
+      handleAxiosError(error, 'An error occurred while reset password.');
     }
   }
 
@@ -114,57 +96,43 @@ export default function ResetPassword() {
           token: token,
         });
         toast({
-          title: "Password has been changed",
+          title: 'Password has been changed',
           action: (
-            <ToastAction altText="Back to home">
-              <Link href="/">Back to Home</Link>
+            <ToastAction altText='Back to home'>
+              <Link href='/'>Back to Home</Link>
             </ToastAction>
           ),
         });
       } else {
-        setVerificationStatus("Password is not same!");
+        setVerificationStatus('Password is not same!');
       }
     } catch (error) {
-      let errorMessage = "Something went wrong!";
-      if (error instanceof AxiosError && error.response) {
-        errorMessage = error.response.data?.message || errorMessage;
-      }
-      toast({
-        title: "Failed to change password!",
-        description: errorMessage,
-        action: (
-          <ToastAction altText="Back to home">
-            <Link href="/">Back to Home</Link>
-          </ToastAction>
-        ),
-        variant: "destructive",
-      });
-      setVerificationStatus("Reset password failed. Please try again.");
-      console.error(error);
+      handleAxiosError(error, 'An error occurred while reset password.');
+      setVerificationStatus('Reset password failed. Please try again.');
     }
   };
 
   if (token) {
     return (
       <div>
-        <section className="py-32">
-          <div className="container">
-            <div className="flex flex-col gap-4">
-              <Link href="/" className="flex justify-center items-center pt-1">
-                <div className=" flex justify-center items-center  p-[1px] rounded-md border-2 border-black mr-2">
+        <section className='py-32'>
+          <div className='container'>
+            <div className='flex flex-col gap-4'>
+              <Link href='/' className='flex justify-center items-center pt-1'>
+                <div className=' flex justify-center items-center  p-[1px] rounded-md border-2 border-black mr-2'>
                   <Library width={24} height={24} />
                 </div>
-                <h1 className="font-bold text-xl md:text-2xl">skilins.</h1>
+                <h1 className='font-bold text-xl md:text-2xl'>skilins.</h1>
               </Link>
-              <Card className="mx-auto w-full max-w-sm">
-                <CardHeader className="items-center">
-                  <UserRound className="size-10 rounded-full bg-accent p-2.5 text-muted-foreground" />
-                  <CardTitle className="text-xl">Change Password</CardTitle>
+              <Card className='mx-auto w-full max-w-sm'>
+                <CardHeader className='items-center'>
+                  <UserRound className='size-10 rounded-full bg-accent p-2.5 text-muted-foreground' />
+                  <CardTitle className='text-xl'>Change Password</CardTitle>
                   <CardDescription>
-                    Remember your password?{" "}
+                    Remember your password?{' '}
                     <Link
-                      href="/auth/user/login"
-                      className="text-blue-400 hover:underline"
+                      href='/auth/user/login'
+                      className='text-blue-400 hover:underline'
                     >
                       Login here
                     </Link>
@@ -174,19 +142,19 @@ export default function ResetPassword() {
                   <Form {...formReset}>
                     <form
                       onSubmit={formReset.handleSubmit(changePassword)}
-                      className="grid gap-4"
+                      className='grid gap-4'
                     >
                       <FormField
                         control={formReset.control}
-                        name="newPassword"
+                        name='newPassword'
                         render={({ field }) => (
-                          <FormItem className="grid gap-2">
+                          <FormItem className='grid gap-2'>
                             <FormLabel>New Password</FormLabel>
                             <FormControl>
                               <Input
-                                placeholder="Enter your new password"
+                                placeholder='Enter your new password'
                                 {...field}
-                                type="password"
+                                type='password'
                               />
                             </FormControl>
                             <FormMessage />
@@ -195,15 +163,15 @@ export default function ResetPassword() {
                       />
                       <FormField
                         control={formReset.control}
-                        name="confirmPassword"
+                        name='confirmPassword'
                         render={({ field }) => (
-                          <FormItem className="grid gap-2">
+                          <FormItem className='grid gap-2'>
                             <FormLabel>Confirm Password</FormLabel>
                             <FormControl>
                               <Input
-                                placeholder="Enter your password again to confirm"
+                                placeholder='Enter your password again to confirm'
                                 {...field}
-                                type="password"
+                                type='password'
                               />
                             </FormControl>
                             <FormMessage />
@@ -211,14 +179,14 @@ export default function ResetPassword() {
                         )}
                       />
                       <FormDescription>{verificationStatus}</FormDescription>
-                      <Button type="submit">Reset Password</Button>
+                      <Button type='submit'>Reset Password</Button>
                     </form>
                   </Form>
                 </CardContent>
               </Card>
-              <div className="mx-auto flex gap-1 text-sm">
+              <div className='mx-auto flex gap-1 text-sm'>
                 <p>{`Don't have an account?`}</p>
-                <a href="/auth/user/register" className="underline">
+                <a href='/auth/user/register' className='underline'>
                   Sign up
                 </a>
               </div>
@@ -231,24 +199,24 @@ export default function ResetPassword() {
   } else {
     return (
       <div>
-        <section className="py-32">
-          <div className="container">
-            <div className="flex flex-col gap-4">
-              <Link href="/" className="flex justify-center items-center pt-1">
-                <div className=" flex justify-center items-center  p-[1px] rounded-md border-2 border-black mr-2">
+        <section className='py-32'>
+          <div className='container'>
+            <div className='flex flex-col gap-4'>
+              <Link href='/' className='flex justify-center items-center pt-1'>
+                <div className=' flex justify-center items-center  p-[1px] rounded-md border-2 border-black mr-2'>
                   <Library width={24} height={24} />
                 </div>
-                <h1 className="font-bold text-xl md:text-2xl">skilins.</h1>
+                <h1 className='font-bold text-xl md:text-2xl'>skilins.</h1>
               </Link>
-              <Card className="mx-auto w-full max-w-sm">
-                <CardHeader className="items-center">
-                  <UserRound className="size-10 rounded-full bg-accent p-2.5 text-muted-foreground" />
-                  <CardTitle className="text-xl">Forgot Password?</CardTitle>
+              <Card className='mx-auto w-full max-w-sm'>
+                <CardHeader className='items-center'>
+                  <UserRound className='size-10 rounded-full bg-accent p-2.5 text-muted-foreground' />
+                  <CardTitle className='text-xl'>Forgot Password?</CardTitle>
                   <CardDescription>
-                    Remember your password?{" "}
+                    Remember your password?{' '}
                     <Link
-                      href="/auth/user/login"
-                      className="text-blue-400 hover:underline"
+                      href='/auth/user/login'
+                      className='text-blue-400 hover:underline'
                     >
                       Login here
                     </Link>
@@ -258,19 +226,19 @@ export default function ResetPassword() {
                   <Form {...form}>
                     <form
                       onSubmit={form.handleSubmit(onSubmit)}
-                      className="grid gap-4"
+                      className='grid gap-4'
                     >
                       <FormField
                         control={form.control}
-                        name="email"
+                        name='email'
                         render={({ field }) => (
-                          <FormItem className="grid gap-2">
+                          <FormItem className='grid gap-2'>
                             <FormLabel>Email</FormLabel>
                             <FormControl>
                               <Input
-                                placeholder="Enter your email"
+                                placeholder='Enter your email'
                                 {...field}
-                                type="email"
+                                type='email'
                               />
                             </FormControl>
                             <FormMessage />
@@ -278,14 +246,14 @@ export default function ResetPassword() {
                         )}
                       />
 
-                      <Button type="submit">Reset Password</Button>
+                      <Button type='submit'>Reset Password</Button>
                     </form>
                   </Form>
                 </CardContent>
               </Card>
-              <div className="mx-auto flex gap-1 text-sm">
+              <div className='mx-auto flex gap-1 text-sm'>
                 <p>{`Don't have an account?`}</p>
-                <a href="/auth/user/register" className="underline">
+                <a href='/auth/user/register' className='underline'>
                   Sign up
                 </a>
               </div>

@@ -9,7 +9,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from '@/utils/axios';
 import { toast } from '@/hooks/use-toast';
-import { AxiosError } from 'axios';
 import {
   Form,
   FormControl,
@@ -28,8 +27,14 @@ import { Input } from '@/components/ui/input';
 import { AutosizeTextarea } from '@/components/autosize-textarea';
 import { useGenre } from '@/hooks/use-genre';
 import MinimalTiptapOne from '@/components/minimal-tiptap/minimal-tiptap-one';
-import { useUser } from '@/hooks/use-user';
 import { ContentLayout } from '@/components/user-panel/content-layout';
+import { handleAxiosError } from '@/utils/handle-axios-error';
+import {
+  GuidedFormLayout,
+  useGuidedField,
+} from '@/components/form-guidance/guided-form-layout';
+import { VIDEO_PODCAST_TOOLTIPS } from '@/app/(skilins)/constants/tooltips';
+
 const ContentSchema = z.object({
   title: z
     .string()
@@ -51,7 +56,7 @@ const ContentSchema = z.object({
     )
     .optional(),
   category: z.string().min(1, { message: 'Category is required.' }),
-  file: z.string().url().min(1, { message: 'Video URL is required' }),
+  link: z.string().url().min(1, { message: 'Video URL is required' }),
   genres: z
     .array(
       z.object({
@@ -71,12 +76,13 @@ export default function VideoCreate() {
       description: '',
       genres: [],
       category: '',
-      file: undefined,
+      link: undefined,
       tags: [],
     },
   });
   const { autocompleteTags } = useTag();
   const { autocompleteGenres } = useGenre();
+
   const [tags, setTags] = useState<Tag[]>([]);
   const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
   const [genres, setGenres] = useState<Tag[]>([]);
@@ -86,7 +92,7 @@ export default function VideoCreate() {
 
   const { categories, isLoading } = useCategorySearch(form.watch('category'));
 
-  const { user } = useUser();
+  const tooltips = VIDEO_PODCAST_TOOLTIPS;
 
   async function onSubmit(data: z.infer<typeof ContentSchema>) {
     setLoading(true);
@@ -98,8 +104,7 @@ export default function VideoCreate() {
     formData.append('description', data.description);
     formData.append('genres', JSON.stringify(data.genres));
     formData.append('category_name', data.category);
-    formData.append('file', data.file);
-    if (user) formData.append('creator_uuid', user?.data.uuid);
+    formData.append('link', data.link);
     formData.append('tags', JSON.stringify(data.tags));
 
     try {
@@ -120,16 +125,7 @@ export default function VideoCreate() {
 
       router.push(`/myworks/video-podcasts`);
     } catch (error) {
-      if (error instanceof AxiosError && error.response) {
-        toast({
-          title: 'Error!',
-          description:
-            error?.response.data.message ||
-            error?.response.data.error ||
-            'An error occurred while submit the competition.',
-          variant: 'destructive',
-        });
-      }
+      handleAxiosError(error, 'An error occurred while submit the video.');
     } finally {
       setLoading(false);
     }
@@ -137,7 +133,7 @@ export default function VideoCreate() {
 
   return (
     <ContentLayout title=''>
-      <div className='max-w-4xl mx-auto'>
+      <GuidedFormLayout tooltips={tooltips}>
         <h1 className='font-semibold mb-4'>Create video</h1>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -164,8 +160,9 @@ export default function VideoCreate() {
                         <FormControl>
                           <AutosizeTextarea
                             {...field}
+                            {...useGuidedField('title')}
                             placeholder='New video title here...'
-                            className='outline-none w-full text-4xl p-0 border-none  shadow-none focus-visible:ring-0  font-bold placeholder:text-slate-700 h-full resize-none overflow-hidden '
+                            className='outline-none w-full text-4xl p-0 border-none shadow-none focus-visible:ring-0 font-bold placeholder:text-slate-700 h-full resize-none overflow-hidden'
                           />
                         </FormControl>
                         <FormMessage />
@@ -177,7 +174,7 @@ export default function VideoCreate() {
                     control={form.control}
                     name='category'
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem {...useGuidedField('category')}>
                         <FormControl>
                           <AutoComplete
                             selectedValue={form.watch('category')}
@@ -201,7 +198,7 @@ export default function VideoCreate() {
                     control={form.control}
                     name='tags'
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem {...useGuidedField('tags')}>
                         <FormControl>
                           <TagInput
                             {...field}
@@ -226,7 +223,7 @@ export default function VideoCreate() {
                             setActiveTagIndex={setActiveTagIndex}
                             enableAutocomplete={true}
                             autocompleteOptions={autocompleteTags}
-                            restrictTagsToAutocompleteOptions={true}
+                            restrictTagsToAutocompleteOptions={false}
                             maxTags={4}
                           />
                         </FormControl>
@@ -239,7 +236,7 @@ export default function VideoCreate() {
                   control={form.control}
                   name='description'
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem {...useGuidedField('description')}>
                       <FormControl>
                         <MinimalTiptapOne
                           {...field}
@@ -258,9 +255,9 @@ export default function VideoCreate() {
                 <div className='m-8 space-y-4'>
                   <FormField
                     control={form.control}
-                    name='tags'
+                    name='genres'
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem {...useGuidedField('genres')}>
                         <FormControl>
                           <TagInput
                             {...field}
@@ -288,7 +285,7 @@ export default function VideoCreate() {
                             setActiveTagIndex={setActiveGenreIndex}
                             enableAutocomplete={true}
                             autocompleteOptions={autocompleteGenres}
-                            restrictTagsToAutocompleteOptions={true}
+                            restrictTagsToAutocompleteOptions={false}
                             maxTags={4}
                           />
                         </FormControl>
@@ -299,9 +296,9 @@ export default function VideoCreate() {
                   <Separator />
                   <FormField
                     control={form.control}
-                    name='file'
+                    name='link'
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem {...useGuidedField('link')}>
                         <FormControl>
                           <Input
                             {...field}
@@ -328,7 +325,7 @@ export default function VideoCreate() {
             </Button>
           </form>
         </Form>
-      </div>
+      </GuidedFormLayout>
     </ContentLayout>
   );
 }

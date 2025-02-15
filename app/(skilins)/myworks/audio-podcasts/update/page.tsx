@@ -87,11 +87,11 @@ export default function AudioUpdate() {
       title: audio?.title || '',
       thumbnail: undefined,
       description: audio?.description || '',
-      genres: audio?.genres || [],
-      category: audio?.category || '',
-      duration: audio?.duration || 0,
+      genres: audio?.genre || [],
+      category: audio?.category.name || '',
+      duration: audio?.audio_podcast.duration || 0,
       file: undefined,
-      tags: audio?.tags || [],
+      tags: audio?.tag || [],
     },
   });
 
@@ -101,31 +101,29 @@ export default function AudioUpdate() {
         title: audio.title,
         thumbnail: undefined,
         description: audio.description,
-        tags: audio.tags || [],
-        category: audio.category,
+        tags: audio.tag || [],
+        category: audio.category.name,
         file: undefined,
-        duration: audio.duration,
-        genres: audio.genres || [],
+        duration: audio.audio_podcast.duration,
+        genres: audio.genre || [],
       });
     }
 
-    setTags(audio?.tags || []);
-    setGenres(audio?.genres || []);
+    setTags(audio?.tag || []);
+    setGenres(audio?.genre || []);
   }, [audio, form]);
 
   const { autocompleteTags } = useTag();
   const { autocompleteGenres } = useGenre();
-  const [tags, setTags] = useState<Tag[]>(audio?.tags || []);
+  const [tags, setTags] = useState<Tag[]>(audio?.tag || []);
   const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
-  const [genres, setGenres] = useState<Tag[]>(audio?.genres || []);
+  const [genres, setGenres] = useState<Tag[]>(audio?.genre || []);
   const [activeGenreIndex, setActiveGenreIndex] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
 
   const { categories, isLoading } = useCategorySearch(form.watch('category'));
-
-  const { user } = useUser();
 
   async function onSubmit(data: z.infer<typeof ContentSchema>) {
     setLoading(true);
@@ -138,7 +136,6 @@ export default function AudioUpdate() {
     formData.append('category_name', data.category);
     formData.append('duration', String(data.duration));
     if (file) formData.append('file', file);
-    if (user) formData.append('creator_uuid', user?.data.uuid);
     formData.append('tags', JSON.stringify(data.tags));
 
     try {
@@ -156,7 +153,7 @@ export default function AudioUpdate() {
         title: 'Success!',
         description: contentData.message,
       });
-      mutate();
+
       router.push(`/myworks/audio-podcasts`);
     } catch (error) {
       handleAxiosError(error, 'An error occurred while update audio.');
@@ -343,8 +340,12 @@ export default function AudioUpdate() {
                           form.setValue('duration', duration ?? 0)
                         }
                         label='Add an Audio file'
-                        initialFileName={audio?.file.split('/').pop()}
-                        initialFileUrl={audio?.file}
+                        initialFileName={audio?.audio_podcast.file_attachment.file
+                          .split('/')
+                          .pop()}
+                        initialFileUrl={
+                          audio?.audio_podcast.file_attachment.file
+                        }
                       />
                     )}
                   />

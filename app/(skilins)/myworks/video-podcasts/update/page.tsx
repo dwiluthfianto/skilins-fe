@@ -33,6 +33,11 @@ import { ContentLayout } from '@/components/user-panel/content-layout';
 import { useVideoBySlug } from '@/hooks/use-video';
 import { ContentUpdateSkeleton } from '@/components/skeletons/content-update-skeleton';
 import { handleAxiosError } from '@/utils/handle-axios-error';
+import {
+  GuidedFormLayout,
+  useGuidedField,
+} from '@/components/form-guidance/guided-form-layout';
+import { VIDEO_PODCAST_TOOLTIPS } from '@/app/(skilins)/constants/tooltips';
 const ContentSchema = z.object({
   title: z
     .string()
@@ -48,7 +53,7 @@ const ContentSchema = z.object({
     )
     .optional(),
   category: z.string().min(1, { message: 'Category is required.' }),
-  file: z.string().url().min(1, { message: 'Video URL is required' }),
+  link: z.string().url().min(1, { message: 'Video URL is required' }),
   genres: z
     .array(
       z.object({
@@ -71,10 +76,10 @@ export default function VideoCreate() {
       title: video?.title || '',
       thumbnail: undefined,
       description: video?.description || '',
-      genres: video?.genres || [],
-      category: video?.category || '',
-      file: video?.file || '',
-      tags: video?.tags || [],
+      genres: video?.genre || [],
+      category: video?.category.name || '',
+      link: video?.video_podcast.link || '',
+      tags: video?.tag || [],
     },
   });
 
@@ -84,15 +89,15 @@ export default function VideoCreate() {
         title: video.title,
         thumbnail: undefined,
         description: video.description,
-        tags: video.tags || [],
-        category: video.category,
-        file: video.file,
-        genres: video.genres || [],
+        tags: video.tag || [],
+        category: video.category.name,
+        link: video.video_podcast.link,
+        genres: video.genre || [],
       });
     }
 
-    setTags(video?.tags || []);
-    setGenres(video?.genres || []);
+    setTags(video?.tag || []);
+    setGenres(video?.genre || []);
   }, [video, form]);
 
   const { autocompleteTags } = useTag();
@@ -106,8 +111,6 @@ export default function VideoCreate() {
 
   const { categories, isLoading } = useCategorySearch(form.watch('category'));
 
-  const { user } = useUser();
-
   async function onSubmit(data: z.infer<typeof ContentSchema>) {
     setLoading(true);
 
@@ -118,8 +121,7 @@ export default function VideoCreate() {
     formData.append('description', data.description);
     formData.append('genres', JSON.stringify(data.genres));
     formData.append('category_name', data.category);
-    formData.append('file', data.file);
-    if (user) formData.append('creator_uuid', user?.data.uuid);
+    formData.append('link', data.link);
     formData.append('tags', JSON.stringify(data.tags));
 
     try {
@@ -138,7 +140,6 @@ export default function VideoCreate() {
         description: contentData.message,
       });
 
-      mutate();
       router.push(`/myworks/video-podcasts`);
     } catch (error) {
       handleAxiosError(error, 'An error occurred while update video.');
@@ -150,199 +151,205 @@ export default function VideoCreate() {
   if (videoLoading || !video) return <ContentUpdateSkeleton />;
   return (
     <ContentLayout title=''>
-      <div className='max-w-4xl mx-auto'>
-        <h1 className='font-semibold mb-4'>Update video</h1>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <Card>
-              <CardContent className='p-0'>
-                <div className='m-8 space-y-4'>
-                  <FormField
-                    control={form.control}
-                    name='thumbnail'
-                    render={() => (
-                      <ImageUploader
-                        onChange={(file) =>
-                          file && form.setValue('thumbnail', file)
-                        }
-                        ratioImage={4 / 3}
-                        initialImage={video.thumbnail}
-                      />
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name='title'
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <AutosizeTextarea
-                            {...field}
-                            placeholder='New video title here...'
-                            className='outline-none w-full text-4xl p-0 border-none  shadow-none focus-visible:ring-0  font-bold placeholder:text-slate-700 h-full resize-none overflow-hidden '
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Separator />
-                  <FormField
-                    control={form.control}
-                    name='category'
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <AutoComplete
-                            selectedValue={form.watch('category')}
-                            onSelectedValueChange={(value) =>
-                              field.onChange(value)
-                            }
-                            searchValue={field.value}
-                            onSearchValueChange={field.onChange}
-                            items={categories ?? []}
-                            isLoading={isLoading}
-                            placeholder='Category name here...'
-                            emptyMessage='No category found.'
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Separator />
-                  <FormField
-                    control={form.control}
-                    name='tags'
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <TagInput
-                            {...field}
-                            tags={tags}
-                            setTags={(newTags) => {
-                              setTags(newTags);
-                              form.setValue('tags', newTags as [Tag, ...Tag[]]);
-                            }}
-                            placeholder='Add up to 4 tags...'
-                            styleClasses={{
-                              input:
-                                'w-full h-fit outline-none border-none shadow-none  text-base p-0',
-                              inlineTagsContainer: 'border-none p-0',
-                              autoComplete: {
-                                command: '[&>div]:border-none',
-                                popoverContent: 'p-4',
-                                commandList: 'list-none',
-                                commandGroup: 'font-bold',
-                              },
-                            }}
-                            activeTagIndex={activeTagIndex}
-                            setActiveTagIndex={setActiveTagIndex}
-                            enableAutocomplete={true}
-                            autocompleteOptions={autocompleteTags}
-                            restrictTagsToAutocompleteOptions={true}
-                            maxTags={4}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <FormField
-                  control={form.control}
-                  name='description'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <MinimalTiptapOne
-                          {...field}
-                          className='w-full'
-                          editorContentClassName='px-8 py-4 shadow-none'
-                          output='html'
-                          placeholder='Type your description here...'
-                          autofocus={true}
-                          editable={true}
-                          editorClassName='focus:outline-none'
+      <GuidedFormLayout tooltips={VIDEO_PODCAST_TOOLTIPS}>
+        <div className='max-w-4xl mx-auto'>
+          <h1 className='font-semibold mb-4'>Update video</h1>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              <Card>
+                <CardContent className='p-0'>
+                  <div className='m-8 space-y-4'>
+                    <FormField
+                      control={form.control}
+                      name='thumbnail'
+                      render={() => (
+                        <ImageUploader
+                          onChange={(file) =>
+                            file && form.setValue('thumbnail', file)
+                          }
+                          ratioImage={4 / 3}
+                          initialImage={video.thumbnail}
                         />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-                <div className='m-8 space-y-4'>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name='title'
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <AutosizeTextarea
+                              {...field}
+                              {...useGuidedField('title')}
+                              placeholder='New video title here...'
+                              className='outline-none w-full text-4xl p-0 border-none  shadow-none focus-visible:ring-0  font-bold placeholder:text-slate-700 h-full resize-none overflow-hidden '
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Separator />
+                    <FormField
+                      control={form.control}
+                      name='category'
+                      render={({ field }) => (
+                        <FormItem {...useGuidedField('category')}>
+                          <FormControl>
+                            <AutoComplete
+                              selectedValue={form.watch('category')}
+                              onSelectedValueChange={(value) =>
+                                field.onChange(value)
+                              }
+                              searchValue={field.value}
+                              onSearchValueChange={field.onChange}
+                              items={categories ?? []}
+                              isLoading={isLoading}
+                              placeholder='Category name here...'
+                              emptyMessage='No category found.'
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Separator />
+                    <FormField
+                      control={form.control}
+                      name='tags'
+                      render={({ field }) => (
+                        <FormItem {...useGuidedField('tags')}>
+                          <FormControl>
+                            <TagInput
+                              {...field}
+                              tags={tags}
+                              setTags={(newTags) => {
+                                setTags(newTags);
+                                form.setValue(
+                                  'tags',
+                                  newTags as [Tag, ...Tag[]]
+                                );
+                              }}
+                              placeholder='Add up to 4 tags...'
+                              styleClasses={{
+                                input:
+                                  'w-full h-fit outline-none border-none shadow-none  text-base p-0',
+                                inlineTagsContainer: 'border-none p-0',
+                                autoComplete: {
+                                  command: '[&>div]:border-none',
+                                  popoverContent: 'p-4',
+                                  commandList: 'list-none',
+                                  commandGroup: 'font-bold',
+                                },
+                              }}
+                              activeTagIndex={activeTagIndex}
+                              setActiveTagIndex={setActiveTagIndex}
+                              enableAutocomplete={true}
+                              autocompleteOptions={autocompleteTags}
+                              restrictTagsToAutocompleteOptions={false}
+                              maxTags={4}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                   <FormField
                     control={form.control}
-                    name='tags'
+                    name='description'
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem {...useGuidedField('description')}>
                         <FormControl>
-                          <TagInput
+                          <MinimalTiptapOne
                             {...field}
-                            tags={genres}
-                            setTags={(newTags) => {
-                              setGenres(newTags);
-                              form.setValue(
-                                'genres',
-                                newTags as [Tag, ...Tag[]]
-                              );
-                            }}
-                            placeholder='Add up to 4 genres...'
-                            styleClasses={{
-                              input:
-                                'w-full h-fit outline-none border-none shadow-none  text-base p-0',
-                              inlineTagsContainer: 'border-none p-0',
-                              autoComplete: {
-                                command: '[&>div]:border-none',
-                                popoverContent: 'p-4',
-                                commandList: 'list-none',
-                                commandGroup: 'font-bold',
-                              },
-                            }}
-                            activeTagIndex={activeGenreIndex}
-                            setActiveTagIndex={setActiveGenreIndex}
-                            enableAutocomplete={true}
-                            autocompleteOptions={autocompleteGenres}
-                            restrictTagsToAutocompleteOptions={true}
-                            maxTags={4}
+                            className='w-full'
+                            editorContentClassName='px-8 py-4 shadow-none'
+                            output='html'
+                            placeholder='Type your description here...'
+                            autofocus={true}
+                            editable={true}
+                            editorClassName='focus:outline-none'
                           />
                         </FormControl>
-                        <FormMessage />
                       </FormItem>
                     )}
                   />
-                  <Separator />
-                  <FormField
-                    control={form.control}
-                    name='file'
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            {...field}
-                            placeholder='Youtube Video URL here'
-                            type='text'
-                            className='border-none outline-none shadow-none text-base p-0 focus-visible:ring-0 focus:border-none '
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-            <Button className='mt-6' disabled={loading}>
-              {loading ? (
-                <>
-                  <Loader2 className='animate-spin' /> {`Publishing...`}
-                </>
-              ) : (
-                'Publish'
-              )}
-            </Button>
-          </form>
-        </Form>
-      </div>
+                  <div className='m-8 space-y-4'>
+                    <FormField
+                      control={form.control}
+                      name='tags'
+                      render={({ field }) => (
+                        <FormItem {...useGuidedField('genres')}>
+                          <FormControl>
+                            <TagInput
+                              {...field}
+                              tags={genres}
+                              setTags={(newTags) => {
+                                setGenres(newTags);
+                                form.setValue(
+                                  'genres',
+                                  newTags as [Tag, ...Tag[]]
+                                );
+                              }}
+                              placeholder='Add up to 4 genres...'
+                              styleClasses={{
+                                input:
+                                  'w-full h-fit outline-none border-none shadow-none  text-base p-0',
+                                inlineTagsContainer: 'border-none p-0',
+                                autoComplete: {
+                                  command: '[&>div]:border-none',
+                                  popoverContent: 'p-4',
+                                  commandList: 'list-none',
+                                  commandGroup: 'font-bold',
+                                },
+                              }}
+                              activeTagIndex={activeGenreIndex}
+                              setActiveTagIndex={setActiveGenreIndex}
+                              enableAutocomplete={true}
+                              autocompleteOptions={autocompleteGenres}
+                              restrictTagsToAutocompleteOptions={false}
+                              maxTags={4}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Separator />
+                    <FormField
+                      control={form.control}
+                      name='link'
+                      render={({ field }) => (
+                        <FormItem {...useGuidedField('link')}>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              placeholder='Youtube Video URL here'
+                              type='text'
+                              className='border-none outline-none shadow-none text-base p-0 focus-visible:ring-0 focus:border-none '
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+              <Button className='mt-6' disabled={loading}>
+                {loading ? (
+                  <>
+                    <Loader2 className='animate-spin' /> {`Publishing...`}
+                  </>
+                ) : (
+                  'Publish'
+                )}
+              </Button>
+            </form>
+          </Form>
+        </div>
+      </GuidedFormLayout>
     </ContentLayout>
   );
 }

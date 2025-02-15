@@ -31,7 +31,7 @@ import { mutate } from 'swr';
 import { AspectRatio } from '../../../ui/aspect-ratio';
 import Image from 'next/image';
 import Compressor from 'compressorjs';
-import { AxiosError } from 'axios';
+import { handleAxiosError } from '@/utils/handle-axios-error';
 
 const TagSchema = z.object({
   name: z.string().min(1, { message: 'Name is required.' }),
@@ -132,15 +132,7 @@ function TagEditForm({ isEditDialogOpen, setIsEditDialogOpen, values }: any) {
 
       setIsEditDialogOpen(false);
     } catch (error) {
-      if (error instanceof AxiosError && error.response) {
-        toast({
-          title: 'Error!',
-          description:
-            JSON.stringify(error?.message) ||
-            'An error occurred while edit the tag.',
-          variant: 'destructive',
-        });
-      }
+      handleAxiosError(error, 'An error occurred while update the tag.');
     }
   }
   return (

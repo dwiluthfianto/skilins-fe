@@ -35,9 +35,9 @@ export function useGenre(search?: string) {
   const genres = data ? [].concat(...data.map((page) => page.data)) : [];
 
   const autocompleteGenres = genres?.map(
-    (genre: { id: string; text: string }) => ({
-      id: genre.id,
-      text: genre.text,
+    (genre: { uuid: string; name: string }) => ({
+      id: genre.uuid,
+      text: genre.name,
     })
   );
 

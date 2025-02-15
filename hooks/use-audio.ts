@@ -133,15 +133,36 @@ export function useAudioBySlug(slug: string) {
   };
 }
 
-export function useUserAudio(page?: number, limit?: number, status?: string) {
+export function useAudioByStudent({
+  page,
+  limit,
+  search,
+  category,
+  tag,
+  genre,
+  type,
+  latest,
+  status,
+}: AudioFilter) {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    limit: limit.toString(),
+  });
+  if (search) params.append('search', search);
+  if (category) params.append('category', category);
+  if (tag) params.append('tag', tag);
+  if (genre) params.append('genre', genre);
+  if (type) params.append('type', type);
+  if (latest) params.append('latest', latest.toString());
+  if (status) params.append('status', status.toString());
   const { data, error, mutate } = useSWR(
-    `/contents/audios/student?page=${page}&limit=${limit}&status=${status}`,
+    `/contents/audios/student?${params.toString()}`,
     fetcher
   );
 
   return {
     audios: data?.data,
-    totalPages: data?.lastPage || 1,
+    last_page: data?.pagination.last_page || 1,
     isLoading: !error && !data,
     isError: error,
     mutate,
