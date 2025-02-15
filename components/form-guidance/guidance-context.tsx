@@ -5,9 +5,11 @@ import { createContext, useContext, useState, ReactNode } from 'react';
 interface GuidanceContextType {
   activeField: string | null;
   position: { top: number; left: number } | null;
+  isTyping: boolean;
   setActiveField: (
     field: string | null,
-    position?: { top: number; left: number }
+    position?: { top: number; left: number },
+    typing?: boolean
   ) => void;
 }
 
@@ -21,18 +23,26 @@ export const GuidanceProvider = ({ children }: { children: ReactNode }) => {
     top: number;
     left: number;
   } | null>(null);
+  const [isTyping, setIsTyping] = useState(false);
 
   const handleSetActiveField = (
     field: string | null,
-    newPosition?: { top: number; left: number }
+    newPosition?: { top: number; left: number },
+    typing: boolean = false
   ) => {
     setActiveField(field);
     setPosition(field ? newPosition || null : null);
+    setIsTyping(typing);
   };
 
   return (
     <GuidanceContext.Provider
-      value={{ activeField, position, setActiveField: handleSetActiveField }}
+      value={{
+        activeField,
+        position,
+        isTyping,
+        setActiveField: handleSetActiveField,
+      }}
     >
       {children}
     </GuidanceContext.Provider>

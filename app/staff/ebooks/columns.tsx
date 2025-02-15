@@ -20,7 +20,8 @@ import { Button } from '@/components/ui/button';
 import DeleteDialog from '@/components/staff-panel/delete-dialog';
 import { format } from 'date-fns';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
-
+import Link from 'next/link';
+import { Pencil } from 'lucide-react';
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type eBooks = {
@@ -233,6 +234,11 @@ export const columns: ColumnDef<eBooks>[] = [
             </DropdownMenuTrigger>
             <DropdownMenuContent align='end'>
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <Link href={`ebooks/update?slug=${row.original.slug}`}>
+                <DropdownMenuItem className='cursor-pointer'>
+                  <Pencil className='mr-2' width={16} /> Edit
+                </DropdownMenuItem>
+              </Link>
               <DropdownMenuItem className='cursor-pointer'>
                 <FileSearch className='mr-2' width={16} /> Detail
               </DropdownMenuItem>

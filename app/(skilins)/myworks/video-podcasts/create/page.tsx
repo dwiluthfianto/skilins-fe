@@ -33,19 +33,20 @@ import {
   GuidedFormLayout,
   useGuidedField,
 } from '@/components/form-guidance/guided-form-layout';
-import { VIDEO_PODCAST_TOOLTIPS } from '@/app/(skilins)/constants/tooltips';
-
+import { VIDEO_PODCAST_TOOLTIPS } from '@/lib/tooltips';
+import { MAX_IMAGE_SIZE, VALID_IMAGE_TYPES } from '@/lib/file_validation';
 const ContentSchema = z.object({
   title: z
     .string()
     .min(5, { message: 'Title must be longer than or equal to 5 characters' }),
   thumbnail: z
     .instanceof(File)
-    .refine(
-      (file) =>
-        file && ['image/png', 'image/jpeg', 'image/jpg'].includes(file.type),
-      { message: 'Invalid image file type' }
-    ),
+    .refine((file) => file && VALID_IMAGE_TYPES.includes(file.type), {
+      message: 'Invalid image file type',
+    })
+    .refine((file) => file.size <= MAX_IMAGE_SIZE, {
+      message: 'File size must be less than 2MB',
+    }),
   description: z.string().min(1, { message: 'Description is required.' }),
   tags: z
     .array(

@@ -5,9 +5,12 @@ import { Button } from '@/components/ui/button';
 import { ContentLayout } from '@/components/user-panel/content-layout';
 import withRole from '@/utils/with-role';
 import {
+  CircleOff,
+  Loader,
   MoreHorizontal,
   Pencil,
   Plus,
+  Signature,
   SquareLibrary,
   Trash2,
 } from 'lucide-react';
@@ -22,15 +25,14 @@ import {
 } from '@/components/ui/dropdown-menu';
 import DeleteDialog from '@/components/staff-panel/delete-dialog';
 import { Card, CardContent } from '@/components/ui/card';
-import { useUserReport } from '@/hooks/use-report';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import Image from 'next/image';
 import { Loading } from '@/components/loading';
 import { Error } from '@/components/error';
-
+import { useReportByStudent } from '@/hooks/use-report';
 function PrakerinStudent() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const { prakerin, isLoading, isError } = useUserReport(1, 1);
+  const { prakerin, isLoading, isError } = useReportByStudent();
 
   if (isLoading) return <Loading />;
   if (isError) return <Error />;
@@ -50,71 +52,84 @@ function PrakerinStudent() {
         </div>
       </div>
 
-      {prakerin.length > 0 ? (
-        prakerin.map((item: any) => {
-          return (
-            <Card
-              className='max-w-2xl mx-auto rounded-sm my-12'
-              key={item.uuid}
-            >
-              <CardContent className='pt-6 flex flex-col justify-center items-center'>
-                <div className='w-80 h-fit relative'>
-                  <div>
-                    <Button
-                      variant='default'
-                      className='absolute top-0 start-0 flex p-1 rounded-md transform  z-10 translate-y-[-8px] translate-x-0 items-center'
-                    >
-                      {item.status}
-                    </Button>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          variant='ghost'
-                          className='absolute top-0 end-0 flex p-1 rounded-md transform  z-50 translate-y-[-8px] translate-x-2 bg-white border dark:bg-neutral-900 dark:ring-neutral-900 items-center h-8 w-8'
-                        >
-                          <span className='sr-only'>Open menu</span>
-                          <MoreHorizontal className='h-4 w-4' />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align='end'>
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <Link href={`prakerin/update?slug=${item.slug}`}>
-                          <DropdownMenuItem className='cursor-pointer'>
-                            <Pencil className='mr-2' width={16} /> Edit
-                          </DropdownMenuItem>
-                        </Link>
-                        <DropdownMenuItem
-                          className='cursor-pointer'
-                          onClick={() => setIsDeleteDialogOpen(true)}
-                        >
-                          <Trash2 className='mr-2' width={16} /> Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                    <DeleteDialog
-                      open={isDeleteDialogOpen}
-                      onOpenChange={setIsDeleteDialogOpen}
-                      pathApi={`/contents/prakerin/${item.uuid}`}
-                    />
-                  </div>
-                  <AspectRatio ratio={3 / 4}>
-                    <Image
-                      src={item.thumbnail}
-                      alt={item.title}
-                      layout='fill'
-                      objectFit='cover'
-                      objectPosition='center'
-                      className='rounded-md'
-                    />
-                  </AspectRatio>
-                  <h1 className='text-center font-bold text-xl capitalize'>
-                    {item.title}
-                  </h1>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })
+      {prakerin ? (
+        <Card
+          className='max-w-2xl mx-auto rounded-sm my-12'
+          key={prakerin.uuid}
+        >
+          <CardContent className='pt-6 flex flex-col justify-center items-center'>
+            <div className='w-80 h-fit relative'>
+              {prakerin.status === 'pending' ? (
+                <Badge
+                  className='bg-yellow-600 p-2 text-white transition-transform transform hover:scale-105'
+                  variant={'outline'}
+                >
+                  <Loader width={18} className='mr-2 animate-spin' />
+                  {prakerin.status}
+                </Badge>
+              ) : prakerin.status === 'approved' ? (
+                <Badge
+                  className='bg-green-600 text-white p-2 transition-transform transform hover:scale-105'
+                  variant={'outline'}
+                >
+                  <Signature width={18} className='mr-2' />
+                  {prakerin.status}
+                </Badge>
+              ) : (
+                <Badge
+                  className='bg-red-600 text-white p-2 transition-transform transform hover:scale-105'
+                  variant={'destructive'}
+                >
+                  <CircleOff width={18} className='mr-2' />
+                  {prakerin.status}
+                </Badge>
+              )}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant='ghost'
+                    className='absolute top-0 end-0 flex p-1 rounded-md transform  z-10 translate-y-[-8px] translate-x-2 bg-white border dark:bg-neutral-900 dark:ring-neutral-900 items-center h-8 w-8'
+                  >
+                    <span className='sr-only'>Open menu</span>
+                    <MoreHorizontal className='h-4 w-4' />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align='end'>
+                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                  <Link href={`prakerin/update?slug=${prakerin.slug}`}>
+                    <DropdownMenuItem className='cursor-pointer'>
+                      <Pencil className='mr-2' width={16} /> Edit
+                    </DropdownMenuItem>
+                  </Link>
+                  <DropdownMenuItem
+                    className='cursor-pointer'
+                    onClick={() => setIsDeleteDialogOpen(true)}
+                  >
+                    <Trash2 className='mr-2' width={16} /> Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <DeleteDialog
+                open={isDeleteDialogOpen}
+                onOpenChange={setIsDeleteDialogOpen}
+                pathApi={`/contents/prakerin/${prakerin.uuid}`}
+              />
+              <AspectRatio ratio={3 / 4}>
+                <Image
+                  src={prakerin.thumbnail}
+                  alt={prakerin.title}
+                  layout='fill'
+                  objectFit='cover'
+                  objectPosition='center'
+                  className='rounded-md'
+                />
+              </AspectRatio>
+              <h1 className='text-center font-bold text-xl capitalize'>
+                {prakerin.title}
+              </h1>
+            </div>
+          </CardContent>
+        </Card>
       ) : (
         <>
           <Card className='max-w-2xl mx-auto rounded-sm my-5'>

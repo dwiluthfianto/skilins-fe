@@ -37,6 +37,7 @@ const ContentSchema = z.object({
 export default function StoryCreate() {
   const params = useParams<{ slug: string; order: string }>();
   const { story, isLoading } = useStoryEpisode(params.slug, params.order);
+  console.log(story);
 
   const form = useForm<z.infer<typeof ContentSchema>>({
     resolver: zodResolver(ContentSchema),

@@ -17,7 +17,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { registerStudent } from '@/utils/auth-service';
 import { useRouter } from 'next/navigation';
-import { useToast } from '@/hooks/use-toast';
 import { CustomCalendar } from '@/components/ui/custom-calendar';
 import { format } from 'date-fns';
 import { CalendarIcon, Loader2, UserRound, Eye, EyeOff } from 'lucide-react';
@@ -95,14 +94,13 @@ const StudentSchema = z.object({
 
 export default function RegisterStudent() {
   const router = useRouter();
-  const { toast } = useToast();
   const form = useForm<z.infer<typeof StudentSchema>>({
     resolver: zodResolver(StudentSchema),
     defaultValues: {
       email: '',
       password: '',
       fullName: '',
-      nis: undefined,
+      nis: 0,
       major: '',
       birthplace: '',
       birthdate: new Date(),
@@ -296,7 +294,7 @@ export default function RegisterStudent() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {major.data?.map((m: { name: string; uuid: string }) => (
+                      {major.map((m: { name: string; uuid: string }) => (
                         <div key={m.uuid}>
                           <SelectItem value={m.name}>{m.name}</SelectItem>
                         </div>

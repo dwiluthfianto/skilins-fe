@@ -42,11 +42,40 @@ import FileUploader from '@/components/file-uploader';
 import { useEbookBySlug } from '@/hooks/use-ebook';
 import { ContentUpdateSkeleton } from '@/components/skeletons/content-update-skeleton';
 import { handleAxiosError } from '@/utils/handle-axios-error';
+import {
+  MAX_IMAGE_SIZE,
+  VALID_IMAGE_TYPES,
+  MAX_DOCUMENT_SIZE,
+  VALID_DOCUMENT_TYPES,
+} from '@/lib/file_validation';
+import { EBOOK_TOOLTIPS } from '@/lib/tooltips';
+import {
+  GuidedFormLayout,
+  useGuidedField,
+} from '@/components/form-guidance/guided-form-layout';
 const ContentSchema = z.object({
   title: z
     .string()
     .min(5, { message: 'Title must be longer than or equal to 5 characters' }),
-  thumbnail: z.instanceof(File).optional().nullable(),
+  thumbnail: z
+    .instanceof(File)
+    .optional()
+    .superRefine((file, ctx) => {
+      if (file) {
+        if (!VALID_IMAGE_TYPES.includes(file.type)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Invalid image file type',
+          });
+        }
+        if (file.size > MAX_IMAGE_SIZE) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'File size must be less than 2MB',
+          });
+        }
+      }
+    }),
   description: z.string().min(1, { message: 'Description is required.' }),
   tags: z
     .array(
@@ -63,9 +92,27 @@ const ContentSchema = z.object({
     .min(1, { message: 'Pages must be greater than 0.' })
     .nonnegative(),
   publication: z.string().optional(),
-  file: z.instanceof(File).optional(),
+  file: z
+    .instanceof(File)
+    .optional()
+    .superRefine((file, ctx) => {
+      if (file) {
+        if (!VALID_DOCUMENT_TYPES.includes(file.type)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Invalid file type',
+          });
+        }
+        if (file.size > MAX_DOCUMENT_SIZE) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'File size must be less than 5MB',
+          });
+        }
+      }
+    }),
   isbn: z.string().optional(),
-  release_date: z.date(),
+  release_date: z.date().optional(),
   genres: z
     .array(
       z.object({
@@ -88,15 +135,15 @@ export default function UpdateEbooks() {
       title: ebook?.title || '',
       thumbnail: undefined,
       description: ebook?.description || '',
-      tags: ebook?.tags || [],
-      category: ebook?.category || '',
-      pages: ebook?.pages || undefined,
+      tags: ebook?.tag || [],
+      category: ebook?.category.name || '',
+      pages: ebook?.ebook.pages || undefined,
       file: undefined,
-      author: ebook?.author || '',
-      publication: ebook?.publication || '',
-      release_date: ebook?.release_data || new Date(),
-      isbn: ebook?.isbn || '',
-      genres: ebook?.genres || [],
+      author: ebook?.ebook.author || '',
+      publication: ebook?.ebook.publication || '',
+      release_date: ebook?.ebook.release_date || new Date(),
+      isbn: ebook?.ebook.isbn || '',
+      genres: ebook?.genre || [],
     },
   });
 
@@ -106,26 +153,26 @@ export default function UpdateEbooks() {
         title: ebook.title,
         thumbnail: undefined,
         description: ebook.description,
-        tags: ebook.tags || [],
-        category: ebook.category,
-        pages: ebook.pages,
+        tags: ebook.tag || [],
+        category: ebook.category.name,
+        pages: ebook.ebook.pages,
         file: undefined,
-        author: ebook.author,
-        publication: ebook.publication,
-        release_date: ebook.release_data,
-        isbn: ebook.isbn,
-        genres: ebook.genres || [],
+        author: ebook.ebook.author,
+        publication: ebook.ebook.publication,
+        release_date: ebook.ebook.release_date,
+        isbn: ebook.ebook.isbn,
+        genres: ebook.genre || [],
       });
     }
 
-    setTags(ebook?.tags || []);
-    setGenres(ebook?.genres || []);
+    setTags(ebook?.tag || []);
+    setGenres(ebook?.genre || []);
   }, [ebook, form]);
   const { autocompleteTags } = useTag();
   const { autocompleteGenres } = useGenre();
-  const [tags, setTags] = useState<Tag[]>(ebook?.tags || []);
+  const [tags, setTags] = useState<Tag[]>(ebook?.tag || []);
   const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
-  const [genres, setGenres] = useState<Tag[]>(ebook?.genres || []);
+  const [genres, setGenres] = useState<Tag[]>(ebook?.genre || []);
   const [activeGenreIndex, setActiveGenreIndex] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -166,7 +213,6 @@ export default function UpdateEbooks() {
         description: ebookData.message,
       });
 
-      mutate();
       router.push('/staff/ebooks');
     } catch (error) {
       handleAxiosError(error, 'An error occurred while update the ebook.');
@@ -178,8 +224,8 @@ export default function UpdateEbooks() {
   if (ebookLoading || !ebook) return <ContentUpdateSkeleton />;
   return (
     <ContentLayout title=''>
-      <div className='max-w-4xl mx-auto'>
-        <h1 className='font-semibold mb-4'>Create Ebooks</h1>
+      <GuidedFormLayout tooltips={EBOOK_TOOLTIPS}>
+        <h1 className='font-semibold mb-4'>Update Ebooks</h1>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <Card>
@@ -190,7 +236,9 @@ export default function UpdateEbooks() {
                     name='thumbnail'
                     render={() => (
                       <ImageUploader
-                        onChange={(file) => form.setValue('thumbnail', file)}
+                        onChange={(file) =>
+                          file && form.setValue('thumbnail', file)
+                        }
                         initialImage={ebook?.thumbnail}
                         ratioImage={3 / 4}
                       />
@@ -204,6 +252,7 @@ export default function UpdateEbooks() {
                         <FormControl>
                           <AutosizeTextarea
                             {...field}
+                            {...useGuidedField('title')}
                             placeholder='New ebook title here...'
                             className='outline-none w-full text-4xl p-0 border-none  shadow-none focus-visible:ring-0  font-bold placeholder:text-slate-700 h-full resize-none overflow-hidden '
                           />
@@ -216,34 +265,11 @@ export default function UpdateEbooks() {
                     control={form.control}
                     name='author'
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem {...useGuidedField('author')}>
                         <FormControl>
                           <Input
                             {...field}
                             placeholder='Name author here...'
-                            className='border-none outline-none shadow-none text-base p-0 focus-visible:ring-0 focus:border-none '
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Separator />
-                  <FormField
-                    control={form.control}
-                    name='pages'
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            {...field}
-                            type='number'
-                            placeholder='Number of pages here...'
-                            min={0}
-                            onChange={(e) => {
-                              const value = e.target.value;
-                              field.onChange(value ? Number(value) : undefined);
-                            }}
                             className='border-none outline-none shadow-none text-base p-0 focus-visible:ring-0 focus:border-none '
                           />
                         </FormControl>
@@ -257,7 +283,7 @@ export default function UpdateEbooks() {
                     control={form.control}
                     name='category'
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem {...useGuidedField('category')}>
                         <FormControl>
                           <AutoComplete
                             selectedValue={form.watch('category')}
@@ -281,7 +307,7 @@ export default function UpdateEbooks() {
                     control={form.control}
                     name='tags'
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem {...useGuidedField('tags')}>
                         <FormControl>
                           <TagInput
                             {...field}
@@ -319,7 +345,7 @@ export default function UpdateEbooks() {
                   control={form.control}
                   name='description'
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem {...useGuidedField('description')}>
                       <FormControl>
                         <MinimalTiptapOne
                           {...field}
@@ -340,7 +366,7 @@ export default function UpdateEbooks() {
                     control={form.control}
                     name='tags'
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem {...useGuidedField('genres')}>
                         <FormControl>
                           <TagInput
                             {...field}
@@ -381,7 +407,7 @@ export default function UpdateEbooks() {
                     control={form.control}
                     name='isbn'
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem {...useGuidedField('isbn')}>
                         <FormControl>
                           <Input
                             {...field}
@@ -399,7 +425,7 @@ export default function UpdateEbooks() {
                     control={form.control}
                     name='publication'
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem {...useGuidedField('publication')}>
                         <FormControl>
                           <Input
                             {...field}
@@ -416,7 +442,7 @@ export default function UpdateEbooks() {
                     control={form.control}
                     name='release_date'
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem {...useGuidedField('release_date')}>
                         <FormLabel className='font-normal text-base text-muted-foreground'>
                           Release date
                         </FormLabel>
@@ -469,9 +495,31 @@ export default function UpdateEbooks() {
                         }}
                         accept='application/pdf'
                         label='Add an Ebook file'
-                        initialFileName={ebook?.file.split('/').pop()}
-                        initialFileUrl={ebook?.file}
+                        initialFileName={ebook?.ebook.file_attachment.file
+                          .split('/')
+                          .pop()}
+                        initialFileUrl={ebook?.ebook.file_attachment.file}
                       />
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name='pages'
+                    render={({ field }) => (
+                      <FormItem {...useGuidedField('pages')}>
+                        <FormLabel className='font-normal text-base text-muted-foreground'>
+                          Pages
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            value={field.value}
+                            type='text'
+                            readOnly
+                            className='border-none outline-none shadow-none text-base p-0 focus-visible:ring-0 focus:border-none '
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
                     )}
                   />
                 </div>
@@ -488,7 +536,7 @@ export default function UpdateEbooks() {
             </Button>
           </form>
         </Form>
-      </div>
+      </GuidedFormLayout>
     </ContentLayout>
   );
 }

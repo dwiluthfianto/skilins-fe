@@ -4,6 +4,7 @@ import { toast } from '@/hooks/use-toast';
 interface ErrorResponse {
   message?: string;
   error?: string;
+  detail?: string;
 }
 
 export function handleAxiosError(
@@ -27,7 +28,10 @@ export function handleAxiosError(
     if (status === 401) {
       toast({
         title: 'Unauthorized',
-        description: 'You are not authorized to access this resource.',
+        description:
+          data.message ||
+          data.detail ||
+          'You are not authorized to access this resource.',
         variant: 'destructive',
       });
       return;

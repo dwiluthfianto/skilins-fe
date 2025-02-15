@@ -26,6 +26,11 @@ import { useStoryBySlug } from '@/hooks/use-story';
 import { Input } from '@/components/ui/input';
 import { handleAxiosError } from '@/utils/handle-axios-error';
 import { Loading } from '@/components/loading';
+import {
+  GuidedFormLayout,
+  useGuidedField,
+} from '@/components/form-guidance/guided-form-layout';
+import { STORY_TOOLTIPS } from '@/lib/tooltips';
 const ContentSchema = z.object({
   title: z
     .string()
@@ -74,95 +79,101 @@ export default function StoryCreate() {
 
   return (
     <ContentLayout title=''>
-      <div className='max-w-4xl mx-auto space-y-6'>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <Card>
-              <CardContent className='p-0'>
-                <div className='m-8 space-y-4'>
+      <GuidedFormLayout tooltips={STORY_TOOLTIPS}>
+        <div className='max-w-4xl mx-auto space-y-6'>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              <Card>
+                <CardContent className='p-0'>
+                  <div className='m-8 space-y-4'>
+                    <FormField
+                      control={form.control}
+                      name='order'
+                      render={({ field }) => (
+                        <FormItem
+                          className='flex items-center justify-center '
+                          {...useGuidedField('order')}
+                        >
+                          <FormLabel className='text-xl text-muted-foreground'>
+                            Part:{' '}
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              type='number'
+                              min={1}
+                              className='outline-none text-2xl w-20 p-0 !mt-0 border-none  shadow-none focus-visible:ring-0  font-bold placeholder:text-slate-700 h-full text-center'
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name='title'
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <AutosizeTextarea
+                              {...field}
+                              {...useGuidedField('title')}
+                              placeholder='New episode title here...'
+                              className='outline-none w-full text-4xl p-0 border-none  shadow-none focus-visible:ring-0  font-bold placeholder:text-slate-700 h-full resize-none overflow-hidden text-center'
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                   <FormField
                     control={form.control}
-                    name='order'
+                    name='content'
                     render={({ field }) => (
-                      <FormItem className='flex items-center justify-center '>
-                        <FormLabel className='text-xl text-muted-foreground'>
-                          Part:{' '}
-                        </FormLabel>
+                      <FormItem {...useGuidedField('content')}>
                         <FormControl>
-                          <Input
+                          <MinimalTiptapOne
                             {...field}
-                            type='number'
-                            min={1}
-                            className='outline-none text-2xl w-20 p-0 !mt-0 border-none  shadow-none focus-visible:ring-0  font-bold placeholder:text-slate-700 h-full text-center'
+                            className='w-full'
+                            editorContentClassName='px-8 py-4 shadow-none'
+                            output='html'
+                            placeholder='Type your stories here...'
+                            autofocus={true}
+                            editable={true}
+                            editorClassName='focus:outline-none'
                           />
                         </FormControl>
-                        <FormMessage />
                       </FormItem>
                     )}
                   />
-                  <FormField
-                    control={form.control}
-                    name='title'
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <AutosizeTextarea
-                            {...field}
-                            placeholder='New episode title here...'
-                            className='outline-none w-full text-4xl p-0 border-none  shadow-none focus-visible:ring-0  font-bold placeholder:text-slate-700 h-full resize-none overflow-hidden text-center'
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <FormField
-                  control={form.control}
-                  name='content'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <MinimalTiptapOne
-                          {...field}
-                          className='w-full'
-                          editorContentClassName='px-8 py-4 shadow-none'
-                          output='html'
-                          placeholder='Type your stories here...'
-                          autofocus={true}
-                          editable={true}
-                          editorClassName='focus:outline-none'
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
 
-            <Button
-              className='mt-6 mr-4'
-              variant={'ghost'}
-              onClick={(e) => {
-                e.preventDefault();
-                router.back();
-              }}
-              disabled={loading}
-            >
-              Cancel
-            </Button>
-            <Button className='mt-6' disabled={loading}>
-              {loading ? (
-                <>
-                  <Loader2 className='animate-spin' /> {`Saving...`}
-                </>
-              ) : (
-                'Save'
-              )}
-            </Button>
-          </form>
-        </Form>
-      </div>
+              <Button
+                className='mt-6 mr-4'
+                variant={'ghost'}
+                onClick={(e) => {
+                  e.preventDefault();
+                  router.back();
+                }}
+                disabled={loading}
+              >
+                Cancel
+              </Button>
+              <Button className='mt-6' disabled={loading}>
+                {loading ? (
+                  <>
+                    <Loader2 className='animate-spin' /> {`Saving...`}
+                  </>
+                ) : (
+                  'Save'
+                )}
+              </Button>
+            </form>
+          </Form>
+        </div>
+      </GuidedFormLayout>
     </ContentLayout>
   );
 }

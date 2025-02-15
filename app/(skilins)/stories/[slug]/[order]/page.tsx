@@ -14,47 +14,47 @@ export default async function OrderDetail({ params }: any) {
 
   const res = (
     await axios.get(`/contents/stories/episodes/${slug}?order=${order}`)
-  ).data;
-
-  const story = res.data;
+  ).data.data;
 
   return (
-    <ContentLayout title={story.title}>
+    <ContentLayout title={res.title}>
       <section className='md:py-2'>
         <div className='rounded-md p-6 bg-white'>
           <div className='w-32 h-44 mx-auto mb-4'>
             <AspectRatio ratio={3 / 4}>
               <Image
-                src={story.thumbnail}
-                alt={story.title}
+                src={res.thumbnail}
+                alt={res.title}
                 fill
                 objectFit='cover'
                 objectPosition='center'
               ></Image>
             </AspectRatio>
           </div>
-          <p className='text-center text-muted-foreground'>{story.author}</p>
+          <p className='text-center text-muted-foreground'>
+            {res.story.creator.name}
+          </p>
           <h1 className='text-center font-bold text-2xl'>
-            {`Ch. ${story.episode.order}: ${story.episode.title}`}
+            {`Ch. ${res.episode.order}: ${res.episode.title}`}
           </h1>
           <div className='max-w-md mx-auto'>
             <Separator className='my-8' />
             <MinimalTiptapPreview
-              value={story.episode.content}
+              value={res.episode.content}
               editable={false}
             />
             <div className='mt-8 flex justify-between'>
-              {story.prevEpisode && (
+              {res.prev_episode && (
                 <Button variant={'link'} className='px-0'>
-                  <Link href={`/stories/${slug}/${story.prevEpisode.order}`}>
-                    ← Back: {story.prevEpisode.title}
+                  <Link href={`/stories/${slug}/${res.prev_episode.order}`}>
+                    ← Back: {res.prev_episode.title}
                   </Link>
                 </Button>
               )}
-              {story.nextEpisode && (
+              {res.next_episode && (
                 <Button variant={'link'} className='px-0'>
-                  <Link href={`/stories/${slug}/${story.nextEpisode.order}`}>
-                    Next: {story.nextEpisode.title} →
+                  <Link href={`/stories/${slug}/${res.next_episode.order}`}>
+                    Next: {res.next_episode.title} →
                   </Link>
                 </Button>
               )}
@@ -63,12 +63,12 @@ export default async function OrderDetail({ params }: any) {
         </div>
         <div className='md:container'>
           <FeedbackComponent
-            contentUuid={story.uuid}
-            shareUrl={`${process.env.NEXT_PUBLIC_FRONTEND_URL}/stories/${story.slug}`}
-            titleContent={story.title}
-            comments={story.comments}
-            avgRating={Number(story.avg_rating)}
-            creator={story.creator}
+            contentUuid={res.uuid}
+            shareUrl={`${process.env.NEXT_PUBLIC_FRONTEND_URL}/stories/${res.slug}`}
+            titleContent={res.title}
+            comments={res.comment}
+            avgRating={Number(res.avg_rating)}
+            creator={res.story.creator.name}
             className='my-8 lg:my-16 antialiased'
           />
         </div>

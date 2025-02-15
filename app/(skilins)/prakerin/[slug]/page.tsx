@@ -189,8 +189,8 @@ export default async function ReportDetail({ params }: any) {
           </div>
           <Card className=' py-8 lg:py-16 antialiased mt-10'>
             <CardContent className='space-y-4'>
-              <LikeComponent likes={report.likes} contentUuid={slug} />
-              <CommentComponent comment={report.comments} contentUuid={slug} />
+              <LikeComponent contentUuid={slug} />
+              <CommentComponent comments={report.comment} contentId={slug} />
             </CardContent>
           </Card>
         </div>

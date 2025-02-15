@@ -20,7 +20,8 @@ import { Button } from '@/components/ui/button';
 import DeleteDialog from '@/components/staff-panel/delete-dialog';
 import { format } from 'date-fns';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
-
+import Link from 'next/link';
+import { Pencil } from 'lucide-react';
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type Blogs = {
@@ -31,6 +32,7 @@ export type Blogs = {
     creator: { full_name: string };
   };
   updated_at: string;
+  slug: string;
 };
 
 export const columns: ColumnDef<Blogs>[] = [
@@ -127,6 +129,11 @@ export const columns: ColumnDef<Blogs>[] = [
             </DropdownMenuTrigger>
             <DropdownMenuContent align='end'>
               <DropdownMenuLabel>Status</DropdownMenuLabel>
+              <Link href={`blogs/update?slug=${row.original.slug}`}>
+                <DropdownMenuItem className='cursor-pointer'>
+                  <Pencil className='mr-2' width={16} /> Edit
+                </DropdownMenuItem>
+              </Link>
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem className='cursor-pointer'>
                 <FileSearch className='mr-2' width={16} /> Detail

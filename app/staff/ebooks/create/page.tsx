@@ -40,12 +40,29 @@ import { useGenre } from '@/hooks/use-genre';
 import MinimalTiptapOne from '@/components/minimal-tiptap/minimal-tiptap-one';
 import FileUploader from '@/components/file-uploader';
 import { handleAxiosError } from '@/utils/handle-axios-error';
-
+import {
+  MAX_IMAGE_SIZE,
+  VALID_IMAGE_TYPES,
+  MAX_DOCUMENT_SIZE,
+  VALID_DOCUMENT_TYPES,
+} from '@/lib/file_validation';
+import {
+  GuidedFormLayout,
+  useGuidedField,
+} from '@/components/form-guidance/guided-form-layout';
+import { EBOOK_TOOLTIPS } from '@/lib/tooltips';
 const ContentSchema = z.object({
   title: z
     .string()
     .min(5, { message: 'Title must be longer than or equal to 5 characters' }),
-  thumbnail: z.instanceof(File).optional().nullable(),
+  thumbnail: z
+    .instanceof(File)
+    .refine((file) => file && VALID_IMAGE_TYPES.includes(file.type), {
+      message: 'Invalid image file type',
+    })
+    .refine((file) => file.size <= MAX_IMAGE_SIZE, {
+      message: 'File size must be less than 2MB',
+    }),
   description: z.string().min(1, { message: 'Description is required.' }),
   tags: z
     .array(
@@ -62,7 +79,14 @@ const ContentSchema = z.object({
     .min(1, { message: 'Pages must be greater than 0.' })
     .nonnegative(),
   publication: z.string().optional(),
-  file: z.instanceof(File),
+  file: z
+    .instanceof(File)
+    .refine((file) => file && VALID_DOCUMENT_TYPES.includes(file.type), {
+      message: 'Invalid document file type',
+    })
+    .refine((file) => file.size <= MAX_DOCUMENT_SIZE, {
+      message: 'File size must be less than 2MB',
+    }),
   isbn: z.string().optional(),
   release_date: z.date(),
   genres: z
@@ -148,7 +172,7 @@ export default function CreateEbooks() {
 
   return (
     <ContentLayout title=''>
-      <div className='max-w-4xl mx-auto'>
+      <GuidedFormLayout tooltips={EBOOK_TOOLTIPS}>
         <h1 className='font-semibold mb-4'>Create Ebooks</h1>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -160,7 +184,9 @@ export default function CreateEbooks() {
                     name='thumbnail'
                     render={() => (
                       <ImageUploader
-                        onChange={(file) => form.setValue('thumbnail', file)}
+                        onChange={(file) =>
+                          file && form.setValue('thumbnail', file)
+                        }
                         ratioImage={3 / 4}
                       />
                     )}
@@ -173,6 +199,7 @@ export default function CreateEbooks() {
                         <FormControl>
                           <AutosizeTextarea
                             {...field}
+                            {...useGuidedField('title')}
                             placeholder='New ebook title here...'
                             className='outline-none w-full text-4xl p-0 border-none  shadow-none focus-visible:ring-0  font-bold placeholder:text-slate-700 h-full resize-none overflow-hidden '
                           />
@@ -185,7 +212,7 @@ export default function CreateEbooks() {
                     control={form.control}
                     name='author'
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem {...useGuidedField('author')}>
                         <FormControl>
                           <Input
                             {...field}
@@ -200,33 +227,9 @@ export default function CreateEbooks() {
                   <Separator />
                   <FormField
                     control={form.control}
-                    name='pages'
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            {...field}
-                            type='number'
-                            placeholder='Number of pages here...'
-                            min={0}
-                            onChange={(e) => {
-                              const value = e.target.value;
-                              field.onChange(value ? Number(value) : undefined);
-                            }}
-                            className='border-none outline-none shadow-none text-base p-0 focus-visible:ring-0 focus:border-none '
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <Separator />
-                  <FormField
-                    control={form.control}
                     name='category'
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem {...useGuidedField('category')}>
                         <FormControl>
                           <AutoComplete
                             selectedValue={form.watch('category')}
@@ -250,7 +253,7 @@ export default function CreateEbooks() {
                     control={form.control}
                     name='tags'
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem {...useGuidedField('tags')}>
                         <FormControl>
                           <TagInput
                             {...field}
@@ -288,7 +291,7 @@ export default function CreateEbooks() {
                   control={form.control}
                   name='description'
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem {...useGuidedField('description')}>
                       <FormControl>
                         <MinimalTiptapOne
                           {...field}
@@ -309,7 +312,7 @@ export default function CreateEbooks() {
                     control={form.control}
                     name='tags'
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem {...useGuidedField('genres')}>
                         <FormControl>
                           <TagInput
                             {...field}
@@ -350,7 +353,7 @@ export default function CreateEbooks() {
                     control={form.control}
                     name='isbn'
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem {...useGuidedField('isbn')}>
                         <FormControl>
                           <Input
                             {...field}
@@ -368,7 +371,7 @@ export default function CreateEbooks() {
                     control={form.control}
                     name='publication'
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem {...useGuidedField('publication')}>
                         <FormControl>
                           <Input
                             {...field}
@@ -385,7 +388,7 @@ export default function CreateEbooks() {
                     control={form.control}
                     name='release_date'
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem {...useGuidedField('release_date')}>
                         <FormLabel className='font-normal text-base text-muted-foreground'>
                           Release date
                         </FormLabel>
@@ -436,6 +439,9 @@ export default function CreateEbooks() {
                           field.onChange(file);
                           setFile(file);
                         }}
+                        onPageCountChange={(pages) =>
+                          form.setValue('pages', pages ?? 0)
+                        }
                         accept='application/pdf'
                         label='Add an Ebook file'
                         initialFileName={field.value ? field.value.name : ''}
@@ -443,6 +449,27 @@ export default function CreateEbooks() {
                           field.value ? URL.createObjectURL(field.value) : ''
                         }
                       />
+                    )}
+                  />
+                  <Separator />
+                  <FormField
+                    control={form.control}
+                    name='pages'
+                    render={({ field }) => (
+                      <FormItem {...useGuidedField('pages')}>
+                        <FormLabel className='font-normal text-base text-muted-foreground'>
+                          Pages
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            value={field.value}
+                            type='text'
+                            readOnly
+                            className='border-none outline-none shadow-none text-base p-0 focus-visible:ring-0 focus:border-none '
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
                     )}
                   />
                 </div>
@@ -459,7 +486,7 @@ export default function CreateEbooks() {
             </Button>
           </form>
         </Form>
-      </div>
+      </GuidedFormLayout>
     </ContentLayout>
   );
 }

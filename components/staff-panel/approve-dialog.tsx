@@ -37,10 +37,7 @@ const ApprovedDialog: FC<ApprovedDialogProps> = ({
     try {
       const { data } = await axios.patch(`${pathApi}/approve`);
 
-      const path = pathApi.replace(
-        /\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
-        ''
-      );
+      const path = pathApi.split('/').slice(1, -1).join('/');
       toast({
         title: 'Content approved Succesfully',
         description: data.message,

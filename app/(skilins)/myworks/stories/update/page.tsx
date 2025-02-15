@@ -27,9 +27,13 @@ import { useCategorySearch } from '@/hooks/use-category';
 import { AutosizeTextarea } from '@/components/autosize-textarea';
 import { useGenre } from '@/hooks/use-genre';
 import MinimalTiptapOne from '@/components/minimal-tiptap/minimal-tiptap-one';
-import { useUser } from '@/hooks/use-user';
 import { handleAxiosError } from '@/utils/handle-axios-error';
-
+import { MAX_IMAGE_SIZE, VALID_IMAGE_TYPES } from '@/lib/file_validation';
+import { STORY_TOOLTIPS } from '@/lib/tooltips';
+import {
+  GuidedFormLayout,
+  useGuidedField,
+} from '@/components/form-guidance/guided-form-layout';
 const ContentSchema = z.object({
   title: z
     .string()
@@ -37,11 +41,22 @@ const ContentSchema = z.object({
   thumbnail: z
     .instanceof(File)
     .optional()
-    .refine(
-      (file) =>
-        file && ['image/png', 'image/jpeg', 'image/jpg'].includes(file.type),
-      { message: 'Invalid image file type' }
-    ),
+    .superRefine((file, ctx) => {
+      if (file) {
+        if (!VALID_IMAGE_TYPES.includes(file.type)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Invalid image file type',
+          });
+        }
+        if (file.size > MAX_IMAGE_SIZE) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'File size must be less than 2MB',
+          });
+        }
+      }
+    }),
   description: z.string().min(1, { message: 'Description is required.' }),
   tags: z
     .array(
@@ -70,9 +85,9 @@ export default function StoryUpdate({ story }: any) {
       title: story?.title || '',
       thumbnail: undefined,
       description: story?.description || '',
-      genres: story?.genres || [],
-      category: story?.category || '',
-      tags: story?.tags || [],
+      genres: story?.genre || [],
+      category: story?.category.name || '',
+      tags: story?.tag || [],
     },
   });
 
@@ -82,28 +97,26 @@ export default function StoryUpdate({ story }: any) {
         title: story.title,
         thumbnail: undefined,
         description: story.description,
-        tags: story.tags || [],
-        category: story.category,
-        genres: story.genres || [],
+        tags: story.tag || [],
+        category: story.category.name,
+        genres: story.genre || [],
       });
     }
 
-    setTags(story?.tags || []);
-    setGenres(story?.genres || []);
+    setTags(story?.tag || []);
+    setGenres(story?.genre || []);
   }, [story, form]);
 
   const { autocompleteTags } = useTag();
   const { autocompleteGenres } = useGenre();
-  const [tags, setTags] = useState<Tag[]>(story?.tags || []);
+  const [tags, setTags] = useState<Tag[]>(story?.tag || []);
   const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
-  const [genres, setGenres] = useState<Tag[]>(story?.genres || []);
+  const [genres, setGenres] = useState<Tag[]>(story?.genre || []);
   const [activeGenreIndex, setActiveGenreIndex] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const { categories, isLoading } = useCategorySearch(form.watch('category'));
-
-  const { user } = useUser();
 
   async function onSubmit(data: z.infer<typeof ContentSchema>) {
     setLoading(true);
@@ -114,7 +127,6 @@ export default function StoryUpdate({ story }: any) {
     formData.append('description', data.description);
     formData.append('genres', JSON.stringify(data.genres));
     formData.append('category_name', data.category);
-    if (user) formData.append('author_uuid', user?.data.uuid);
     formData.append('tags', JSON.stringify(data.tags));
 
     try {
@@ -141,169 +153,174 @@ export default function StoryUpdate({ story }: any) {
   }
 
   return (
-    <div>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          <div className='m-8 space-y-4'>
-            <FormField
-              control={form.control}
-              name='thumbnail'
-              render={() => (
-                <ImageUploader
-                  onChange={(file) => file && form.setValue('thumbnail', file)}
-                  ratioImage={3 / 4}
-                  initialImage={story?.thumbnail}
-                />
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='title'
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <AutosizeTextarea
-                      {...field}
-                      placeholder='New story title here...'
-                      className='outline-none w-full text-4xl p-0 border-none  shadow-none focus-visible:ring-0  font-bold placeholder:text-slate-700 h-full resize-none overflow-hidden '
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Separator />
-            <FormField
-              control={form.control}
-              name='category'
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <AutoComplete
-                      selectedValue={form.watch('category')}
-                      onSelectedValueChange={(value) => field.onChange(value)}
-                      searchValue={field.value}
-                      onSearchValueChange={field.onChange}
-                      items={categories ?? []}
-                      isLoading={isLoading}
-                      placeholder='Category name here...'
-                      emptyMessage='No category found.'
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Separator />
-            <FormField
-              control={form.control}
-              name='tags'
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <TagInput
-                      {...field}
-                      tags={tags}
-                      setTags={(newTags) => {
-                        setTags(newTags);
-                        form.setValue('tags', newTags as [Tag, ...Tag[]]);
-                      }}
-                      placeholder='Add up to 4 tags...'
-                      styleClasses={{
-                        input:
-                          'w-full h-fit outline-none border-none shadow-none  text-base p-0',
-                        inlineTagsContainer: 'border-none p-0',
-                        autoComplete: {
-                          command: '[&>div]:border-none',
-                          popoverContent: 'p-4',
-                          commandList: 'list-none',
-                          commandGroup: 'font-bold',
-                        },
-                      }}
-                      activeTagIndex={activeTagIndex}
-                      setActiveTagIndex={setActiveTagIndex}
-                      enableAutocomplete={true}
-                      autocompleteOptions={autocompleteTags}
-                      restrictTagsToAutocompleteOptions={true}
-                      maxTags={4}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-          <FormField
-            control={form.control}
-            name='description'
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <MinimalTiptapOne
-                    {...field}
-                    className='w-full'
-                    editorContentClassName='px-8 py-4 shadow-none'
-                    output='html'
-                    placeholder='Type your description here...'
-                    autofocus={true}
-                    editable={true}
-                    editorClassName='focus:outline-none'
+    <GuidedFormLayout tooltips={STORY_TOOLTIPS}>
+      <div>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <div className='m-8 space-y-4'>
+              <FormField
+                control={form.control}
+                name='thumbnail'
+                render={() => (
+                  <ImageUploader
+                    onChange={(file) =>
+                      file && form.setValue('thumbnail', file)
+                    }
+                    ratioImage={3 / 4}
+                    initialImage={story?.thumbnail}
                   />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <div className='m-8 space-y-4'>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='title'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <AutosizeTextarea
+                        {...field}
+                        {...useGuidedField('title')}
+                        placeholder='New story title here...'
+                        className='outline-none w-full text-4xl p-0 border-none  shadow-none focus-visible:ring-0  font-bold placeholder:text-slate-700 h-full resize-none overflow-hidden '
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Separator />
+              <FormField
+                control={form.control}
+                name='category'
+                render={({ field }) => (
+                  <FormItem {...useGuidedField('category')}>
+                    <FormControl>
+                      <AutoComplete
+                        selectedValue={form.watch('category')}
+                        onSelectedValueChange={(value) => field.onChange(value)}
+                        searchValue={field.value}
+                        onSearchValueChange={field.onChange}
+                        items={categories ?? []}
+                        isLoading={isLoading}
+                        placeholder='Category name here...'
+                        emptyMessage='No category found.'
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Separator />
+              <FormField
+                control={form.control}
+                name='tags'
+                render={({ field }) => (
+                  <FormItem {...useGuidedField('tags')}>
+                    <FormControl>
+                      <TagInput
+                        {...field}
+                        tags={tags}
+                        setTags={(newTags) => {
+                          setTags(newTags);
+                          form.setValue('tags', newTags as [Tag, ...Tag[]]);
+                        }}
+                        placeholder='Add up to 4 tags...'
+                        styleClasses={{
+                          input:
+                            'w-full h-fit outline-none border-none shadow-none  text-base p-0',
+                          inlineTagsContainer: 'border-none p-0',
+                          autoComplete: {
+                            command: '[&>div]:border-none',
+                            popoverContent: 'p-4',
+                            commandList: 'list-none',
+                            commandGroup: 'font-bold',
+                          },
+                        }}
+                        activeTagIndex={activeTagIndex}
+                        setActiveTagIndex={setActiveTagIndex}
+                        enableAutocomplete={true}
+                        autocompleteOptions={autocompleteTags}
+                        restrictTagsToAutocompleteOptions={true}
+                        maxTags={4}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             <FormField
               control={form.control}
-              name='tags'
+              name='description'
               render={({ field }) => (
-                <FormItem>
+                <FormItem {...useGuidedField('description')}>
                   <FormControl>
-                    <TagInput
+                    <MinimalTiptapOne
                       {...field}
-                      tags={genres}
-                      setTags={(newTags) => {
-                        setGenres(newTags);
-                        form.setValue('genres', newTags as [Tag, ...Tag[]]);
-                      }}
-                      placeholder='Add up to 4 genres...'
-                      styleClasses={{
-                        input:
-                          'w-full h-fit outline-none border-none shadow-none  text-base p-0',
-                        inlineTagsContainer: 'border-none p-0',
-                        autoComplete: {
-                          command: '[&>div]:border-none',
-                          popoverContent: 'p-4',
-                          commandList: 'list-none',
-                          commandGroup: 'font-bold',
-                        },
-                      }}
-                      activeTagIndex={activeGenreIndex}
-                      setActiveTagIndex={setActiveGenreIndex}
-                      enableAutocomplete={true}
-                      autocompleteOptions={autocompleteGenres}
-                      restrictTagsToAutocompleteOptions={true}
-                      maxTags={4}
+                      className='w-full'
+                      editorContentClassName='px-8 py-4 shadow-none'
+                      output='html'
+                      placeholder='Type your description here...'
+                      autofocus={true}
+                      editable={true}
+                      editorClassName='focus:outline-none'
                     />
                   </FormControl>
-                  <FormMessage />
                 </FormItem>
               )}
             />
-          </div>
+            <div className='m-8 space-y-4'>
+              <FormField
+                control={form.control}
+                name='tags'
+                render={({ field }) => (
+                  <FormItem {...useGuidedField('genres')}>
+                    <FormControl>
+                      <TagInput
+                        {...field}
+                        tags={genres}
+                        setTags={(newTags) => {
+                          setGenres(newTags);
+                          form.setValue('genres', newTags as [Tag, ...Tag[]]);
+                        }}
+                        placeholder='Add up to 4 genres...'
+                        styleClasses={{
+                          input:
+                            'w-full h-fit outline-none border-none shadow-none  text-base p-0',
+                          inlineTagsContainer: 'border-none p-0',
+                          autoComplete: {
+                            command: '[&>div]:border-none',
+                            popoverContent: 'p-4',
+                            commandList: 'list-none',
+                            commandGroup: 'font-bold',
+                          },
+                        }}
+                        activeTagIndex={activeGenreIndex}
+                        setActiveTagIndex={setActiveGenreIndex}
+                        enableAutocomplete={true}
+                        autocompleteOptions={autocompleteGenres}
+                        restrictTagsToAutocompleteOptions={true}
+                        maxTags={4}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
-          <Button className='mt-6' disabled={loading}>
-            {loading ? (
-              <>
-                <Loader2 className='animate-spin' /> {`Saving...`}
-              </>
-            ) : (
-              'Save'
-            )}
-          </Button>
-        </form>
-      </Form>
-    </div>
+            <Button className='mt-6' disabled={loading}>
+              {loading ? (
+                <>
+                  <Loader2 className='animate-spin' /> {`Saving...`}
+                </>
+              ) : (
+                'Save'
+              )}
+            </Button>
+          </form>
+        </Form>
+      </div>
+    </GuidedFormLayout>
   );
 }

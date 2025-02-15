@@ -30,11 +30,35 @@ import { useCategorySearch } from '@/hooks/use-category';
 import { AutosizeTextarea } from '@/components/autosize-textarea';
 import { ContentUpdateSkeleton } from '@/components/skeletons/content-update-skeleton';
 import { handleAxiosError } from '@/utils/handle-axios-error';
+import {
+  GuidedFormLayout,
+  useGuidedField,
+} from '@/components/form-guidance/guided-form-layout';
+import { BLOG_TOOLTIPS } from '@/lib/tooltips';
+import { MAX_IMAGE_SIZE, VALID_IMAGE_TYPES } from '@/lib/file_validation';
 const BlogSchema = z.object({
   title: z
     .string()
     .min(5, { message: 'Title must be longer than or equal to 5 characters' }),
-  thumbnail: z.instanceof(File).optional().nullable(),
+  thumbnail: z
+    .instanceof(File)
+    .optional()
+    .superRefine((file, ctx) => {
+      if (file) {
+        if (!VALID_IMAGE_TYPES.includes(file.type)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Invalid image file type',
+          });
+        }
+        if (file.size > MAX_IMAGE_SIZE) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'File size must be less than 2MB',
+          });
+        }
+      }
+    }),
   description: z.string().min(1, { message: 'Description is required.' }),
   tags: z
     .array(
@@ -52,7 +76,7 @@ export default function UpdateBlogs() {
   const searchParams = useSearchParams();
 
   const slug = searchParams.get('slug') || '';
-  const { blog, isLoading: blogLoading, mutate } = useBlogBySlug(slug);
+  const { blog, isLoading: blogLoading } = useBlogBySlug(slug);
 
   const form = useForm<z.infer<typeof BlogSchema>>({
     resolver: zodResolver(BlogSchema),
@@ -60,8 +84,8 @@ export default function UpdateBlogs() {
       title: blog?.title || '',
       thumbnail: undefined,
       description: blog?.description || '',
-      tags: blog?.tags || [],
-      category: blog?.category || '',
+      tags: blog?.tag || [],
+      category: blog?.category.name || '',
     },
   });
 
@@ -71,16 +95,16 @@ export default function UpdateBlogs() {
         title: blog.title,
         thumbnail: undefined,
         description: blog.description,
-        tags: blog.tags || [],
-        category: blog.category,
+        tags: blog.tag || [],
+        category: blog.category.name,
       });
     }
 
-    setTags(blog?.tags || []);
+    setTags(blog?.tag || []);
   }, [blog, form]);
 
   const { autocompleteTags } = useTag();
-  const [tags, setTags] = useState<Tag[]>(blog?.tags || []);
+  const [tags, setTags] = useState<Tag[]>(blog?.tag || []);
   const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
   const [loading, setLoading] = useState(false); // New loading state
   const router = useRouter();
@@ -112,7 +136,6 @@ export default function UpdateBlogs() {
         description: blogData.message,
       });
 
-      mutate();
       router.push('/staff/blogs');
     } catch (error) {
       handleAxiosError(error, 'An error occurred while update the blog.');
@@ -125,7 +148,7 @@ export default function UpdateBlogs() {
 
   return (
     <ContentLayout title=''>
-      <div className='md:container'>
+      <GuidedFormLayout tooltips={BLOG_TOOLTIPS}>
         <h1 className='font-semibold mb-4'>Update Blog</h1>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -137,7 +160,9 @@ export default function UpdateBlogs() {
                     name='thumbnail'
                     render={() => (
                       <ImageUploader
-                        onChange={(file) => form.setValue('thumbnail', file)}
+                        onChange={(file) =>
+                          file && form.setValue('thumbnail', file)
+                        }
                         initialImage={blog?.thumbnail}
                         ratioImage={16 / 9}
                       />
@@ -151,6 +176,7 @@ export default function UpdateBlogs() {
                         <FormControl>
                           <AutosizeTextarea
                             {...field}
+                            {...useGuidedField('title')}
                             placeholder='New blog title here...'
                             className='outline-none w-full text-4xl p-0 border-none  shadow-none focus-visible:ring-0  font-bold placeholder:text-slate-700 h-full resize-none overflow-hidden '
                           />
@@ -164,7 +190,7 @@ export default function UpdateBlogs() {
                     control={form.control}
                     name='category'
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem {...useGuidedField('category')}>
                         <FormControl>
                           <AutoComplete
                             selectedValue={form.watch('category')}
@@ -188,7 +214,7 @@ export default function UpdateBlogs() {
                     control={form.control}
                     name='tags'
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem {...useGuidedField('tags')}>
                         <FormControl>
                           <TagInput
                             {...field}
@@ -226,7 +252,7 @@ export default function UpdateBlogs() {
                   control={form.control}
                   name='description'
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem {...useGuidedField('description')}>
                       <FormControl>
                         <MinimalTiptapEditor
                           {...field}
@@ -255,7 +281,7 @@ export default function UpdateBlogs() {
             </Button>
           </form>
         </Form>
-      </div>
+      </GuidedFormLayout>
     </ContentLayout>
   );
 }

@@ -56,12 +56,10 @@ export async function generateMetadata({
 export default async function EbookDetail({ params }: any) {
   const { slug } = params;
 
-  const res = (await axios.get(`/contents/ebooks/${slug}`)).data;
-
-  const ebook = res.data;
+  const res = (await axios.get(`/contents/ebooks/${slug}`)).data.data;
 
   return (
-    <ContentLayout title={ebook.title}>
+    <ContentLayout title={res.title}>
       <section className='md:py-2'>
         <div className='md:container'>
           <Breadcrumb>
@@ -79,7 +77,7 @@ export default async function EbookDetail({ params }: any) {
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage>{ebook.title}</BreadcrumbPage>
+                <BreadcrumbPage>{res.title}</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -87,7 +85,7 @@ export default async function EbookDetail({ params }: any) {
             <div>
               <AspectRatio ratio={3 / 4}>
                 <Image
-                  src={ebook.thumbnail}
+                  src={res.thumbnail}
                   alt='placeholder'
                   layout='fill'
                   objectFit='cover'
@@ -102,15 +100,17 @@ export default async function EbookDetail({ params }: any) {
                   <div className='flex flex-col gap-2 md:flex-row md:justify-between md:items-center'>
                     <div>
                       <p className=' text-lg text-muted-foreground'>
-                        {ebook.author}
+                        {res.author}
                       </p>
                       <h2 className='text-balance text-3xl font-medium md:text-5xl'>
-                        {ebook.title}
+                        {res.title}
                       </h2>
                     </div>
                     <Button variant={'default'}>
                       <BookText width={16} className='mr-2' />
-                      <Link href={ebook.file}>Read book</Link>
+                      <Link href={res.ebook.file_attachment.file}>
+                        Read book
+                      </Link>
                     </Button>
                     {/* <ShareButton
                       title={ebook.title}
@@ -121,7 +121,7 @@ export default async function EbookDetail({ params }: any) {
                     Description
                   </p>
                   <MinimalTiptapPreview
-                    value={ebook.description}
+                    value={res.description}
                     editable={false}
                   />
                   <Dialog>
@@ -141,7 +141,7 @@ export default async function EbookDetail({ params }: any) {
                       </DialogHeader>
                       <ScrollArea className='max-h-[600px] pr-4'>
                         <MinimalTiptapPreview
-                          value={ebook.description}
+                          value={res.description}
                           editable={false}
                         />
                       </ScrollArea>
@@ -160,7 +160,7 @@ export default async function EbookDetail({ params }: any) {
                             <p className='text-muted-foreground text-sm'>
                               Category
                             </p>
-                            <p>{ebook.category}</p>
+                            <p>{res.category.name}</p>
                           </div>
                         </div>
                         <div className='flex flex-row gap-6 items-start'>
@@ -168,7 +168,7 @@ export default async function EbookDetail({ params }: any) {
                             <p className='text-muted-foreground text-sm'>
                               ISBN
                             </p>
-                            <p>{ebook.isbn} </p>
+                            <p>{res.ebook.isbn} </p>
                           </div>
                         </div>
                         <div className='flex flex-row gap-6 items-start'>
@@ -176,7 +176,7 @@ export default async function EbookDetail({ params }: any) {
                             <p className='text-muted-foreground text-sm'>
                               Publication
                             </p>
-                            <p>{ebook.publication}</p>
+                            <p>{res.ebook.publication}</p>
                           </div>
                         </div>
                         <div className='flex flex-row gap-6 w-full items-start'>
@@ -184,7 +184,7 @@ export default async function EbookDetail({ params }: any) {
                             <p className='text-muted-foreground text-sm'>
                               Pages
                             </p>
-                            <p>{ebook.pages}</p>
+                            <p>{res.ebook.pages}</p>
                           </div>
                         </div>
                         <div className='flex flex-row gap-6 items-start'>
@@ -192,7 +192,9 @@ export default async function EbookDetail({ params }: any) {
                             <p className='text-muted-foreground text-sm'>
                               Release Date
                             </p>
-                            <p>{format(ebook.release_date, 'dd MMM yyyy')}</p>
+                            <p>
+                              {format(res.ebook.release_date, 'dd MMM yyyy')}
+                            </p>
                           </div>
                         </div>
                         <div className='flex flex-row gap-6 items-start'>
@@ -201,7 +203,7 @@ export default async function EbookDetail({ params }: any) {
                               Tags
                             </p>
                             <p>
-                              {ebook.genres.map((genre: any, index: number) => (
+                              {res.genre.map((genre: any, index: number) => (
                                 <Badge key={index} className='mr-2'>
                                   {genre.text}
                                 </Badge>
@@ -217,12 +219,12 @@ export default async function EbookDetail({ params }: any) {
             </div>
           </div>
           <FeedbackComponent
-            contentUuid={ebook.uuid}
-            shareUrl={`${process.env.NEXT_PUBLIC_FRONTEND_URL}/ebooks/${ebook.slug}`}
-            titleContent={ebook.title}
-            comments={ebook.comments}
-            avgRating={Number(ebook.avg_rating)}
-            creator={ebook.creator}
+            contentUuid={res.uuid}
+            shareUrl={`${process.env.NEXT_PUBLIC_FRONTEND_URL}/ebooks/${res.slug}`}
+            titleContent={res.title}
+            comments={res.comment}
+            avgRating={Number(res.avg_rating)}
+            creator={res.ebook.author}
             className='my-8 lg:my-16 antialiased'
           />
         </div>

@@ -108,15 +108,11 @@ export function useReportBySlug(slug: string) {
   };
 }
 
-export function useUserReport(page?: number, limit?: number) {
-  const { data, error, mutate } = useSWR(
-    `/contents/prakerin/student?page=${page}&limit=${limit}`,
-    fetcher
-  );
+export function useReportByStudent() {
+  const { data, error, mutate } = useSWR(`/contents/prakerin/student`, fetcher);
 
   return {
     prakerin: data?.data,
-    totalPages: data?.lastPage || 1,
     isLoading: !error && !data,
     isError: error,
     mutate,

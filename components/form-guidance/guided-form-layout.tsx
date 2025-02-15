@@ -1,8 +1,8 @@
-import { ReactNode } from 'react';
+import { ReactNode, useRef } from 'react';
 import { GuidancePanel } from './guidance-panel';
 import { GuidanceProvider, useGuidance } from './guidance-context';
 
-import { TooltipContent } from '@/app/(skilins)/constants/tooltips';
+import { TooltipContent } from '@/lib/tooltips';
 
 interface GuidedFormLayoutProps {
   tooltips: {
@@ -16,7 +16,7 @@ const GuidanceContent = ({ children, tooltips }: GuidedFormLayoutProps) => {
   const { activeField, position } = useGuidance();
 
   return (
-    <div className='relative max-w-screen-md'>
+    <div className='relative max-w-screen-md mx-auto'>
       {children}
       <GuidancePanel
         activeField={activeField}
@@ -42,19 +42,36 @@ export const GuidedFormLayout = ({
 // Create a hook wrapper to use in form fields
 export const useGuidedField = (fieldName: string) => {
   const { setActiveField } = useGuidance();
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   return {
     onFocus: (e: React.FocusEvent<HTMLElement>) => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+
       const element = e.currentTarget;
       const rect = element.getBoundingClientRect();
-
       const verticalCenter = rect.top + rect.height / 2;
 
-      setActiveField(fieldName, {
-        top: verticalCenter - 32,
-        left: rect.right - 24,
-      });
+      setActiveField(
+        fieldName,
+        {
+          top: verticalCenter - 32,
+          left: rect.right - 60,
+        },
+        false
+      );
     },
-    onBlur: () => setActiveField(null),
+    onBlur: () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      setActiveField(null, undefined, false);
+    },
+    onInput: () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      setActiveField(fieldName, undefined, true);
+
+      timeoutRef.current = setTimeout(() => {
+        setActiveField(null, undefined, false);
+      }, 1000);
+    },
   };
 };

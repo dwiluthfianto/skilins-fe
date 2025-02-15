@@ -32,12 +32,10 @@ import { columns } from './columns';
 export default async function StoryDetail({ params }: any) {
   const { slug } = params;
 
-  const res = (await axios.get(`/contents/stories/${slug}`)).data;
-
-  const story = res.data;
+  const res = (await axios.get(`/contents/stories/${slug}`)).data.data;
 
   return (
-    <ContentLayout title={story.title}>
+    <ContentLayout title={res.title}>
       <section className='md:py-2'>
         <div className='md:container'>
           <Breadcrumb>
@@ -55,7 +53,7 @@ export default async function StoryDetail({ params }: any) {
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage>{story.title}</BreadcrumbPage>
+                <BreadcrumbPage>{res.title}</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -63,7 +61,7 @@ export default async function StoryDetail({ params }: any) {
             <div>
               <AspectRatio ratio={3 / 4}>
                 <Image
-                  src={story.thumbnail}
+                  src={res.thumbnail}
                   alt='placeholder'
                   layout='fill'
                   objectFit='cover'
@@ -78,10 +76,10 @@ export default async function StoryDetail({ params }: any) {
                   <div className='flex justify-between items-center'>
                     <div>
                       <p className=' text-lg text-muted-foreground'>
-                        {story.author}
+                        {res.story.creator.name}
                       </p>
                       <h2 className='text-balance text-3xl font-medium md:text-5xl'>
-                        {story.title}
+                        {res.title}
                       </h2>
                     </div>
                   </div>
@@ -89,7 +87,7 @@ export default async function StoryDetail({ params }: any) {
                     Description
                   </p>
                   <MinimalTiptapPreview
-                    value={story.description}
+                    value={res.description}
                     editable={false}
                   />
                   <Dialog>
@@ -109,7 +107,7 @@ export default async function StoryDetail({ params }: any) {
                       </DialogHeader>
                       <ScrollArea className='max-h-[600px] pr-4'>
                         <MinimalTiptapPreview
-                          value={story.description}
+                          value={res.description}
                           editable={false}
                         />
                       </ScrollArea>
@@ -128,7 +126,7 @@ export default async function StoryDetail({ params }: any) {
                             <p className='text-muted-foreground text-sm'>
                               Category
                             </p>
-                            <p>{story.category}</p>
+                            <p>{res.category.name}</p>
                           </div>
                         </div>
                         <div className='flex flex-row gap-6 items-start'>
@@ -136,7 +134,7 @@ export default async function StoryDetail({ params }: any) {
                             <p className='text-muted-foreground text-sm'>
                               Release Date
                             </p>
-                            <p>{format(story.created_at, 'dd MMM yyyy')}</p>
+                            <p>{format(res.created_at, 'dd MMM yyyy')}</p>
                           </div>
                         </div>
                         <div className='flex flex-row gap-6 items-start'>
@@ -145,7 +143,7 @@ export default async function StoryDetail({ params }: any) {
                               Subjects
                             </p>
                             <p>
-                              {story.genres.map((genre: any, index: number) => (
+                              {res.genre.map((genre: any, index: number) => (
                                 <Badge key={index} className='mr-2'>
                                   {genre.text}
                                 </Badge>
@@ -160,7 +158,7 @@ export default async function StoryDetail({ params }: any) {
                               Tags
                             </p>
                             <p>
-                              {story.tags.map((tag: any, index: number) => (
+                              {res.tag.map((tag: any, index: number) => (
                                 <Badge key={index} className='mr-2'>
                                   {tag.text}
                                 </Badge>
@@ -176,15 +174,15 @@ export default async function StoryDetail({ params }: any) {
             </div>
           </div>
           <div className='mt-8'>
-            <DataTable columns={columns} data={story.episodes} />
+            <DataTable columns={columns} data={res.story.episode} />
           </div>
           <FeedbackComponent
-            contentUuid={story.uuid}
-            shareUrl={`${process.env.NEXT_PUBLIC_FRONTEND_URL}/stories/${story.slug}`}
-            titleContent={story.title}
-            comments={story.comments}
-            avgRating={Number(story.avg_rating)}
-            creator={story.creator}
+            contentUuid={res.uuid}
+            shareUrl={`${process.env.NEXT_PUBLIC_FRONTEND_URL}/stories/${res.slug}`}
+            titleContent={res.title}
+            comments={res.comment}
+            avgRating={Number(res.avg_rating)}
+            creator={res.story.creator.name}
             className='my-8 lg:my-16 antialiased'
           />
         </div>

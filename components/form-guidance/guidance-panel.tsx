@@ -1,4 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Card, CardContent } from '../ui/card';
+import { useGuidance } from './guidance-context';
 
 interface GuidanceItem {
   title: string;
@@ -11,25 +12,15 @@ interface GuidancePanelProps {
   position: { top: number; left: number } | null;
 }
 
-const TooltipContent = ({ title, items }: GuidanceItem) => (
-  <div>
-    <h2 className='font-bold text-lg mb-2'>{title}</h2>
-    <ul className='list-disc pl-4 space-y-2'>
-      {items.map((item, index) => (
-        <li key={index} className='text-gray-700'>
-          {item}
-        </li>
-      ))}
-    </ul>
-  </div>
-);
-
 export const GuidancePanel = ({
   activeField,
   tooltips,
   position,
 }: GuidancePanelProps) => {
-  if (!activeField || !tooltips[activeField] || !position) return null;
+  const { isTyping } = useGuidance();
+
+  if (!activeField || !tooltips[activeField] || !position || isTyping)
+    return null;
 
   return (
     <Card
@@ -41,7 +32,16 @@ export const GuidancePanel = ({
       }}
     >
       <CardContent className='p-8'>
-        <TooltipContent {...tooltips[activeField]} />
+        <h2 className='font-bold text-lg mb-2'>
+          {tooltips[activeField].title}
+        </h2>
+        <ul className='list-disc pl-4 space-y-2'>
+          {tooltips[activeField].items.map((item, index) => (
+            <li key={index} className='text-gray-700'>
+              {item}
+            </li>
+          ))}
+        </ul>
       </CardContent>
     </Card>
   );
