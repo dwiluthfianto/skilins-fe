@@ -88,7 +88,7 @@ export function BlogCarousel({ data }: any) {
         >
           <CarouselContent>
             {blogs?.map((item: any) => (
-              <CarouselItem key={item.uuid}>
+              <CarouselItem key={item.uuid} className='max-w-[452px]'>
                 <ContentCard
                   key={item.uuid}
                   variant='blog'

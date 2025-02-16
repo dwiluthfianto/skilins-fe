@@ -28,7 +28,7 @@ import { AutoComplete } from '@/components/autocomplete';
 import { useCategorySearch } from '@/hooks/use-category';
 import { AutosizeTextarea } from '@/components/autosize-textarea';
 import { handleAxiosError } from '@/utils/handle-axios-error';
-import { MAX_IMAGE_SIZE, VALID_IMAGE_TYPES } from '@/lib/file_validation';
+import { MAX_IMAGE_SIZE, VALID_IMAGE_TYPES } from '@/lib/file-validation';
 import {
   GuidedFormLayout,
   useGuidedField,

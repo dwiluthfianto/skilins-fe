@@ -89,7 +89,7 @@ export function AudioCarousel({ data }: any) {
         >
           <CarouselContent>
             {audios.map((item: any) => (
-              <CarouselItem key={item.uuid}>
+              <CarouselItem key={item.uuid} className='max-w-[250px]'>
                 <ContentCard
                   key={item.uuid}
                   variant='audio'

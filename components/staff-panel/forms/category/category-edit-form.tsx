@@ -111,8 +111,8 @@ function CategoryEditForm({
     formData.append('description', data.description || '');
 
     try {
-      const { data: tagData } = await axios.patch(
-        `/tags/${values?.uuid}`,
+      const { data: categoryData } = await axios.patch(
+        `/categories/${values?.uuid}`,
         formData,
         {
           headers: {
@@ -122,14 +122,8 @@ function CategoryEditForm({
       );
 
       toast({
-        title: 'Tag Updated Successfully!',
-        description: (
-          <pre className='mt-2 w-[340px] rounded-md bg-slate-950 p-4'>
-            <code className='text-white'>
-              {JSON.stringify(tagData.message, null, 2)}
-            </code>
-          </pre>
-        ),
+        title: 'Category Updated Successfully!',
+        description: categoryData.message,
       });
 
       mutate('/categories');
@@ -146,7 +140,7 @@ function CategoryEditForm({
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Update tag</DialogTitle>
+          <DialogTitle>Update category</DialogTitle>
           <DialogDescription>
             {"Add new data values here. Click save when you're done."}
           </DialogDescription>

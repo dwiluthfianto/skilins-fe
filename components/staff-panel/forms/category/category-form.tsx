@@ -103,14 +103,8 @@ function CategoryForm() {
         },
       });
       toast({
-        title: 'Major Added Successfully!',
-        description: (
-          <pre className='mt-2 w-[340px] rounded-md bg-slate-950 p-4'>
-            <code className='text-white'>
-              {JSON.stringify(categoryData.message, null, 2)}
-            </code>
-          </pre>
-        ),
+        title: 'Category Added Successfully!',
+        description: categoryData.message,
       });
 
       mutate('/categories');

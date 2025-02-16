@@ -128,13 +128,12 @@ export const columns: ColumnDef<Blogs>[] = [
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align='end'>
-              <DropdownMenuLabel>Status</DropdownMenuLabel>
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <Link href={`blogs/update?slug=${row.original.slug}`}>
                 <DropdownMenuItem className='cursor-pointer'>
                   <Pencil className='mr-2' width={16} /> Edit
                 </DropdownMenuItem>
               </Link>
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem className='cursor-pointer'>
                 <FileSearch className='mr-2' width={16} /> Detail
               </DropdownMenuItem>

@@ -41,7 +41,7 @@ import {
   VALID_IMAGE_TYPES,
   VALID_AUDIO_TYPES,
   MAX_AUDIO_SIZE,
-} from '@/lib/file_validation';
+} from '@/lib/file-validation';
 const ContentSchema = z.object({
   title: z
     .string()
@@ -70,9 +70,9 @@ const ContentSchema = z.object({
     .nonnegative(),
   file: z
     .instanceof(File)
-    .refine((file) => file && VALID_AUDIO_TYPES.includes(file.type), {
-      message: 'Invalid audio file type',
-    })
+    // .refine((file) => file && VALID_AUDIO_TYPES.includes(file.type), {
+    //   message: 'Invalid audio file type',
+    // })
     .refine((file) => file.size <= MAX_AUDIO_SIZE, {
       message: 'File size must be less than 15MB',
     }),
@@ -108,7 +108,6 @@ export default function AudioCreate() {
   const [activeGenreIndex, setActiveGenreIndex] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const [file, setFile] = useState<File | null>(null);
 
   const { categories, isLoading } = useCategorySearch(form.watch('category'));
 
@@ -122,7 +121,7 @@ export default function AudioCreate() {
     formData.append('genres', JSON.stringify(data.genres));
     formData.append('category_name', data.category);
     formData.append('duration', String(data.duration));
-    if (file) formData.append('file', file);
+    if (data.file) formData.append('file', data.file);
     formData.append('tags', JSON.stringify(data.tags));
 
     try {
@@ -321,11 +320,10 @@ export default function AudioCreate() {
                       name='file'
                       render={({ field }) => (
                         <FileUploader
-                          onChange={(file) => {
-                            field.onChange(file);
-                            setFile(file);
-                          }}
-                          accept='audio/mp3'
+                          onChange={(file) =>
+                            file && form.setValue('file', file)
+                          }
+                          accept='audio/*'
                           onDurationChange={(duration) =>
                             form.setValue('duration', duration ?? 0)
                           }

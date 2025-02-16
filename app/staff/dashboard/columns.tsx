@@ -3,32 +3,75 @@
 
 import { ColumnDef } from '@tanstack/react-table';
 
-import { FileText } from 'lucide-react';
+import {
+  CircleOff,
+  FileSearch,
+  MoreHorizontal,
+  Paperclip,
+  PencilRuler,
+  Signature,
+  Trash2,
+} from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 import { ArrowUpDown } from 'lucide-react';
-import { format } from 'date-fns';
 import React from 'react';
+import Image from 'next/image';
+import DeleteDialog from '@/components/staff-panel/delete-dialog';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
+import { Badge } from '@/components/ui/badge';
+import ApprovedDialog from '@/components/staff-panel/approve-dialog';
+import RejectDialog from '@/components/staff-panel/reject-dialog';
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type Report = {
   uuid: string;
-  thumbnail: string;
-  author: string;
   title: string;
+  thumbnail: string;
   description: string;
-  category: string;
-  pages: number;
-  major: string;
-  subjects: string[];
-  file: string;
-  published_at: string;
-  tags: string[];
+  prakerin: {
+    pages: number;
+    file_attachment: { file: string };
+    creator: { name: string; major: { name: string } };
+    published_at: Date;
+  };
+  status: string;
 };
 
 export const columns: ColumnDef<Report>[] = [
+  {
+    accessorKey: 'No',
+    header: () => {
+      return <p>No</p>;
+    },
+    cell: ({ row }) => {
+      return <div>{row.index + 1}</div>;
+    },
+  },
+  {
+    accessorKey: 'thumbnail',
+    header: () => <div className='text-right'>Image</div>,
+    cell: ({ row }) => (
+      <AspectRatio ratio={3 / 4} className='h-full relative'>
+        <Image
+          src={`${row.original.thumbnail}?t=${new Date().getTime()}`}
+          alt='Image'
+          layout='fill'
+          objectFit='cover'
+          objectPosition='center'
+        />
+      </AspectRatio>
+    ),
+  },
   {
     accessorKey: 'title',
     header: ({ column }) => {
@@ -38,27 +81,31 @@ export const columns: ColumnDef<Report>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Title
-          <ArrowUpDown className='w-4 h-4 ml-2' />
+          <ArrowUpDown className='ml-2 h-4 w-4' />
         </Button>
+      );
+    },
+    cell: ({ row }) => {
+      return (
+        <div className=' line-clamp-3 break-words '>{row.original.title}</div>
       );
     },
   },
   {
-    accessorKey: 'description',
-    header: 'Description',
-  },
-  {
-    accessorKey: 'author',
+    accessorKey: 'creator',
     header: ({ column }) => {
       return (
         <Button
           variant='ghost'
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Author
-          <ArrowUpDown className='w-4 h-4 ml-2' />
+          Creator
+          <ArrowUpDown className='ml-2 h-4 w-4' />
         </Button>
       );
+    },
+    cell: ({ row }) => {
+      return row.original.prakerin.creator.name;
     },
   },
   {
@@ -70,23 +117,12 @@ export const columns: ColumnDef<Report>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Major
-          <ArrowUpDown className='w-4 h-4 ml-2' />
+          <ArrowUpDown className='ml-2 h-4 w-4' />
         </Button>
       );
     },
-  },
-  {
-    accessorKey: 'category',
-    header: ({ column }) => {
-      return (
-        <Button
-          variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          Category
-          <ArrowUpDown className='w-4 h-4 ml-2' />
-        </Button>
-      );
+    cell: ({ row }) => {
+      return row.original.prakerin.creator.major.name;
     },
   },
   {
@@ -98,43 +134,133 @@ export const columns: ColumnDef<Report>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Pages
-          <ArrowUpDown className='w-4 h-4 ml-2' />
+          <ArrowUpDown className='ml-2 h-4 w-4' />
         </Button>
       );
     },
-  },
-
-  {
-    accessorKey: 'file',
-    header: 'Report File',
     cell: ({ row }) => {
-      return (
-        <a
-          href={`${row.original.file}?t=${new Date().getTime()}`}
-          className='flex items-center gap-2 text-pink-600'
-        >
-          <FileText width={16} />
-          .pdf
-        </a>
-      );
+      return row.original.prakerin.pages;
     },
   },
-
   {
-    accessorKey: 'published_at',
+    accessorKey: 'file',
     header: ({ column }) => {
       return (
         <Button
           variant='ghost'
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Published At
-          <ArrowUpDown className='w-4 h-4 ml-2' />
+          File
+          <ArrowUpDown className='ml-2 h-4 w-4' />
         </Button>
       );
     },
     cell: ({ row }) => {
-      return format(row.original.published_at, 'dd MMM yyyy');
+      return (
+        <a
+          href={`${
+            row.original.prakerin.file_attachment.file
+          }?t=${new Date().getTime()}`}
+          className='text-pink-600 items-center flex gap-2'
+        >
+          <Paperclip width={16} />
+          .pdf
+        </a>
+      );
+    },
+  },
+  {
+    accessorKey: 'status',
+    header: ({ column }) => {
+      return (
+        <Button
+          variant='ghost'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Status
+          <ArrowUpDown className='ml-2 h-4 w-4' />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      return row.original.status === 'pending' ? (
+        <Badge className='bg-yellow-500 text-white' variant={'outline'}>
+          {row.original.status}
+        </Badge>
+      ) : row.original.status === 'approved' ? (
+        <Badge className='bg-green-500 text-white' variant={'outline'}>
+          {row.original.status}
+        </Badge>
+      ) : (
+        <Badge className='bg-red-500 text-white' variant={'outline'}>
+          {row.original.status}
+        </Badge>
+      );
+    },
+  },
+  {
+    id: 'actions',
+    cell: ({ row }) => {
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      const [approveOpen, setApproveOpen] = React.useState(false);
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      const [rejectOpen, setRejectOpen] = React.useState(false);
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
+      return (
+        <div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant='ghost' className='h-8 w-8 p-0'>
+                <span className='sr-only'>Open menu</span>
+                <MoreHorizontal className='h-4 w-4' />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align='end'>
+              <DropdownMenuLabel>Status</DropdownMenuLabel>
+              <DropdownMenuItem
+                className='cursor-pointer'
+                onClick={() => setApproveOpen(true)}
+              >
+                <Signature className='mr-2' width={16} /> Approve
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className='cursor-pointer'
+                onClick={() => setRejectOpen(true)}
+              >
+                <CircleOff className='mr-2' width={16} /> Reject
+              </DropdownMenuItem>
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuItem className='cursor-pointer'>
+                <FileSearch className='mr-2' width={16} /> Detail
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className='cursor-pointer'
+                onClick={() => setIsDeleteDialogOpen(true)}
+              >
+                <Trash2 className='mr-2' width={16} /> Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <DeleteDialog
+            open={isDeleteDialogOpen}
+            onOpenChange={setIsDeleteDialogOpen}
+            pathApi={`/contents/prakerin/${row.original.uuid}`}
+          />
+
+          <ApprovedDialog
+            open={approveOpen}
+            onOpenChange={setApproveOpen}
+            pathApi={`/contents/${row.original.uuid}`}
+          />
+          <RejectDialog
+            open={rejectOpen}
+            onOpenChange={setRejectOpen}
+            pathApi={`/contents/${row.original.uuid}`}
+          />
+        </div>
+      );
     },
   },
 ];

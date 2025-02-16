@@ -332,4 +332,81 @@ export const EBOOK_TOOLTIPS: { [key: string]: TooltipContent } = {
     items: ['Upload your ebook file', 'Supported formats: PDF'],
   },
 };
+
+export const COMPETITION_TOOLTIPS: { [key: string]: TooltipContent } = {
+  title: {
+    title: 'Competition Title',
+    items: [
+      'Enter the title of your competition',
+      'Make it specific enough to understand the content',
+      'Use keywords where appropriate for better search visibility',
+    ],
+  },
+  thumbnail: {
+    title: 'Competition Thumbnail',
+    items: [
+      'Use a clear, high-quality image',
+      'Recommended ratio is 16:9',
+      'Keep file size under 2MB',
+      'Supported formats: PNG, JPEG, JPG',
+    ],
+  },
+  type_competition: {
+    title: 'Competition Type',
+    items: ['Choose the type of your competition'],
+  },
+  description: {
+    title: 'Competition Description',
+    items: [
+      'Provide clear and detailed information about your competition',
+      'Include relevant keywords naturally',
+      'You can use basic formatting for better readability',
+    ],
+  },
+  guide: {
+    title: 'Competition Guide',
+    items: [
+      'Provide clear and detailed information about your competition',
+      'You can use basic formatting for better readability',
+    ],
+  },
+  winner_count: {
+    title: 'Winner Count',
+    items: ['Enter the number of winners for your competition'],
+  },
+  judges: {
+    title: 'Judges',
+    items: ['Choose the judges for your competition'],
+  },
+  parameters: {
+    title: 'Parameters',
+    items: [
+      'Enter the parameters for your competition',
+      'Enter weight for each parameter',
+      'This is the parameters for judges to score the participants',
+    ],
+  },
+  start_date: {
+    title: 'Start Date',
+    items: [
+      'Enter the start date of your competition',
+      'This is the start date of your competition',
+    ],
+  },
+  end_date: {
+    title: 'End Date',
+    items: [
+      'Enter the end date of your competition',
+      'This is the end date of your competition',
+    ],
+  },
+  submission_deadline: {
+    title: 'Submission Deadline',
+    items: [
+      'Enter the submission deadline of your competition',
+      'This is the deadline for participants to submit their entries',
+    ],
+  },
+};
+
 export type { TooltipContent };

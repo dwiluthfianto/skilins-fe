@@ -2,7 +2,7 @@
 
 import { ColumnDef } from '@tanstack/react-table';
 
-import { MoreHorizontal, ShieldCheck, Trash2 } from 'lucide-react';
+import { MoreHorizontal, ShieldCheck, Trash2, PencilRuler } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -18,6 +18,7 @@ import { format } from 'date-fns';
 import DeleteDialog from '@/components/staff-panel/delete-dialog';
 import React from 'react';
 import VerifyStudentDialog from '@/components/verify-student-dialog';
+import StudentEditForm from '@/components/staff-panel/forms/student/student-edit-form';
 
 export type Student = {
   uuid: string;
@@ -166,6 +167,7 @@ export const columns: ColumnDef<Student>[] = [
       const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
+      const [isVerifyDialogOpen, setIsVerifyDialogOpen] = React.useState(false);
       return (
         <div>
           <DropdownMenu>
@@ -182,11 +184,17 @@ export const columns: ColumnDef<Student>[] = [
               ) : (
                 <DropdownMenuItem
                   className='cursor-pointer'
-                  onClick={() => setIsEditDialogOpen(true)}
+                  onClick={() => setIsVerifyDialogOpen(true)}
                 >
                   <ShieldCheck className='mr-2' width={16} /> Verify Student
                 </DropdownMenuItem>
               )}
+              <DropdownMenuItem
+                className='cursor-pointer'
+                onClick={() => setIsEditDialogOpen(true)}
+              >
+                <PencilRuler className='mr-2' width={16} /> Edit
+              </DropdownMenuItem>
               <DropdownMenuItem
                 className='cursor-pointer'
                 onClick={() => setIsDeleteDialogOpen(true)}
@@ -196,9 +204,14 @@ export const columns: ColumnDef<Student>[] = [
             </DropdownMenuContent>
           </DropdownMenu>
           <VerifyStudentDialog
-            open={isEditDialogOpen}
-            onOpenChange={setIsEditDialogOpen}
+            open={isVerifyDialogOpen}
+            onOpenChange={setIsVerifyDialogOpen}
             pathApi={`/students/${student.uuid}`}
+          />
+          <StudentEditForm
+            isEditDialogOpen={isEditDialogOpen}
+            setIsEditDialogOpen={setIsEditDialogOpen}
+            values={row.original}
           />
           <DeleteDialog
             open={isDeleteDialogOpen}

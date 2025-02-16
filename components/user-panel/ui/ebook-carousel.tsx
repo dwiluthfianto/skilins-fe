@@ -93,7 +93,7 @@ export function EbookCarousel({ data }: any) {
           <CarouselContent>
             {ebooks?.map((item: any) => {
               return (
-                <CarouselItem key={item.uuid}>
+                <CarouselItem key={item.uuid} className='max-w-[250px]'>
                   <ContentCard
                     key={item.uuid}
                     variant='default'

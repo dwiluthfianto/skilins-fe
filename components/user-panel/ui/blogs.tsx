@@ -40,7 +40,7 @@ export function Blogs() {
           </div>
         </div>
       </div>
-      <div className='w-full grid gap-2 grid-cols-2 md:grid-cols-4 lg:grid-cols-6'>
+      <div className='w-full grid gap-2 grid-cols-3'>
         {blogs?.map((item: any) => {
           return (
             <div key={item.uuid} className='pl-[20px] md:max-w-[452px]'>
@@ -57,6 +57,7 @@ export function Blogs() {
                           alt={item.title}
                           layout='fill'
                           objectFit='cover'
+                          className='rounded-md'
                           objectPosition='center'
                         />
                       </div>

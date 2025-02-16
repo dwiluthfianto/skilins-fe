@@ -118,7 +118,7 @@ function MajorForm() {
 
   async function onSubmit(data: z.infer<typeof MajorSchema>) {
     const formData = new FormData();
-    if (image) formData.append('image_url', image);
+    if (image) formData.append('image', image);
     formData.append('name', data.name);
     formData.append('description', data.description);
     if (avatar) formData.append('avatar', avatar);
@@ -132,13 +132,7 @@ function MajorForm() {
 
       toast({
         title: 'Major Added Successfully!',
-        description: (
-          <pre className='mt-2 w-[340px] rounded-md bg-slate-950 p-4'>
-            <code className='text-white'>
-              {JSON.stringify(majorData.message, null, 2)}
-            </code>
-          </pre>
-        ),
+        description: majorData.message,
       });
 
       mutate('/majors');

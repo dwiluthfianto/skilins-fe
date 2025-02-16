@@ -59,7 +59,7 @@ function MajorEditForm({ isEditDialogOpen, setIsEditDialogOpen, values }: any) {
         name: values?.name || '',
         description: values?.description || '',
       });
-      setImageUrl(values?.image_url || null);
+      setImageUrl(values?.image || null);
       setAvatarUrl(values?.avatar || null);
     }
   }, [isEditDialogOpen, values, form]);
@@ -71,7 +71,7 @@ function MajorEditForm({ isEditDialogOpen, setIsEditDialogOpen, values }: any) {
 
   const [image, setImage] = React.useState<File | null>(null);
   const [imageUrl, setImageUrl] = React.useState<string | null>(
-    values?.image_url || null
+    values?.image || null
   );
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -145,9 +145,9 @@ function MajorEditForm({ isEditDialogOpen, setIsEditDialogOpen, values }: any) {
     }
 
     if (image) {
-      formData.append('image_url', image);
+      formData.append('image', image);
     } else if (imageUrl) {
-      formData.append('image_url', imageUrl);
+      formData.append('image', imageUrl);
     }
 
     formData.append('name', data.name);
@@ -166,13 +166,7 @@ function MajorEditForm({ isEditDialogOpen, setIsEditDialogOpen, values }: any) {
 
       toast({
         title: 'Major Updated Successfully!',
-        description: (
-          <pre className='mt-2 w-[340px] rounded-md bg-slate-950 p-4'>
-            <code className='text-white'>
-              {JSON.stringify(majorData.message, null, 2)}
-            </code>
-          </pre>
-        ),
+        description: majorData.message,
       });
 
       mutate('/majors');

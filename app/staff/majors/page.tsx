@@ -70,7 +70,8 @@ function Majors() {
           <div>
             <p className='font-bold text-4xl'>Majors</p>
             <p className='text-sm'>
-              Lorem ipsum, dolor sit amet consectetur adipisicing elit.
+              Manage all majors here. Add, edit, or delete a major to keep your
+              curriculum up to date.
             </p>
           </div>
           <MajorForm />
@@ -131,10 +132,10 @@ function Majors() {
                   </CardContent>
                   <CardFooter className='justify-end pb-0 pr-0'>
                     <div className='h-40 w-full relative'>
-                      {m.image_url ? (
+                      {m.image ? (
                         <Image
                           className='rounded-tl-md'
-                          src={`${m.image_url}?t=${new Date().getTime()}`}
+                          src={`${m.image}?t=${new Date().getTime()}`}
                           layout='fill'
                           objectFit='cover'
                           objectPosition='center'

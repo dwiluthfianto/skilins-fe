@@ -87,7 +87,7 @@ const StudentSchema = z.object({
     message: 'Birthplace has to be filled.',
   }),
   birthdate: z.coerce.date(),
-  sex: z.enum(['Male', 'Female'], {
+  sex: z.enum(['male', 'female'], {
     required_error: 'You need to select a sex.',
   }),
 });
@@ -104,7 +104,7 @@ export default function RegisterStudent() {
       major: '',
       birthplace: '',
       birthdate: new Date(),
-      sex: 'Male',
+      sex: 'male',
     },
   });
 
@@ -261,13 +261,13 @@ export default function RegisterStudent() {
                     >
                       <FormItem className='flex items-center space-x-3 space-y-0'>
                         <FormControl>
-                          <RadioGroupItem value='Male' />
+                          <RadioGroupItem value='male' />
                         </FormControl>
                         <FormLabel className='font-normal'>Male</FormLabel>
                       </FormItem>
                       <FormItem className='flex items-center space-x-3 space-y-0'>
                         <FormControl>
-                          <RadioGroupItem value='Female' />
+                          <RadioGroupItem value='female' />
                         </FormControl>
                         <FormLabel className='font-normal'>Female</FormLabel>
                       </FormItem>

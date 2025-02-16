@@ -26,7 +26,6 @@ import { ArrowUpDown } from 'lucide-react';
 import React from 'react';
 import Image from 'next/image';
 import DeleteDialog from '@/components/staff-panel/delete-dialog';
-import ReportEditForm from '@/components/staff-panel/forms/report/report-edit-form';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Badge } from '@/components/ui/badge';
 import ApprovedDialog from '@/components/staff-panel/approve-dialog';
@@ -42,10 +41,9 @@ export type Report = {
   prakerin: {
     pages: number;
     file_attachment: { file: string };
-    creator: { name: string; major: string };
+    creator: { name: string; major: { name: string } };
     published_at: Date;
   };
-
   status: string;
 };
 
@@ -124,7 +122,7 @@ export const columns: ColumnDef<Report>[] = [
       );
     },
     cell: ({ row }) => {
-      return row.original.prakerin.creator.major;
+      return row.original.prakerin.creator.major.name;
     },
   },
   {

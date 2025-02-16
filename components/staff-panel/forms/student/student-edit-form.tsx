@@ -1,41 +1,14 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-'use client';
-
-import { CalendarIcon } from '@radix-ui/react-icons';
-import { format } from 'date-fns';
-
-import { cn } from '@/lib/utils';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-
-import * as React from 'react';
-import { RadioGroup, RadioGroupItem } from '../../../ui/radio-group';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../../../ui/select';
-import { useMajor } from '@/hooks/use-major';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Form,
   FormControl,
@@ -43,192 +16,142 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '../../../ui/form';
-
+} from '@/components/ui/form';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useToast } from '@/hooks/use-toast';
+import { CalendarIcon, Loader2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import axios from '@/utils/axios';
-import { toast } from '@/hooks/use-toast';
-import { mutate } from 'swr';
-import Image from 'next/image';
-import { AspectRatio } from '../../../ui/aspect-ratio';
-import Compressor from 'compressorjs';
 import { handleAxiosError } from '@/utils/handle-axios-error';
+import { cn } from '@/lib/utils';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { format } from 'date-fns';
+import { CustomCalendar } from '@/components/ui/custom-calendar';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { useMajor } from '@/hooks/use-major';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+
+const allowedDomains = ['@gmail.com', '@skilins.com'];
 
 const StudentSchema = z.object({
-  image: z.instanceof(File).optional(),
-  nis: z.number().min(1, { message: 'NIS is required.' }),
-  name: z.string().min(1, { message: 'Name is required.' }),
-  birthplace: z.string().min(1, { message: 'Birthplace is required.' }),
-  birthdate: z.date({ required_error: 'A date of birth is required.' }),
-  sex: z.enum(['male', 'female'], {
-    errorMap: () => ({ message: 'Sex is required.' }),
+  nis: z.coerce.number().min(1, {
+    message: 'This field has to be filled.',
   }),
-  major: z.string().min(1, { message: 'Major is required.' }),
+  name: z.string().min(4, {
+    message: 'Full name must be at least 4 characters.',
+  }),
+  major: z.string().min(1, {
+    message: 'Major has to be filled.',
+  }),
+  birthplace: z.string().min(1, {
+    message: 'Birthplace has to be filled.',
+  }),
+  birthdate: z.coerce.date(),
+  sex: z.enum(['male', 'female'], {
+    required_error: 'You need to select a sex.',
+  }),
 });
 
-function StudentEditForm({
+export default function StudentEditForm({
   isEditDialogOpen,
   setIsEditDialogOpen,
-  student,
+  values,
 }: any) {
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
+  const { major } = useMajor();
   const form = useForm<z.infer<typeof StudentSchema>>({
     resolver: zodResolver(StudentSchema),
     defaultValues: {
-      image: undefined,
-      nis: parseInt(student?.nis, 10),
-      name: student?.name || '',
-      birthplace: student?.birthplace || '',
-      birthdate: student?.birthdate ? new Date(student.birthdate) : undefined,
-      sex: student?.sex || 'male',
-      major: student?.major || '',
+      nis: values?.nis || 0,
+      name: values?.name || '',
+      major: values?.major?.name || '',
+      birthplace: values?.birthplace || '',
+      birthdate: values?.birthdate || new Date(),
+      sex: values?.sex || 'male',
     },
   });
 
-  React.useEffect(() => {
-    if (!isEditDialogOpen) {
+  useEffect(() => {
+    if (values) {
       form.reset({
-        image: undefined,
-        nis: parseInt(student?.nis, 10),
-        name: student?.name || '',
-        birthplace: student?.birthplace || '',
-        birthdate: student?.birthdate ? new Date(student.birthdate) : undefined,
-        sex: student?.sex || 'male',
-        major: student?.major || '',
-      });
-      setImageUrl(student?.image_url || null); // Reset image URL
-    }
-  }, [isEditDialogOpen, student, form]);
-
-  const [image, setImage] = React.useState<File | null>(null);
-  const [imageUrl, setImageUrl] = React.useState<string | null>(
-    student?.image_url || null
-  );
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-
-      // Kompresi file gambar
-      new Compressor(file, {
-        quality: 0.6, // Ubah kualitas kompresi
-        maxWidth: 1400, // Resolusi maksimal
-        maxHeight: 1600,
-        success(compressedBlob) {
-          const compressedFile = new File([compressedBlob], file.name, {
-            type: compressedBlob.type,
-            lastModified: Date.now(),
-          });
-          setImage(compressedFile);
-
-          const reader = new FileReader();
-          reader.onload = (event) => {
-            if (event.target?.result) {
-              setImageUrl(event.target.result as string);
-            }
-          };
-          reader.readAsDataURL(compressedFile);
-        },
-        error(err) {
-          console.error('Compression failed:', err.message);
-        },
+        nis: values.nis,
+        name: values.name,
+        major: values.major.name,
+        birthplace: values.birthplace,
+        birthdate: values.birthdate,
+        sex: values.sex,
       });
     }
-  };
-
-  const { major, isLoading, isError } = useMajor();
-  if (isLoading) return <h1>Loading..</h1>;
-  if (isError) return <h1>Error</h1>;
+  }, [values, form]);
 
   async function onSubmit(data: z.infer<typeof StudentSchema>) {
-    const formData = new FormData();
-    if (image) {
-      formData.append('image_url', image);
-    } else if (imageUrl) {
-      formData.append('image_url', imageUrl);
-    }
-    formData.append('nis', String(data.nis));
-    formData.append('name', data.name);
-    formData.append('birthplace', data.birthplace);
-    formData.append('birthdate', data.birthdate.toISOString());
-    formData.append('sex', data.sex);
-    formData.append('major', data.major);
-    formData.append('status', 'true');
+    setLoading(true);
 
+    const payload = {
+      name: data.name,
+      nis: data.nis.toString(),
+      major: data.major,
+      birthplace: data.birthplace,
+      birthdate: data.birthdate,
+      sex: data.sex,
+    };
     try {
       const { data: studentData } = await axios.patch(
-        `/students/${student?.uuid}`,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }
+        `/students/${values?.uuid}`,
+        payload
       );
 
       toast({
-        title: 'Student Updated Successfully!',
-        description: (
-          <pre className='mt-2 w-[340px] rounded-md bg-slate-950 p-4'>
-            <code className='text-white'>
-              {JSON.stringify(studentData.message, null, 2)}
-            </code>
-          </pre>
-        ),
+        title: 'Success!',
+        description: studentData.message,
       });
-
-      mutate('/students');
-
-      setIsEditDialogOpen(false);
     } catch (error) {
       handleAxiosError(error, 'An error occurred while update the student.');
+    } finally {
+      setLoading(false);
+      setIsEditDialogOpen(false);
     }
   }
   return (
-    <Dialog
-      open={isEditDialogOpen}
-      onOpenChange={isEditDialogOpen ? setIsEditDialogOpen : false}
-    >
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Add student</DialogTitle>
-          <DialogDescription>
-            {"Add new data student here. Click save when you're done."}
-          </DialogDescription>
-        </DialogHeader>
+    <Sheet open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+      <SheetContent>
+        <SheetHeader>
+          <SheetTitle>Update Student</SheetTitle>
+          <SheetDescription>
+            Update student, fill the information below. Click update student to
+            save.
+          </SheetDescription>
+        </SheetHeader>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className='grid gap-4 py-4'
+            className='grid gap-4 mt-8'
           >
-            {imageUrl && (
-              <div className='grid grid-cols-4 items-center gap-2'>
-                <div className='col-span-1'>
-                  <AspectRatio ratio={1 / 1}>
-                    <Image
-                      src={imageUrl}
-                      alt='Current student image'
-                      className='object-cover'
-                      fill
-                    />
-                  </AspectRatio>
-                </div>
-              </div>
-            )}
             <FormField
               control={form.control}
-              name='image'
-              render={() => (
-                <FormItem className='grid grid-cols-4 items-center gap-2'>
-                  <FormLabel>Image</FormLabel>
-                  <div className='col-span-3'>
-                    <FormControl>
-                      <Input
-                        type='file'
-                        accept='image/*'
-                        onChange={handleImageChange}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </div>
+              name='name'
+              render={({ field }) => (
+                <FormItem className='grid gap-2'>
+                  <FormLabel>
+                    Full name <span className='text-red-500'>*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input placeholder='e.g. John Doe' {...field} type='text' />
+                  </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -236,90 +159,46 @@ function StudentEditForm({
               control={form.control}
               name='nis'
               render={({ field }) => (
-                <FormItem className='grid grid-cols-4 items-center gap-2'>
-                  <FormLabel>NIS</FormLabel>
-                  <div className='col-span-3'>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        type='text'
-                        onChange={(e) =>
-                          field.onChange(parseInt(e.target.value, 10))
-                        }
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </div>
+                <FormItem className='grid gap-2'>
+                  <FormLabel>
+                    NIS <span className='text-red-500'>*</span>{' '}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder='e.g. 1234567890'
+                      {...field}
+                      type='number'
+                    />
+                  </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
-              name='name'
+              name='major'
               render={({ field }) => (
-                <FormItem className='grid grid-cols-4 items-center gap-2'>
-                  <FormLabel>Name</FormLabel>
-                  <div className='col-span-3'>
+                <FormItem className='grid gap-2'>
+                  <FormLabel>Major</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
                     <FormControl>
-                      <Input {...field} type='text' />
+                      <SelectTrigger className='col-span-3'>
+                        <SelectValue placeholder='Select a major' />
+                      </SelectTrigger>
                     </FormControl>
-                    <FormMessage />
-                  </div>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='birthplace'
-              render={({ field }) => (
-                <FormItem className='grid grid-cols-4 items-center gap-2'>
-                  <FormLabel>Birthplace</FormLabel>
-                  <div className='col-span-3'>
-                    <FormControl>
-                      <Input {...field} type='text' />
-                    </FormControl>
-                    <FormMessage />
-                  </div>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='birthdate'
-              render={({ field }) => (
-                <FormItem className='grid grid-cols-4 items-center gap-2'>
-                  <FormLabel>Date of birth</FormLabel>
-                  <div className='col-span-3'>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={'outline'}
-                            className={cn(
-                              'w-full justify-start text-left font-normal',
-                              !field.value && 'text-muted-foreground'
-                            )}
-                          >
-                            <CalendarIcon className='mr-2 h-4 w-4' />
-                            {field.value ? (
-                              format(field.value, 'PPP')
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className='w-auto p-0' align='start'>
-                        <Calendar
-                          mode='single'
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </div>
+                    <SelectContent>
+                      {major.map((m: { name: string; uuid: string }) => (
+                        <div key={m.uuid}>
+                          <SelectItem value={m.name}>{m.name}</SelectItem>
+                        </div>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -327,73 +206,102 @@ function StudentEditForm({
               control={form.control}
               name='sex'
               render={({ field }) => (
-                <FormItem className='grid grid-cols-4 items-center gap-2'>
+                <FormItem className='grid gap-2'>
                   <FormLabel>Sex</FormLabel>
-                  <div>
-                    <FormControl>
-                      <RadioGroup
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        className='flex items-center'
-                      >
-                        <FormItem className='flex items-center'>
-                          <FormControl>
-                            <RadioGroupItem value='male' />
-                          </FormControl>
-                          <FormLabel className='m-0'>Male</FormLabel>
-                        </FormItem>
-                        <FormItem className='flex items-center space-x-2'>
-                          <FormControl>
-                            <RadioGroupItem value='female' />
-                          </FormControl>
-                          <FormLabel>Female</FormLabel>
-                        </FormItem>
-                      </RadioGroup>
-                    </FormControl>
-                    <FormMessage />
-                  </div>
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className='flex flex-row items-center space-x-1'
+                    >
+                      <FormItem className='flex items-center space-x-3 space-y-0'>
+                        <FormControl>
+                          <RadioGroupItem value='male' />
+                        </FormControl>
+                        <FormLabel className='font-normal'>Male</FormLabel>
+                      </FormItem>
+                      <FormItem className='flex items-center space-x-3 space-y-0'>
+                        <FormControl>
+                          <RadioGroupItem value='female' />
+                        </FormControl>
+                        <FormLabel className='font-normal'>Female</FormLabel>
+                      </FormItem>
+                    </RadioGroup>
+                  </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
             <FormField
               control={form.control}
-              name='major'
+              name='birthplace'
               render={({ field }) => (
-                <FormItem className='grid grid-cols-4 items-center gap-2'>
-                  <FormLabel>Major</FormLabel>
-                  <div className='col-span-3'>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder='Select a major' />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {major.data?.map(
-                          (m: { name: string; uuid: string }) => (
-                            <div key={m.uuid}>
-                              <SelectItem value={m.name}>{m.name}</SelectItem>
-                            </div>
-                          )
-                        )}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </div>
+                <FormItem className='grid gap-2'>
+                  <FormLabel>Birthplace (Optional)</FormLabel>
+                  <FormControl>
+                    <Input placeholder='e.g. Surabaya' {...field} type='text' />
+                  </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
-            <DialogFooter>
-              <Button type='submit'>Save</Button>
-            </DialogFooter>
+            <FormField
+              control={form.control}
+              name='birthdate'
+              render={({ field }) => (
+                <FormItem className='grid gap-2'>
+                  <FormLabel>Date of birth</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={'outline'}
+                          className={cn(
+                            'w-full pl-3 text-left font-normal',
+                            !field.value && 'text-muted-foreground'
+                          )}
+                        >
+                          {field.value ? (
+                            format(field.value, 'PPP')
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                          <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className='w-auto p-0' align='end'>
+                      <CustomCalendar
+                        initialFocus
+                        mode='single'
+                        captionLayout='dropdown-buttons' //Also: dropdown | buttons
+                        fromYear={1990}
+                        toYear={new Date().getFullYear() - 1}
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        // numberOfMonths={2} //Add this line, if you want, can be 2 or more
+                        className='rounded-md border'
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <SheetFooter>
+              <Button className='mt-6' disabled={loading}>
+                {loading ? (
+                  <>
+                    <Loader2 className='animate-spin' /> {`Updating...`}
+                  </>
+                ) : (
+                  'Update student'
+                )}
+              </Button>
+            </SheetFooter>
           </form>
         </Form>
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   );
 }
-
-export default StudentEditForm;

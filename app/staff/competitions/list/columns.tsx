@@ -19,7 +19,8 @@ import { Button } from '@/components/ui/button';
 import DeleteDialog from '@/components/staff-panel/delete-dialog';
 import Link from 'next/link';
 import { format } from 'date-fns';
-
+import Image from 'next/image';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type Competitions = {
@@ -34,6 +35,30 @@ export type Competitions = {
 };
 
 export const columns: ColumnDef<Competitions>[] = [
+  {
+    accessorKey: 'No',
+    header: () => {
+      return <p>No</p>;
+    },
+    cell: ({ row }) => {
+      return <div>{row.index + 1}</div>;
+    },
+  },
+  {
+    accessorKey: 'thumbnail',
+    header: () => <div className='text-right'>Image</div>,
+    cell: ({ row }) => (
+      <AspectRatio ratio={4 / 3} className='h-full relative'>
+        <Image
+          src={`${row.original.thumbnail}?t=${new Date().getTime()}`}
+          alt='Image'
+          layout='fill'
+          objectFit='cover'
+          objectPosition='center'
+        />
+      </AspectRatio>
+    ),
+  },
   {
     accessorKey: 'title',
     header: ({ column }) => {

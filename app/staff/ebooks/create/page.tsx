@@ -45,7 +45,7 @@ import {
   VALID_IMAGE_TYPES,
   MAX_DOCUMENT_SIZE,
   VALID_DOCUMENT_TYPES,
-} from '@/lib/file_validation';
+} from '@/lib/file-validation';
 import {
   GuidedFormLayout,
   useGuidedField,

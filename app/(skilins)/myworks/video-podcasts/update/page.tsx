@@ -37,7 +37,7 @@ import {
   useGuidedField,
 } from '@/components/form-guidance/guided-form-layout';
 import { VIDEO_PODCAST_TOOLTIPS } from '@/lib/tooltips';
-import { MAX_IMAGE_SIZE, VALID_IMAGE_TYPES } from '@/lib/file_validation';
+import { MAX_IMAGE_SIZE, VALID_IMAGE_TYPES } from '@/lib/file-validation';
 const ContentSchema = z.object({
   title: z
     .string()

@@ -28,7 +28,7 @@ import { AutosizeTextarea } from '@/components/autosize-textarea';
 import { useGenre } from '@/hooks/use-genre';
 import MinimalTiptapOne from '@/components/minimal-tiptap/minimal-tiptap-one';
 import { handleAxiosError } from '@/utils/handle-axios-error';
-import { MAX_IMAGE_SIZE, VALID_IMAGE_TYPES } from '@/lib/file_validation';
+import { MAX_IMAGE_SIZE, VALID_IMAGE_TYPES } from '@/lib/file-validation';
 import { STORY_TOOLTIPS } from '@/lib/tooltips';
 import {
   GuidedFormLayout,

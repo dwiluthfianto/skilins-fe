@@ -44,7 +44,7 @@ import {
   VALID_IMAGE_TYPES,
   VALID_AUDIO_TYPES,
   MAX_AUDIO_SIZE,
-} from '@/lib/file_validation';
+} from '@/lib/file-validation';
 const ContentSchema = z.object({
   title: z
     .string()

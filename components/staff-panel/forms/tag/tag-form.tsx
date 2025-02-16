@@ -94,20 +94,14 @@ function TagForm() {
     if (avatar) formData.append('avatar', avatar);
 
     try {
-      const { data: majorData } = await axios.post('/tags', formData, {
+      const { data: tagData } = await axios.post('/tags', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
       toast({
-        title: 'Major Added Successfully!',
-        description: (
-          <pre className='mt-2 w-[340px] rounded-md bg-slate-950 p-4'>
-            <code className='text-white'>
-              {JSON.stringify(majorData.message, null, 2)}
-            </code>
-          </pre>
-        ),
+        title: 'Tag Added Successfully!',
+        description: tagData.message,
       });
 
       mutate('/tags');

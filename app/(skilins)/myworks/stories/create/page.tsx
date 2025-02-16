@@ -28,7 +28,7 @@ import { useGenre } from '@/hooks/use-genre';
 import MinimalTiptapOne from '@/components/minimal-tiptap/minimal-tiptap-one';
 import { ContentLayout } from '@/components/user-panel/content-layout';
 import { handleAxiosError } from '@/utils/handle-axios-error';
-import { MAX_IMAGE_SIZE, VALID_IMAGE_TYPES } from '@/lib/file_validation';
+import { MAX_IMAGE_SIZE, VALID_IMAGE_TYPES } from '@/lib/file-validation';
 import {
   GuidedFormLayout,
   useGuidedField,

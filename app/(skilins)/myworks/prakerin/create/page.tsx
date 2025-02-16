@@ -37,7 +37,7 @@ import {
   VALID_IMAGE_TYPES,
   VALID_DOCUMENT_TYPES,
   MAX_DOCUMENT_SIZE,
-} from '@/lib/file_validation';
+} from '@/lib/file-validation';
 const ContentSchema = z.object({
   title: z
     .string()
@@ -165,7 +165,7 @@ export default function PrakerinCreate() {
                             className='w-full'
                             editorContentClassName='px-8 py-4 shadow-none'
                             output='html'
-                            placeholder='Type your synopsis here...'
+                            placeholder='Type your prakerin description here...'
                             autofocus={true}
                             editable={true}
                             editorClassName='focus:outline-none'

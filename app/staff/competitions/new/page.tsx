@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { use, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { z } from 'zod';
@@ -8,7 +8,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from '@/utils/axios';
 import { toast } from '@/hooks/use-toast';
-import { AxiosError } from 'axios';
 import {
   Form,
   FormControl,
@@ -39,12 +38,24 @@ import { Tag, TagInput } from 'emblor';
 import { useJudge } from '@/hooks/use-judge';
 import { Input } from '@/components/ui/input';
 import { handleAxiosError } from '@/utils/handle-axios-error';
-
+import { MAX_IMAGE_SIZE, VALID_IMAGE_TYPES } from '@/lib/file-validation';
+import {
+  GuidedFormLayout,
+  useGuidedField,
+} from '@/components/form-guidance/guided-form-layout';
+import { COMPETITION_TOOLTIPS } from '@/lib/tooltips';
 const ContentSchema = z.object({
   title: z
     .string()
     .min(5, { message: 'Title must be longer than or equal to 5 characters' }),
-  thumbnail: z.instanceof(File).nullable(),
+  thumbnail: z
+    .instanceof(File)
+    .refine((file) => file && VALID_IMAGE_TYPES.includes(file.type), {
+      message: 'Invalid image file type',
+    })
+    .refine((file) => file.size <= MAX_IMAGE_SIZE, {
+      message: 'File size must be less than 2MB',
+    }),
   description: z.string().min(1, { message: 'Description is required.' }),
   guide: z.string().min(1, { message: 'Guide is required.' }),
   winner_count: z.number().min(1, { message: 'Winner count is required.' }),
@@ -83,7 +94,7 @@ export default function CreateCompetition() {
     defaultValues: {
       title: '',
       thumbnail: undefined,
-      type_competition: 'AUDIO',
+      type_competition: 'audio',
       description: '',
       guide: '',
       winner_count: undefined,
@@ -96,7 +107,7 @@ export default function CreateCompetition() {
   });
   const [judges, setJudges] = useState<Tag[]>([]);
   const [activeJudgeIndex, setActiveJudgeIndex] = useState<number | null>(null);
-  const { autocompleteJudges } = useJudge();
+  const { autocompleteJudges } = useJudge({});
   const parameters = form.watch('parameters');
   const addParameter = () => {
     const newParameter = { parameterName: '', weight: '' };
@@ -167,7 +178,7 @@ export default function CreateCompetition() {
 
   return (
     <ContentLayout title=''>
-      <div className='max-w-4xl mx-auto'>
+      <GuidedFormLayout tooltips={COMPETITION_TOOLTIPS}>
         <h1 className='font-semibold mb-4'>Create Competition</h1>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -179,7 +190,9 @@ export default function CreateCompetition() {
                     name='thumbnail'
                     render={() => (
                       <ImageUploader
-                        onChange={(file) => form.setValue('thumbnail', file)}
+                        onChange={(file) =>
+                          file && form.setValue('thumbnail', file)
+                        }
                         ratioImage={16 / 9}
                       />
                     )}
@@ -190,17 +203,13 @@ export default function CreateCompetition() {
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
-                          <div className='relative group'>
-                            <AutosizeTextarea
-                              {...field}
-                              maxLength={45}
-                              placeholder='New competition title here...'
-                              className='outline-none w-full text-4xl p-0 border-none  shadow-none focus-visible:ring-0  font-bold placeholder:text-slate-700 h-full resize-none overflow-hidden '
-                            />
-                            <div className='absolute inset-y-0 end-0 flex items-center z-20 cursor-pointer text-gray-400 px-3'>
-                              <CircleAlert width={18} className='shrink-0' />
-                            </div>
-                          </div>
+                          <AutosizeTextarea
+                            {...field}
+                            {...useGuidedField('title')}
+                            maxLength={45}
+                            placeholder='New competition title here...'
+                            className='outline-none w-full text-4xl p-0 border-none  shadow-none focus-visible:ring-0  font-bold placeholder:text-slate-700 h-full resize-none overflow-hidden '
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -210,7 +219,7 @@ export default function CreateCompetition() {
                     control={form.control}
                     name='type_competition'
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem {...useGuidedField('type_competition')}>
                         <FormControl>
                           <RadioGroup
                             onValueChange={field.onChange}
@@ -223,7 +232,7 @@ export default function CreateCompetition() {
                                   htmlFor='audio'
                                   className='border cursor-pointer rounded-md p-2 flex items-center gap-2 [&:has(:checked)]:bg-zinc-100 dark:[&:has(:checked)]:bg-zinc-800'
                                 >
-                                  <RadioGroupItem id='audio' value='AUDIO' />
+                                  <RadioGroupItem id='audio' value='audio' />
                                   Audio
                                 </Label>
                               </FormControl>
@@ -234,7 +243,7 @@ export default function CreateCompetition() {
                                   htmlFor='video'
                                   className='border cursor-pointer rounded-md p-2 flex items-center gap-2 [&:has(:checked)]:bg-zinc-100 dark:[&:has(:checked)]:bg-zinc-800'
                                 >
-                                  <RadioGroupItem id='video' value='VIDEO' />
+                                  <RadioGroupItem id='video' value='video' />
                                   Video
                                 </Label>
                               </FormControl>
@@ -247,7 +256,7 @@ export default function CreateCompetition() {
                                 >
                                   <RadioGroupItem
                                     id='prakerin'
-                                    value='PRAKERIN'
+                                    value='prakerin'
                                   />
                                   Prakerin
                                 </Label>
@@ -264,7 +273,7 @@ export default function CreateCompetition() {
                     control={form.control}
                     name='description'
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem {...useGuidedField('description')}>
                         <FormControl>
                           <AutosizeTextarea
                             {...field}
@@ -283,7 +292,7 @@ export default function CreateCompetition() {
                     control={form.control}
                     name='start_date'
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem {...useGuidedField('start_date')}>
                         <FormLabel className='font-normal text-base text-muted-foreground'>
                           Start date
                         </FormLabel>
@@ -328,7 +337,7 @@ export default function CreateCompetition() {
                     control={form.control}
                     name='end_date'
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem {...useGuidedField('end_date')}>
                         <FormLabel className='font-normal text-base text-muted-foreground'>
                           End date
                         </FormLabel>
@@ -375,7 +384,7 @@ export default function CreateCompetition() {
                   control={form.control}
                   name='guide'
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem {...useGuidedField('guide')}>
                       <FormControl>
                         <MinimalTiptapOne
                           {...field}
@@ -397,7 +406,7 @@ export default function CreateCompetition() {
                     control={form.control}
                     name='submission_deadline'
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem {...useGuidedField('submission_deadline')}>
                         <FormLabel className='font-normal text-base text-muted-foreground'>
                           Submission Deadline
                         </FormLabel>
@@ -445,7 +454,7 @@ export default function CreateCompetition() {
                     control={form.control}
                     name='judges'
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem {...useGuidedField('judges')}>
                         <FormControl>
                           <TagInput
                             {...field}
@@ -487,7 +496,7 @@ export default function CreateCompetition() {
                     control={form.control}
                     name='parameters'
                     render={() => (
-                      <FormItem>
+                      <FormItem {...useGuidedField('parameters')}>
                         <FormLabel className='font-normal text-base text-muted-foreground'>
                           Score Parameter
                         </FormLabel>
@@ -547,7 +556,7 @@ export default function CreateCompetition() {
                     control={form.control}
                     name='winner_count'
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem {...useGuidedField('winner_count')}>
                         <FormLabel className='font-normal text-base text-muted-foreground'>
                           Total Winners
                         </FormLabel>
@@ -580,7 +589,7 @@ export default function CreateCompetition() {
             </Button>
           </form>
         </Form>
-      </div>
+      </GuidedFormLayout>
     </ContentLayout>
   );
 }

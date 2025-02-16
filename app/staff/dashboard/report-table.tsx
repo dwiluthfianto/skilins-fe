@@ -23,7 +23,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-import { useReport } from '@/hooks/use-report';
+import { useReportByStaff } from '@/hooks/use-report';
 import {
   Card,
   CardContent,
@@ -31,18 +31,17 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
 import { Loading } from '@/components/loading';
 import { Error } from '@/components/error';
+import Combobox from '@/components/skilins/combo-box';
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
 }
+const statusComponent = [
+  { name: 'pending' },
+  { name: 'rejected' },
+  { name: 'approved' },
+];
 
 export function DataTable<TData, TValue>({
   columns,
@@ -55,10 +54,12 @@ export function DataTable<TData, TValue>({
     React.useState<VisibilityState>({});
 
   const [rowSelection, setRowSelection] = React.useState({});
+  const [status, setStatus] = React.useState('');
 
-  const { prakerin, isLoading, isError, last_page } = useReport({
+  const { prakerin, isLoading, isError, last_page } = useReportByStaff({
     page: 1,
     limit: 10,
+    status,
   });
 
   const table = useReactTable({
@@ -92,32 +93,13 @@ export function DataTable<TData, TValue>({
           <CardDescription>Showing the latest PKL Reports.</CardDescription>
         </div>
         <div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant='outline' className='ml-auto'>
-                Columns
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align='end'>
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className='capitalize'
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
-                      }
-                    >
-                      {column.id}
-                    </DropdownMenuCheckboxItem>
-                  );
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className='flex gap-2 flex-wrap'>
+            <Combobox
+              items={statusComponent}
+              placeholder='Status'
+              onSelect={(val) => setStatus(val)}
+            />
+          </div>
         </div>
       </CardHeader>
       <CardContent className='max-h-80 overflow-auto'>

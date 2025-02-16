@@ -124,20 +124,30 @@ export const columns: ColumnDef<Video>[] = [
     },
   },
   {
-    accessorKey: 'duration',
+    accessorKey: 'link',
     header: ({ column }) => {
       return (
         <Button
           variant='ghost'
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Duration
+          Link
           <ArrowUpDown className='ml-2 h-4 w-4' />
         </Button>
       );
     },
     cell: ({ row }) => {
-      return row.original.video_podcast.link;
+      const link = String(row.original.video_podcast.link); // Ensure the link is a string
+      return (
+        <a
+          href={link}
+          target='_blank'
+          rel='noopener noreferrer'
+          className='text-blue-400'
+        >
+          {link}
+        </a>
+      );
     },
   },
 

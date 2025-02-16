@@ -2,33 +2,9 @@
 import { ContentLayout } from '@/components/user-panel/content-layout';
 import axios from '../../../../utils/axios';
 import Image from 'next/image';
-import { AspectRatio } from '@/components/ui/aspect-ratio';
-// import { format } from "date-fns";
-// import {
-//   Dialog,
-//   DialogContent,
-//   DialogHeader,
-//   DialogTitle,
-//   DialogTrigger,
-// } from "@/components/ui/dialog";
-// import { Button } from "@/components/ui/button";
-// import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
-import Link from 'next/link';
-// import { Badge } from "@/components/ui/badge";
-// import { Card, CardContent } from "@/components/ui/card";
-// import CommentComponent from "@/components/user-panel/ui/comment";
-// import { BookText } from "lucide-react";
-// import LikeComponent from "@/components/user-panel/ui/like";
 import { Metadata } from 'next';
 import MinimalTiptapPreview from '@/components/minimal-tiptap/minimal-tiptap-preview';
+import { format } from 'date-fns';
 
 export async function generateMetadata({
   params,
@@ -57,77 +33,66 @@ export async function generateMetadata({
 export default async function EbookDetail({ params }: any) {
   const { slug } = params;
 
-  const res = (await axios.get(`/contents/blogs/${slug}`)).data;
-
-  const blog = res.data;
+  const res = (await axios.get(`/contents/blogs/${slug}`)).data.data;
 
   return (
     <ContentLayout title=''>
-      <section className='md:py-2'>
-        <div className='max-w-3xl mx-auto'>
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link href='/'>Home</Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link href='/blogs'>blogs</Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>{blog.title}</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-          <div>
-            <div className='col-span-3'>
-              <AspectRatio ratio={16 / 9}>
-                <Image
-                  src={blog.thumbnail}
-                  alt='placeholder'
-                  layout='fill'
-                  objectFit='cover'
-                  objectPosition='center'
-                  className=' rounded-lg'
-                />
-              </AspectRatio>
-              <MinimalTiptapPreview value={blog.description} editable={false} />
-            </div>
+      <div className='max-w-4xl mx-auto px-4 py-8'>
+        <div className='relative w-full h-96'>
+          <Image
+            src={res.thumbnail} // Ganti dengan gambar yang sesuai
+            alt='Blog Header'
+            layout='fill'
+            objectFit='cover'
+            className='rounded-lg'
+          />
+        </div>
+        <div className='mt-6'>
+          <p className='text-gray-500 text-sm'>
+            Published in <span className='font-semibold'>Skilins Blog</span>
+          </p>
+          <h1 className='text-3xl font-bold mt-2'>{res.title}</h1>
+
+          <div className='flex items-center mt-4 text-gray-500 text-sm'>
+            <span className='font-semibold'>By {res.creator}</span>
+            <span className='mx-2'>•</span>
+            <span>{format(res.created_at, 'PPP')}</span>
           </div>
         </div>
-      </section>
+        <div className='mt-6 text-gray-700'>
+          <MinimalTiptapPreview content={res.description} />
+        </div>
+        <div className='mt-8'>
+          {res.latest_blogs.length > 0 ? (
+            <>
+              <h3 className='font-semibold'>LATEST BLOGS</h3>
+              {res.latest_blogs.map((item: any) => (
+                <div className='flex items-center mt-2'>
+                  <Image
+                    src={item.thumbnail} // Ganti dengan gambar yang sesuai
+                    alt='Latest News'
+                    width={50}
+                    height={50}
+                    className='rounded'
+                  />
+                  <div className='ml-4'>
+                    <h4 className='text-sm font-semibold'>{item.title}</h4>
+                    <p className='text-xs text-gray-600'>{item.description}</p>
+                    <a
+                      href={`/blogs/${item.slug}`}
+                      className='text-blue-500 text-xs'
+                    >
+                      Read more
+                    </a>
+                  </div>
+                </div>
+              ))}
+            </>
+          ) : (
+            ''
+          )}
+        </div>
+      </div>
     </ContentLayout>
   );
-}
-
-export async function generateStaticParams() {
-  let page = 1;
-  const limit = 25;
-  let allBlogs: any[] = [];
-  let hasMore = true;
-
-  // Lakukan fetching hingga tidak ada lagi data yang dikembalikan
-  while (hasMore) {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/contents/blogs?page=${page}&limit=${limit}`
-    );
-    const data = await res.json();
-    const blogs = data?.data || [];
-
-    // Gabungkan data dari halaman saat ini
-    allBlogs = allBlogs.concat(blogs);
-
-    // Cek apakah data masih ada di halaman berikutnya
-    hasMore = blogs.length === limit;
-    page++;
-  }
-
-  return allBlogs.map((blog: any) => ({
-    slug: blog.slug,
-  }));
 }

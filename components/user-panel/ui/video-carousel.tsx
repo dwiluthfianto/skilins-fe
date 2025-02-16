@@ -89,7 +89,7 @@ export function VideoCarousel({ data }: any) {
         >
           <CarouselContent>
             {videos.map((item: any) => (
-              <CarouselItem key={item.uuid}>
+              <CarouselItem key={item.uuid} className='max-w-[352px]'>
                 <ContentCard
                   key={item.uuid}
                   variant='video'
