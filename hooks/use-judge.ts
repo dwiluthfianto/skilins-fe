@@ -1,7 +1,6 @@
 import { fetcher } from '@/utils/fetcher';
 import useSWR from 'swr';
 
-
 interface JudgeFilter {
   page?: number;
   limit?: number;
@@ -55,7 +54,8 @@ export function useEvaluationParameter(competitionUuid: string) {
   );
 
   return {
-    parameters: data?.data,
+    parameters: data?.data.parameters,
+    parameter_scores: data?.data.parameter_scores,
     isLoading: !error && !data,
     isError: error,
     mutate,

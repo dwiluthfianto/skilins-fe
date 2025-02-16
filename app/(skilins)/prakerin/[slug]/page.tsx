@@ -22,21 +22,17 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import Link from 'next/link';
-import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { BookText } from 'lucide-react';
-import LikeComponent from '@/components/user-panel/ui/rating';
-import CommentComponent from '@/components/user-panel/ui/comment';
-
+import FeedbackComponent from '@/components/skilins/features/feedback';
+import MinimalTiptapPreview from '@/components/minimal-tiptap/minimal-tiptap-preview';
 export default async function ReportDetail({ params }: any) {
   const { slug } = params;
 
-  const res = (await axios.get(`/contents/reports/${slug}`)).data;
-
-  const report = res.data;
+  const res = (await axios.get(`/contents/prakerin/${slug}`)).data.data;
 
   return (
-    <ContentLayout title={report.title}>
+    <ContentLayout title={res.title}>
       <section className='md:py-2'>
         <div className='md:container'>
           <Breadcrumb>
@@ -49,12 +45,12 @@ export default async function ReportDetail({ params }: any) {
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href='/reports'>reports</Link>
+                  <Link href='/prakerin'>Prakerin</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage>{report.title}</BreadcrumbPage>
+                <BreadcrumbPage>{res.title}</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -62,7 +58,7 @@ export default async function ReportDetail({ params }: any) {
             <div>
               <AspectRatio ratio={3 / 4}>
                 <Image
-                  src={report.thumbnail}
+                  src={res.thumbnail}
                   alt='placeholder'
                   layout='fill'
                   objectFit='cover'
@@ -77,23 +73,26 @@ export default async function ReportDetail({ params }: any) {
                   <div className='flex justify-between items-center'>
                     <div>
                       <p className=' text-lg text-muted-foreground'>
-                        {report.author}
+                        {res.prakerin.creator.name}
                       </p>
                       <h2 className='text-balance text-3xl font-medium md:text-5xl'>
-                        {report.title}
+                        {res.title}
                       </h2>
                     </div>
                     <Button variant={'default'}>
                       <BookText width={16} className='mr-2' />
-                      <Link href={report.file}>Read book</Link>
+                      <Link href={res.prakerin.file_attachment.file}>
+                        Read book
+                      </Link>
                     </Button>
                   </div>
                   <p className='mt-1 md:mt-6 text text-lg max-w-xl lg:max-w-xl leading-relaxed tracking-tight font-medium'>
                     Description
                   </p>
-                  <p className='mt-1 text-muted-foreground line-clamp-3 text-justify'>
-                    {report.description}
-                  </p>
+                  <MinimalTiptapPreview
+                    value={res.description}
+                    editable={false}
+                  />
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button
@@ -111,7 +110,7 @@ export default async function ReportDetail({ params }: any) {
                       </DialogHeader>
                       <ScrollArea className='max-h-[600px] pr-4'>
                         <p className='text-justify text-muted-foreground	'>
-                          {report.description}
+                          {res.description}
                         </p>
                       </ScrollArea>
                     </DialogContent>
@@ -127,9 +126,9 @@ export default async function ReportDetail({ params }: any) {
                         <div className='flex flex-row gap-6 w-full items-start'>
                           <div className='flex flex-col gap-1'>
                             <p className='text-muted-foreground text-sm'>
-                              Category
+                              Major
                             </p>
-                            <p>{report.category}</p>
+                            <p>{res.prakerin.creator.major.name}</p>
                           </div>
                         </div>
 
@@ -138,7 +137,7 @@ export default async function ReportDetail({ params }: any) {
                             <p className='text-muted-foreground text-sm'>
                               Pages
                             </p>
-                            <p>{report.pages}</p>
+                            <p>{res.prakerin.pages}</p>
                           </div>
                         </div>
                         <div className='flex flex-row gap-6 items-start'>
@@ -146,37 +145,8 @@ export default async function ReportDetail({ params }: any) {
                             <p className='text-muted-foreground text-sm'>
                               Published at
                             </p>
-                            <p>{format(report.published_at, 'dd MMM yyyy')}</p>
-                          </div>
-                        </div>
-                        <div className='flex flex-row gap-6 items-start'>
-                          <div className='flex flex-col gap-1'>
-                            <p className='text-muted-foreground text-sm'>
-                              Subjects
-                            </p>
                             <p>
-                              {report.subjects.map(
-                                (subject: any, index: number) => (
-                                  <Badge key={index} className='mr-2'>
-                                    {subject}
-                                  </Badge>
-                                )
-                              )}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className='flex flex-row gap-6 items-start'>
-                          <div className='flex flex-col gap-1'>
-                            <p className='text-muted-foreground text-sm'>
-                              Tags
-                            </p>
-                            <p>
-                              {report.tags.map((tag: any, index: number) => (
-                                <Badge key={index} className='mr-2'>
-                                  {tag.name}
-                                </Badge>
-                              ))}
+                              {format(res.prakerin.published_at, 'dd MMM yyyy')}
                             </p>
                           </div>
                         </div>
@@ -187,41 +157,17 @@ export default async function ReportDetail({ params }: any) {
               </Card>
             </div>
           </div>
-          <Card className=' py-8 lg:py-16 antialiased mt-10'>
-            <CardContent className='space-y-4'>
-              <LikeComponent contentUuid={slug} />
-              <CommentComponent comments={report.comment} contentId={slug} />
-            </CardContent>
-          </Card>
+          <FeedbackComponent
+            contentUuid={res.uuid}
+            shareUrl={`${process.env.NEXT_PUBLIC_FRONTEND_URL}/prakerin/${res.slug}`}
+            titleContent={res.title}
+            comments={res.comment}
+            avgRating={Number(res.avg_rating)}
+            creator={res.prakerin.creator.name}
+            className='my-8 lg:my-16 antialiased'
+          />
         </div>
       </section>
     </ContentLayout>
   );
-}
-
-export async function generateStaticParams() {
-  let page = 1;
-  const limit = 25;
-  let allreports: any[] = [];
-  let hasMore = true;
-
-  // Lakukan fetching hingga tidak ada lagi data yang dikembalikan
-  while (hasMore) {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/contents/reports?page=${page}&limit=${limit}`
-    );
-    const data = await res.json();
-    const reports = data?.data || [];
-
-    // Gabungkan data dari halaman saat ini
-    allreports = allreports.concat(reports);
-
-    // Cek apakah data masih ada di halaman berikutnya
-    hasMore = reports.length === limit;
-    page++;
-  }
-
-  return allreports.map((report: any) => ({
-    slug: report.uuid,
-  }));
 }

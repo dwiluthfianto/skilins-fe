@@ -1,74 +1,173 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Crown } from 'lucide-react';
+import { Crown, Trophy, Medal, Sparkles } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardFooter,
+} from '@/components/ui/card';
 import { FC } from 'react';
 import { AspectRatio } from '@radix-ui/react-aspect-ratio';
 import Image from 'next/image';
+import { cn } from '@/lib/utils';
 
 interface WinnerProps {
-  Winners: [];
+  winners: any[];
 }
 
-const WinnerLayout: FC<WinnerProps> = ({ Winners }) => {
-  return (
-    Winners && (
-      <section className='w-full py-6'>
-        <div className='container mx-auto'>
-          <div className='flex text-center justify-center items-center gap-4 flex-col'>
-            <Badge variant={'outline'}>
-              <Crown width={14} className='mr-2' />
-              Winner
-            </Badge>
-            <div className='flex gap-2 flex-col'>
-              <h2 className='text-3xl md:text-5xl tracking-tighter max-w-xl text-center font-regular'>
-                The Winner of Competition
-              </h2>
-              <p className='text-lg leading-relaxed tracking-tight text-muted-foreground max-w-xl text-center'>
-                Celebrating every victory while inspiring growth and
-                determination in our journey to success.
-              </p>
-            </div>
-            <div className='grid pt-20 text-left grid-cols-1 lg:grid-cols-3 w-full gap-8'>
-              {Winners.map((item: any) => {
-                return (
-                  <Card className='w-full rounded-md ' key={item.uuid}>
-                    <CardHeader>
-                      <div className='flex items-end justify-center'>
-                        <h1 className='text-center font-bold text-6xl'>
-                          #{item.rank}
-                        </h1>
-                        <div className='font-semibold'>
-                          <p>SKILINS</p>
-                          <p>COMPETITION</p>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <AspectRatio ratio={1 / 1}>
-                        <Image
-                          src={item.submission.content.thumbnail}
-                          fill
-                          objectFit='cover'
-                          objectPosition='center'
-                          alt='winners'
-                        ></Image>
-                      </AspectRatio>
-                      <h1 className='text-2xl font-bold text-center'>
-                        {item.submission.content.title}
-                      </h1>
-                      <p className='text-center'>
-                        {item.submission.student.name}
-                      </p>
-                    </CardContent>
-                  </Card>
-                );
-              })}
+const WinnerLayout: FC<WinnerProps> = ({ winners }) => {
+  const getRankBadge = (rank: number) => {
+    switch (rank) {
+      case 1:
+        return (
+          <div className='absolute -top-6 -right-6 z-10'>
+            <div className='relative animate-bounce'>
+              <Sparkles
+                className='absolute -top-2 -left-2 text-yellow-400 dark:text-yellow-300'
+                size={24}
+              />
+              <Crown
+                className='text-yellow-400 dark:text-yellow-300'
+                size={48}
+                fill='currentColor'
+              />
             </div>
           </div>
+        );
+      case 2:
+        return (
+          <Trophy className='text-gray-300 dark:text-gray-400' size={32} />
+        );
+      case 3:
+        return (
+          <Medal className='text-amber-600 dark:text-amber-400' size={32} />
+        );
+      default:
+        return (
+          <Badge className='text-lg px-4 py-1 dark:bg-gray-700 dark:text-white'>
+            #{rank}
+          </Badge>
+        );
+    }
+  };
+
+  return (
+    <section className='w-full py-12 bg-gradient-to-b from-blue-50/50 to-white dark:from-gray-900 dark:to-gray-800'>
+      <div className='container mx-auto px-4'>
+        <div className='flex flex-col items-center gap-6 mb-16'>
+          <Badge
+            variant='outline'
+            className='bg-white shadow-sm dark:bg-gray-800 dark:border-gray-700'
+          >
+            <Sparkles className='w-4 h-4 mr-2 text-yellow-500 dark:text-yellow-400' />
+            <span className='bg-gradient-to-r from-yellow-600 to-amber-600 dark:from-yellow-400 dark:to-amber-500 bg-clip-text text-transparent'>
+              Our Champions
+            </span>
+          </Badge>
+
+          <div className='space-y-4 text-center'>
+            <h2 className='text-4xl md:text-6xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent'>
+              Celebration of Winners
+            </h2>
+            <p className='text-xl text-muted-foreground max-w-2xl mx-auto dark:text-gray-300'>
+              Where talent meets recognition! Explore our outstanding winners
+              who raised the bar.
+            </p>
+          </div>
         </div>
-      </section>
-    )
+
+        <div className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
+          {winners.map((item: any, index) => (
+            <div
+              key={item.uuid}
+              className={cn(
+                'relative group transition-all duration-300',
+                index === 0 ? 'lg:col-span-2 lg:row-span-2' : 'h-80'
+              )}
+            >
+              <Card
+                className={cn(
+                  'h-full overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300',
+                  index === 0
+                    ? 'bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-gray-800 dark:to-gray-700'
+                    : 'bg-white dark:bg-gray-800'
+                )}
+              >
+                {/* Rank Badge */}
+                <div className='absolute top-4 right-4 z-10'>
+                  {getRankBadge(item.rank)}
+                </div>
+
+                {/* Image with overlay */}
+                <div className='relative'>
+                  <AspectRatio ratio={index === 0 ? 16 / 9 : 4 / 3}>
+                    <Image
+                      src={item.submission.content.thumbnail}
+                      fill
+                      className='object-cover group-hover:scale-105 transition-transform duration-300'
+                      alt='Winner submission'
+                    />
+                  </AspectRatio>
+                  <div className='absolute inset-0 bg-gradient-to-t from-black/60 to-transparent' />
+                </div>
+
+                {/* Content */}
+                <CardContent
+                  className={cn(
+                    'absolute bottom-0 left-0 right-0 text-white p-6',
+                    index === 0 ? 'space-y-4' : 'space-y-2'
+                  )}
+                >
+                  <h3
+                    className={cn(
+                      'font-bold tracking-tight dark:text-white',
+                      index === 0 ? 'text-3xl' : 'text-xl'
+                    )}
+                  >
+                    {item.submission.content.title}
+                  </h3>
+                  <p
+                    className={cn(
+                      'font-medium text-muted-foreground dark:text-gray-300',
+                      index === 0 ? 'text-xl' : 'text-base'
+                    )}
+                  >
+                    by {item.submission.student.name}
+                  </p>
+                </CardContent>
+
+                {/* Additional Info */}
+                <CardFooter className='flex justify-between items-center p-4 bg-white/90 backdrop-blur-sm dark:bg-gray-700/80 dark:backdrop-blur-none'>
+                  <div className='flex items-center gap-2'>
+                    <span className='text-sm font-semibold dark:text-gray-200'>
+                      🏆 Points:
+                    </span>
+                    <Badge
+                      variant='secondary'
+                      className='dark:bg-gray-600 dark:text-white'
+                    >
+                      {item.points}
+                    </Badge>
+                  </div>
+                  <Badge
+                    variant='outline'
+                    className='dark:border-gray-600 dark:text-gray-300'
+                  >
+                    {item.submission.student.school || 'Unknown School'}
+                  </Badge>
+                </CardFooter>
+              </Card>
+            </div>
+          ))}
+        </div>
+
+        {/* Floating Decorations */}
+        <div className='absolute right-0 top-1/3 -translate-y-1/2 opacity-20 dark:opacity-30'>
+          <Sparkles className='w-48 h-48 text-yellow-400 dark:text-purple-400' />
+        </div>
+      </div>
+    </section>
   );
 };
 

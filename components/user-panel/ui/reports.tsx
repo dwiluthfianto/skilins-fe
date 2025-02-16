@@ -51,7 +51,7 @@ export function Reports() {
           return (
             <div key={item.uuid} className='pl-[20px] max-w-[250px]'>
               <a
-                href={`pkl-reports/${item.uuid}`}
+                href={`prakerin/${item.slug}`}
                 className='group flex flex-col justify-between'
               >
                 <div>

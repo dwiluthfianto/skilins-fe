@@ -25,6 +25,7 @@ import { Badge } from '@/components/ui/badge';
 import { notFound } from 'next/navigation';
 import { useState } from 'react';
 import { useCompetitionDetail } from '@/hooks/use-competition';
+import { Loading } from '@/components/loading';
 
 export default function CompetitionPage({
   params,
@@ -42,7 +43,7 @@ export default function CompetitionPage({
     setContentStatus(status);
   };
 
-  if (isLoading) return <h1>loading..</h1>;
+  if (isLoading) return <Loading />;
   if (isError) return notFound();
   return (
     <ContentLayout title=''>
@@ -117,7 +118,7 @@ export default function CompetitionPage({
           </TabsList>
           <TabsContent value='submission'>
             <SubmissionLayout
-              Submissions={data.Submissions}
+              submissions={data.submission}
               status={contentStatus}
               onUpdateStatus={updateStatus}
             />
@@ -126,10 +127,10 @@ export default function CompetitionPage({
             <GuideLayout guide={data.guide} />
           </TabsContent>
           <TabsContent value='winner'>
-            <WinnerLayout Winners={data.Winners} />
+            <WinnerLayout winners={data.winner} />
           </TabsContent>
           <TabsContent value='judge'>
-            <JudgeLayout Judges={data.Judges} />
+            <JudgeLayout judges={data.judge} />
           </TabsContent>
         </Tabs>
       </div>

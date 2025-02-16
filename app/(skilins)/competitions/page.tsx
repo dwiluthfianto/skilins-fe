@@ -49,12 +49,12 @@ export default function CompetitionPage() {
             </div>
           </div>
         </div>
-        <div className='w-full grid gap-2 grid-cols-2  lg:grid-cols-4'>
+        <div className='w-full grid gap-2 grid-cols-3'>
           {competitions?.map((item: any) => {
             return (
-              <div className='pl-[20px] max-w-[352px]' key={item.uuid}>
+              <div className='pl-[20px] max-w-[520px]' key={item.uuid}>
                 <a
-                  href={`competitions/${item.type.toLowerCase()}/${item.slug}`}
+                  href={`competitions/${item.type}/${item.slug}`}
                   className='group flex flex-col justify-between'
                 >
                   <div>

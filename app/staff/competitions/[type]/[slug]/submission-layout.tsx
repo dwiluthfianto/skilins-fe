@@ -18,18 +18,18 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import DeleteDialog from '@/components/staff-panel/delete-dialog';
-import approvedialog from '@/components/staff-panel/approve-dialog';
+import ApproveDialog from '@/components/staff-panel/approve-dialog';
 import RejectDialog from '@/components/staff-panel/reject-dialog';
 
 interface SubmissionProps {
   onUpdateStatus: (status: string) => void;
   status: string;
-  Submissions: [];
+  submissions: any[];
 }
 
 const SubmissionLayout: FC<SubmissionProps> = ({
   onUpdateStatus,
-  Submissions,
+  submissions,
   status,
 }) => {
   const [approveOpen, setApproveOpen] = useState(false);
@@ -74,18 +74,18 @@ const SubmissionLayout: FC<SubmissionProps> = ({
         </Button>
       </div>
       <div className='w-full grid gap-2 grid-cols-2 md:grid-cols-5'>
-        {Submissions.map((item: any) => {
+        {submissions.map((item: any) => {
           return (
             <div className='relative' key={item.content.slug}>
               {' '}
-              {item.content.type === 'AUDIO' ? (
+              {item.content.type === 'audio' ? (
                 <ContentCard
                   href={`/staff/student-works/audio-podcasts/${item.content.slug}`}
                   variant='audio'
                   imageSrc={item.content.thumbnail}
                   title={item.content.title}
                 />
-              ) : item.content.type === 'VIDEO' ? (
+              ) : item.content.type === 'video' ? (
                 <ContentCard
                   href={`/staff/student-works/video-podcasts/${item.content.slug}`}
                   variant='video'
@@ -134,7 +134,7 @@ const SubmissionLayout: FC<SubmissionProps> = ({
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-              <approvedialog
+              <ApproveDialog
                 open={approveOpen}
                 onOpenChange={setApproveOpen}
                 pathApi={`/competitions/submissions/${item.uuid}`}

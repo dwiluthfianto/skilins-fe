@@ -29,13 +29,32 @@ import { Input } from '@/components/ui/input';
 import { AutosizeTextarea } from '@/components/autosize-textarea';
 import MinimalTiptapOne from '@/components/minimal-tiptap/minimal-tiptap-one';
 import FileUploader from '@/components/file-uploader';
-import { useUser } from '@/hooks/use-user';
 import { ContentLayout } from '@/components/user-panel/content-layout';
+import {
+  MAX_DOCUMENT_SIZE,
+  MAX_IMAGE_SIZE,
+  VALID_DOCUMENT_TYPES,
+  VALID_IMAGE_TYPES,
+} from '@/lib/file-validation';
+import { handleAxiosError } from '@/utils/handle-axios-error';
+import {
+  GuidedFormLayout,
+  useGuidedField,
+} from '@/components/form-guidance/guided-form-layout';
+import { PRAKERIN_TOOLTIPS } from '@/lib/tooltips';
+
 const ContentSchema = z.object({
   title: z
     .string()
     .min(5, { message: 'Title must be longer than or equal to 5 characters' }),
-  thumbnail: z.instanceof(File).optional().nullable(),
+  thumbnail: z
+    .instanceof(File)
+    .refine((file) => file && VALID_IMAGE_TYPES.includes(file.type), {
+      message: 'Invalid image file type',
+    })
+    .refine((file) => file.size <= MAX_IMAGE_SIZE, {
+      message: 'File size must be less than 2MB',
+    }),
   description: z.string().min(1, { message: 'Description is required.' }),
   tags: z
     .array(
@@ -50,7 +69,14 @@ const ContentSchema = z.object({
     .number()
     .min(1, { message: 'Duration must be greater than 0.' })
     .nonnegative(),
-  file: z.instanceof(File),
+  file: z
+    .instanceof(File)
+    .refine((file) => file && VALID_DOCUMENT_TYPES.includes(file.type), {
+      message: 'Invalid document file type',
+    })
+    .refine((file) => file.size <= MAX_DOCUMENT_SIZE, {
+      message: 'File size must be less than 5MB',
+    }),
 });
 
 export default function PrakerinSubmission() {
@@ -78,8 +104,6 @@ export default function PrakerinSubmission() {
 
   const { categories, isLoading } = useCategorySearch(form.watch('category'));
 
-  const { user } = useUser();
-
   async function onSubmit(data: z.infer<typeof ContentSchema>) {
     setLoading(true);
 
@@ -93,7 +117,6 @@ export default function PrakerinSubmission() {
     formData.append('prakerinData[category_name]', data.category);
     formData.append('prakerinData[pages]', String(data.pages));
     if (file) formData.append('file', file);
-    if (user) formData.append('prakerinData[author_uuid]', user?.data.uuid);
     formData.append('prakerinData[tags]', JSON.stringify(data.tags));
 
     try {
@@ -122,7 +145,7 @@ export default function PrakerinSubmission() {
 
   return (
     <ContentLayout title=''>
-      <div className='max-w-4xl mx-auto'>
+      <GuidedFormLayout tooltips={PRAKERIN_TOOLTIPS}>
         <h1 className='font-semibold mb-4'>Create Submission</h1>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -134,7 +157,9 @@ export default function PrakerinSubmission() {
                     name='thumbnail'
                     render={() => (
                       <ImageUploader
-                        onChange={(file) => form.setValue('thumbnail', file)}
+                        onChange={(file) =>
+                          file && form.setValue('thumbnail', file)
+                        }
                         ratioImage={3 / 4}
                       />
                     )}
@@ -147,6 +172,7 @@ export default function PrakerinSubmission() {
                         <FormControl>
                           <AutosizeTextarea
                             {...field}
+                            {...useGuidedField('title')}
                             placeholder='New prakerin title here...'
                             className='outline-none w-full text-4xl p-0 border-none  shadow-none focus-visible:ring-0  font-bold placeholder:text-slate-700 h-full resize-none overflow-hidden '
                           />
@@ -160,7 +186,7 @@ export default function PrakerinSubmission() {
                     control={form.control}
                     name='category'
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem {...useGuidedField('category')}>
                         <FormControl>
                           <AutoComplete
                             selectedValue={form.watch('category')}
@@ -184,7 +210,7 @@ export default function PrakerinSubmission() {
                     control={form.control}
                     name='tags'
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem {...useGuidedField('tags')}>
                         <FormControl>
                           <TagInput
                             {...field}
@@ -222,7 +248,7 @@ export default function PrakerinSubmission() {
                   control={form.control}
                   name='description'
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem {...useGuidedField('description')}>
                       <FormControl>
                         <MinimalTiptapOne
                           {...field}
@@ -265,7 +291,7 @@ export default function PrakerinSubmission() {
                     control={form.control}
                     name='pages'
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem {...useGuidedField('pages')}>
                         <FormLabel className='font-normal text-base text-muted-foreground'>
                           Pages
                         </FormLabel>
@@ -295,7 +321,7 @@ export default function PrakerinSubmission() {
             </Button>
           </form>
         </Form>
-      </div>
+      </GuidedFormLayout>
     </ContentLayout>
   );
 }

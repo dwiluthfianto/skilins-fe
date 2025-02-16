@@ -13,9 +13,10 @@ import { Error } from '@/components/error';
 export default function JudgeDashboard() {
   const [scored, setScored] = useState(true);
   const { judge } = useJudgeUser();
+
   const { data, summary, isLoading, isError } = useJudgeSubmission(
     scored,
-    judge && judge?.Judges[0].competition.uuid
+    judge && judge.judge.competition.uuid
   );
   if (isLoading) return <Loading />;
   if (isError) return <Error />;
@@ -31,9 +32,7 @@ export default function JudgeDashboard() {
               <BadgeCheck className='h-4 w-4' />
             </CardHeader>
             <CardContent>
-              <div className='text-2xl font-bold'>
-                {summary.scoredSubmissions}
-              </div>
+              <div className='text-2xl font-bold'>{summary.scored}</div>
             </CardContent>
           </Card>
           <Card>
@@ -44,9 +43,7 @@ export default function JudgeDashboard() {
               <Badge className='h-4 w-4' />
             </CardHeader>
             <CardContent>
-              <div className='text-2xl font-bold'>
-                {summary.unscoredSubmissions}
-              </div>
+              <div className='text-2xl font-bold'>{summary.unscored}</div>
             </CardContent>
           </Card>
           <Card>
@@ -57,9 +54,7 @@ export default function JudgeDashboard() {
               <BadgePercent className='h-4 w-4' />
             </CardHeader>
             <CardContent>
-              <div className='text-2xl font-bold'>
-                {summary.totalSubmissions}
-              </div>
+              <div className='text-2xl font-bold'>{summary.total}</div>
             </CardContent>
           </Card>
           <Card>
@@ -71,7 +66,7 @@ export default function JudgeDashboard() {
             </CardHeader>
             <CardContent>
               <div className='text-2xl font-bold'>
-                {format(summary.deadlineJudge.end_date, 'dd MMM yyyy')}
+                {format(summary.deadline.end_date, 'dd MMM yyyy')}
               </div>
             </CardContent>
           </Card>
@@ -92,7 +87,7 @@ export default function JudgeDashboard() {
         </div>
         <div className='w-full grid gap-2 grid-cols-2 md:grid-cols-4 lg:grid-cols-6'>
           {data.map((item: any) => {
-            return item.competition.type === 'AUDIO' ? (
+            return item.competition.type === 'audio' ? (
               <ContentCard
                 key={item.content.slug}
                 href={`/judge/audio-podcasts/${item.content.slug}`}
@@ -100,7 +95,7 @@ export default function JudgeDashboard() {
                 imageSrc={item.content.thumbnail}
                 title={item.content.title}
               />
-            ) : item.competition.type === 'VIDEO' ? (
+            ) : item.competition.type === 'video' ? (
               <ContentCard
                 key={item.content.slug}
                 href={`/judge/video-podcasts/${item.content.slug}`}

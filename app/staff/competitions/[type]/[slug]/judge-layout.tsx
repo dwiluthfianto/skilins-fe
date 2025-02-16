@@ -7,10 +7,10 @@ import Link from 'next/link';
 import { FC } from 'react';
 
 interface JudgeProps {
-  Judges: [];
+  judges: any[];
 }
 
-const JudgeLayout: FC<JudgeProps> = ({ Judges }) => {
+const JudgeLayout: FC<JudgeProps> = ({ judges }) => {
   return (
     <section className='py-6'>
       <div className='container flex flex-col items-center text-center gap-4'>
@@ -30,7 +30,7 @@ const JudgeLayout: FC<JudgeProps> = ({ Judges }) => {
         </div>
       </div>
       <div className='container mt-16 grid gap-x-12 gap-y-16 md:grid-cols-2 lg:grid-cols-4'>
-        {Judges.map((judge: any) => (
+        {judges.map((judge: any) => (
           <div className='flex flex-col items-start' key={judge.uuid}>
             <Avatar className='size-20 lg:size-24'>
               <AvatarImage src={judge.user.profile} />

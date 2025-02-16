@@ -30,15 +30,32 @@ import { AutosizeTextarea } from '@/components/autosize-textarea';
 import { useGenre } from '@/hooks/use-genre';
 import MinimalTiptapOne from '@/components/minimal-tiptap/minimal-tiptap-one';
 import FileUploader from '@/components/file-uploader';
-import { useUser } from '@/hooks/use-user';
 import { ContentLayout } from '@/components/user-panel/content-layout';
 import { handleAxiosError } from '@/utils/handle-axios-error';
+import {
+  MAX_IMAGE_SIZE,
+  VALID_IMAGE_TYPES,
+  VALID_AUDIO_TYPES,
+  MAX_AUDIO_SIZE,
+} from '@/lib/file-validation';
+import {
+  GuidedFormLayout,
+  useGuidedField,
+} from '@/components/form-guidance/guided-form-layout';
+import { AUDIO_PODCAST_TOOLTIPS } from '@/lib/tooltips';
 
 const ContentSchema = z.object({
   title: z
     .string()
     .min(5, { message: 'Title must be longer than or equal to 5 characters' }),
-  thumbnail: z.instanceof(File).optional().nullable(),
+  thumbnail: z
+    .instanceof(File)
+    .refine((file) => file && VALID_IMAGE_TYPES.includes(file.type), {
+      message: 'Invalid image file type',
+    })
+    .refine((file) => file.size <= MAX_IMAGE_SIZE, {
+      message: 'File size must be less than 2MB',
+    }),
   description: z.string().min(1, { message: 'Description is required.' }),
   tags: z
     .array(
@@ -53,7 +70,14 @@ const ContentSchema = z.object({
     .number()
     .min(1, { message: 'Duration must be greater than 0.' })
     .nonnegative(),
-  file: z.instanceof(File),
+  file: z
+    .instanceof(File)
+    // .refine((file) => file && VALID_AUDIO_TYPES.includes(file.type), {
+    //   message: 'Invalid audio file type',
+    // })
+    .refine((file) => file.size <= MAX_AUDIO_SIZE, {
+      message: 'File size must be less than 15MB',
+    }),
   genres: z
     .array(
       z.object({
@@ -91,14 +115,12 @@ export default function AudioSubmission() {
 
   const { categories, isLoading } = useCategorySearch(form.watch('category'));
 
-  const { user } = useUser();
-
   async function onSubmit(data: z.infer<typeof ContentSchema>) {
     setLoading(true);
 
     const formData = new FormData();
     formData.append('competition_slug', params.slug);
-    formData.append('type', params.type.toUpperCase());
+    formData.append('type', params.type);
 
     if (data.thumbnail) formData.append('thumbnail', data.thumbnail);
     formData.append('audioData[title]', data.title);
@@ -107,7 +129,6 @@ export default function AudioSubmission() {
     formData.append('audioData[category_name]', data.category);
     formData.append('audioData[duration]', String(data.duration));
     if (file) formData.append('file', file);
-    if (user) formData.append('audioData[creator_uuid]', user?.data.uuid);
     formData.append('audioData[tags]', JSON.stringify(data.tags));
 
     try {
@@ -136,7 +157,7 @@ export default function AudioSubmission() {
 
   return (
     <ContentLayout title=''>
-      <div className='max-w-4xl mx-auto'>
+      <GuidedFormLayout tooltips={AUDIO_PODCAST_TOOLTIPS}>
         <h1 className='font-semibold mb-4'>Create Submission</h1>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -148,7 +169,9 @@ export default function AudioSubmission() {
                     name='thumbnail'
                     render={() => (
                       <ImageUploader
-                        onChange={(file) => form.setValue('thumbnail', file)}
+                        onChange={(file) =>
+                          file && form.setValue('thumbnail', file)
+                        }
                         ratioImage={1 / 1}
                       />
                     )}
@@ -161,6 +184,7 @@ export default function AudioSubmission() {
                         <FormControl>
                           <AutosizeTextarea
                             {...field}
+                            {...useGuidedField('title')}
                             placeholder='New audio title here...'
                             className='outline-none w-full text-4xl p-0 border-none  shadow-none focus-visible:ring-0  font-bold placeholder:text-slate-700 h-full resize-none overflow-hidden '
                           />
@@ -174,7 +198,7 @@ export default function AudioSubmission() {
                     control={form.control}
                     name='category'
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem {...useGuidedField('category')}>
                         <FormControl>
                           <AutoComplete
                             selectedValue={form.watch('category')}
@@ -198,7 +222,7 @@ export default function AudioSubmission() {
                     control={form.control}
                     name='tags'
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem {...useGuidedField('tags')}>
                         <FormControl>
                           <TagInput
                             {...field}
@@ -236,7 +260,7 @@ export default function AudioSubmission() {
                   control={form.control}
                   name='description'
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem {...useGuidedField('description')}>
                       <FormControl>
                         <MinimalTiptapOne
                           {...field}
@@ -257,7 +281,7 @@ export default function AudioSubmission() {
                     control={form.control}
                     name='tags'
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem {...useGuidedField('genres')}>
                         <FormControl>
                           <TagInput
                             {...field}
@@ -320,7 +344,7 @@ export default function AudioSubmission() {
                     control={form.control}
                     name='duration'
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem {...useGuidedField('duration')}>
                         <FormLabel className='font-normal text-base text-muted-foreground'>
                           Duration
                         </FormLabel>
@@ -353,7 +377,7 @@ export default function AudioSubmission() {
             </Button>
           </form>
         </Form>
-      </div>
+      </GuidedFormLayout>
     </ContentLayout>
   );
 }

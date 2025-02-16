@@ -3,13 +3,6 @@
 import Image from 'next/image';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { format } from 'date-fns';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
@@ -30,12 +23,20 @@ import FeedbackJudge from '@/components/judge-panel/feedback';
 import { useState } from 'react';
 import JudgeAudioPlayer from '@/components/judge-panel/judge-audio-player';
 import { Loading } from '@/components/loading';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import {
+  DialogTitle,
+  DialogHeader,
+  DialogContent,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Dialog } from '@/components/ui/dialog';
+
 export default function AudioDetail({ params }: any) {
   const { slug } = params;
   const { audio, isLoading: audioLoading } = useAudioBySlug(slug);
   const [hasPlayed, setHasPlayed] = useState(false);
 
-  if (audioLoading) return <Loading />;
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
@@ -43,18 +44,20 @@ export default function AudioDetail({ params }: any) {
   };
 
   const track = {
-    src: audio.file,
-    title: audio.title,
-    category: audio.category,
-    image: audio.thumbnail,
-    creator: audio.creator,
+    src: audio?.audio_podcast.file_attachment.file,
+    title: audio?.title,
+    category: audio?.category.name,
+    image: audio?.thumbnail,
+    creator: audio?.audio_podcast.creator.name,
   };
+
+  if (audioLoading) return <Loading />;
 
   return (
     <ContentLayout>
       <section className='md:py-2'>
         <div className='md:container'>
-          <Breadcrumb>
+          <Breadcrumb className='mb-6'>
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
@@ -64,7 +67,7 @@ export default function AudioDetail({ params }: any) {
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href='/audio-podcasts'>audios</Link>
+                  <Link href='/audio-podcasts'>Audio</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
@@ -73,136 +76,119 @@ export default function AudioDetail({ params }: any) {
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
-          {hasPlayed ? (
-            <FeedbackJudge
-              submissionUuid={audio.submission_uuid}
-              competitionUuid={audio.competition_uuid}
-            />
-          ) : (
-            ''
-          )}
-          <div className='grid grid-cols-1  md:grid-cols-4 mt-8 gap-y-6  md:gap-8'>
+
+          <div className='grid grid-cols-1 md:grid-cols-4 mt-8 gap-y-6 md:gap-8'>
             <div className='relative'>
               <AspectRatio ratio={1 / 1}>
                 <Image
                   src={audio.thumbnail}
-                  alt='placeholder'
-                  layout='fill'
-                  objectFit='cover'
-                  objectPosition='center'
-                  className='rounded-lg '
+                  alt={audio.title}
+                  fill
+                  className='rounded-lg object-cover'
                 />
               </AspectRatio>
               <JudgeAudioPlayer data={track} onHasCheck={setHasPlayed} />
             </div>
-            <div className='col-span-3 '>
-              <Card className='rounded-lg '>
-                <CardContent className='p-6'>
-                  <p className='text-lg text-muted-foreground'>
-                    {audio.creator}
-                  </p>
-                  <h2 className='text-3xl font-medium text-balance md:text-5xl'>
-                    {audio.title}
-                  </h2>
-                  <p className='max-w-xl mt-1 text-lg font-medium leading-relaxed tracking-tight md:mt-6 text lg:max-w-xl'>
-                    Description
-                  </p>
-                  <MinimalTiptapPreview
-                    value={audio.description}
-                    editable={false}
-                  />
 
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button
-                        variant='link'
-                        className='flex items-center w-full'
-                      >
-                        See more
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className='sm:max-w-[425px] md:max-w-[600px]'>
-                      <DialogHeader>
-                        <DialogTitle className='items-center justify-center text-center'>
-                          Description
-                        </DialogTitle>
-                      </DialogHeader>
-                      <ScrollArea className='max-h-[600px] pr-4'>
-                        <MinimalTiptapPreview
-                          value={audio.description}
-                          editable={false}
-                        />
-                      </ScrollArea>
-                    </DialogContent>
-                  </Dialog>
-                  <div className='flex flex-col items-start gap-4 py-4 lg:py-8'>
-                    <div className='flex flex-col gap-2'>
-                      <p className='max-w-xl text-lg font-medium leading-relaxed tracking-tight lg:max-w-xl'>
-                        Detail Audio
+            <div className='col-span-3 space-y-8'>
+              {!hasPlayed && (
+                <Alert variant='destructive'>
+                  <AlertDescription>
+                    Please listen to the entire audio before making an
+                    assessment
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              <Card>
+                <CardContent className='p-6 space-y-6'>
+                  <div className='space-y-2'>
+                    <h1 className='text-3xl font-bold'>{audio.title}</h1>
+                    <p className='text-lg text-muted-foreground'>
+                      {audio.audio_podcast.creator.name}
+                    </p>
+                  </div>
+
+                  <div className='space-y-4'>
+                    <h3 className='text-xl font-semibold'>Description</h3>
+                    <MinimalTiptapPreview
+                      value={audio.description}
+                      editable={false}
+                    />
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button
+                          variant='link'
+                          className='flex w-full items-center'
+                        >
+                          See more
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className='sm:max-w-[425px] md:max-w-[600px]'>
+                        <DialogHeader>
+                          <DialogTitle className='text-center justify-center items-center'>
+                            Description
+                          </DialogTitle>
+                        </DialogHeader>
+                        <ScrollArea className='max-h-[600px] pr-4'>
+                          <MinimalTiptapPreview
+                            value={audio.description}
+                            editable={false}
+                          />
+                        </ScrollArea>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+
+                  <div className='grid grid-cols-2 md:grid-cols-3 gap-4'>
+                    <div className='space-y-1'>
+                      <p className='text-sm text-muted-foreground'>Category</p>
+                      <p className='font-medium'>{audio.category.name}</p>
+                    </div>
+                    <div className='space-y-1'>
+                      <p className='text-sm text-muted-foreground'>Duration</p>
+                      <p className='font-medium'>
+                        {formatTime(audio.audio_podcast.duration)}
                       </p>
                     </div>
-                    <div className='flex flex-col w-full'>
-                      <div className='grid items-start grid-cols-2 gap-4 lg:grid-cols-3'>
-                        <div className='flex flex-row items-start w-full gap-6'>
-                          <div className='flex flex-col gap-1'>
-                            <p className='text-sm text-muted-foreground'>
-                              Category
-                            </p>
-                            <p>{audio.category}</p>
-                          </div>
-                        </div>
-                        <div className='flex flex-row items-start gap-6'>
-                          <div className='flex flex-col gap-1'>
-                            <p className='text-sm text-muted-foreground'>
-                              Duration
-                            </p>
-                            <p>{formatTime(audio.duration)} </p>
-                          </div>
-                        </div>
-                        <div className='flex flex-row items-start gap-6'>
-                          <div className='flex flex-col gap-1'>
-                            <p className='text-sm text-muted-foreground'>
-                              Release Date
-                            </p>
-                            <p>{format(audio.created_at, 'dd MMM yyyy')}</p>
-                          </div>
-                        </div>
-                        <div className='flex flex-row items-start gap-6'>
-                          <div className='flex flex-col gap-1'>
-                            <p className='text-sm text-muted-foreground'>
-                              Genres
-                            </p>
-                            <p>
-                              {audio.genres.map((genre: any, index: number) => (
-                                <Badge key={index} className='mr-2'>
-                                  {genre.text}
-                                </Badge>
-                              ))}
-                            </p>
-                          </div>
-                        </div>
-                        <div className='flex flex-row items-start gap-6'>
-                          <div className='flex flex-col gap-1'>
-                            <p className='text-sm text-muted-foreground'>
-                              Tags
-                            </p>
-                            <p>
-                              {audio.tags.map((tag: any, index: number) => (
-                                <Badge
-                                  key={index}
-                                  className='items-center mr-2'
-                                >
-                                  #{tag.text}
-                                </Badge>
-                              ))}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
+                    <div className='space-y-1'>
+                      <p className='text-sm text-muted-foreground'>
+                        Release Date
+                      </p>
+                      <p className='font-medium'>
+                        {format(audio.created_at, 'dd MMM yyyy')}
+                      </p>
+                    </div>
+                    <div className='space-y-1'>
+                      <p className='text-sm text-muted-foreground'>Genre</p>
+                      <p className='font-medium'>
+                        {audio.genre.map((genre: any) => (
+                          <Badge key={genre.text} variant='secondary'>
+                            {genre.text}
+                          </Badge>
+                        ))}
+                      </p>
+                    </div>
+                    <div className='space-y-1'>
+                      <p className='text-sm text-muted-foreground'>Tag</p>
+                      <p className='font-medium'>
+                        {audio.tag.map((tag: any) => (
+                          <Badge key={tag.text} variant='secondary'>
+                            #{tag.text}
+                          </Badge>
+                        ))}
+                      </p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
+
+              {hasPlayed && (
+                <FeedbackJudge
+                  submissionUuid={audio.submission.uuid}
+                  competitionUuid={audio.submission.competition.uuid}
+                />
+              )}
             </div>
           </div>
         </div>

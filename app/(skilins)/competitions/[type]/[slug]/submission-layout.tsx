@@ -5,10 +5,10 @@ import { Send } from 'lucide-react';
 import { FC } from 'react';
 
 interface SubmissionProps {
-  Submissions: [];
+  submissions: any[];
 }
 
-const SubmissionLayout: FC<SubmissionProps> = ({ Submissions }) => {
+const SubmissionLayout: FC<SubmissionProps> = ({ submissions }) => {
   return (
     <section className='w-full py-6'>
       <div className='container mx-auto'>
@@ -28,8 +28,8 @@ const SubmissionLayout: FC<SubmissionProps> = ({ Submissions }) => {
         </div>
       </div>
       <div className='w-full grid gap-2 grid-cols-2 md:grid-cols-4 lg:grid-cols-6 py-8'>
-        {Submissions.map((item: any) => {
-          return item.content.type === 'AUDIO' ? (
+        {submissions.map((item: any) => {
+          return item.content.type === 'audio' ? (
             <ContentCard
               key={item.content.slug}
               href={`/audio-podcasts/${item.content.slug}`}
@@ -37,7 +37,7 @@ const SubmissionLayout: FC<SubmissionProps> = ({ Submissions }) => {
               imageSrc={item.content.thumbnail}
               title={item.content.title}
             />
-          ) : item.content.type === 'VIDEO' ? (
+          ) : item.content.type === 'video' ? (
             <ContentCard
               key={item.content.slug}
               href={`/video-podcasts/${item.content.slug}`}

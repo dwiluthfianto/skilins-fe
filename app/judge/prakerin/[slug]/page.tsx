@@ -13,14 +13,6 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -37,25 +29,6 @@ export default async function ReportDetail({ params }: any) {
     <ContentLayout>
       <section className='md:py-2'>
         <div className='md:container'>
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link href='/'>Home</Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link href='/reports'>reports</Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>{report.title}</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
           <div className='grid grid-cols-1 md:grid-cols-4 mt-8 gap-y-6 md:gap-8 lg:gap-10'>
             <div>
               <AspectRatio ratio={3 / 4}>
@@ -150,27 +123,10 @@ export default async function ReportDetail({ params }: any) {
                         <div className='flex flex-row gap-6 items-start'>
                           <div className='flex flex-col gap-1'>
                             <p className='text-muted-foreground text-sm'>
-                              Subjects
-                            </p>
-                            <p>
-                              {report.subjects.map(
-                                (subject: any, index: number) => (
-                                  <Badge key={index} className='mr-2'>
-                                    {subject}
-                                  </Badge>
-                                )
-                              )}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className='flex flex-row gap-6 items-start'>
-                          <div className='flex flex-col gap-1'>
-                            <p className='text-muted-foreground text-sm'>
                               Tags
                             </p>
                             <p>
-                              {report.tags.map((tag: any, index: number) => (
+                              {report.tag.map((tag: any, index: number) => (
                                 <Badge key={index} className='mr-2'>
                                   {tag.name}
                                 </Badge>
@@ -189,31 +145,4 @@ export default async function ReportDetail({ params }: any) {
       </section>
     </ContentLayout>
   );
-}
-
-export async function generateStaticParams() {
-  let page = 1;
-  const limit = 25;
-  let allreports: any[] = [];
-  let hasMore = true;
-
-  // Lakukan fetching hingga tidak ada lagi data yang dikembalikan
-  while (hasMore) {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/contents/reports?page=${page}&limit=${limit}`
-    );
-    const data = await res.json();
-    const reports = data?.data || [];
-
-    // Gabungkan data dari halaman saat ini
-    allreports = allreports.concat(reports);
-
-    // Cek apakah data masih ada di halaman berikutnya
-    hasMore = reports.length === limit;
-    page++;
-  }
-
-  return allreports.map((report: any) => ({
-    slug: report.uuid,
-  }));
 }

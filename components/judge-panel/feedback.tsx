@@ -32,6 +32,7 @@ import { AutosizeTextarea } from '../autosize-textarea';
 import { useEvaluationParameter, useJudgeUser } from '@/hooks/use-judge';
 import { ScrollArea } from '../ui/scroll-area';
 import { handleAxiosError } from '@/utils/handle-axios-error';
+import { Loading } from '../loading';
 const FeedbackSchema = z.object({
   parameter_scores: z.array(
     z.object({
@@ -51,11 +52,18 @@ const FeedbackJudge: FC<FeedbackJudgeProps> = ({
   competitionUuid,
   submissionUuid,
 }) => {
-  const { parameters, isLoading } = useEvaluationParameter(competitionUuid);
+  const { parameters, parameter_scores, isLoading } =
+    useEvaluationParameter(competitionUuid);
+  const parameterScores = parameter_scores?.map((param: any) => ({
+    parameter_uuid: param.parameter.uuid,
+    notes: param.notes,
+    score: param.score,
+  }));
+
   const form = useForm<z.infer<typeof FeedbackSchema>>({
     resolver: zodResolver(FeedbackSchema),
     defaultValues: {
-      parameter_scores: [],
+      parameter_scores: parameterScores || [],
     },
   });
   const [loading, setLoading] = useState(false);
@@ -65,11 +73,7 @@ const FeedbackJudge: FC<FeedbackJudgeProps> = ({
   useEffect(() => {
     if (parameters) {
       form.reset({
-        parameter_scores: parameters.map((param: any) => ({
-          parameter_uuid: param.uuid,
-          notes: '',
-          score: 0,
-        })),
+        parameter_scores: parameterScores,
       });
     }
   }, [parameters, form]);
@@ -97,7 +101,7 @@ const FeedbackJudge: FC<FeedbackJudgeProps> = ({
     }
   }
 
-  if (isLoading) return <h1>loading</h1>;
+  if (isLoading) return <Loading />;
 
   return (
     <Dialog>
@@ -121,7 +125,7 @@ const FeedbackJudge: FC<FeedbackJudgeProps> = ({
                   name={`parameter_scores.${index}.score`}
                   render={({ field }) => (
                     <FormItem className='p-4'>
-                      <FormLabel>{param.parameterName}</FormLabel>
+                      <FormLabel>{param.parameter_name}</FormLabel>
                       <FormControl>
                         <CommentRatings
                           rating={field.value}
@@ -140,7 +144,7 @@ const FeedbackJudge: FC<FeedbackJudgeProps> = ({
                         name={`parameter_scores.${index}.notes`}
                         render={({ field }) => (
                           <AutosizeTextarea
-                            placeholder={`Notes for ${param.parameterName}`}
+                            placeholder={`Notes for ${param.parameter_name}`}
                             {...field}
                           />
                         )}
