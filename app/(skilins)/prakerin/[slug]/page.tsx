@@ -26,6 +26,32 @@ import { Card, CardContent } from '@/components/ui/card';
 import { BookText } from 'lucide-react';
 import FeedbackComponent from '@/components/skilins/features/feedback';
 import MinimalTiptapPreview from '@/components/minimal-tiptap/minimal-tiptap-preview';
+import { Metadata } from 'next';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string };
+}): Promise<Metadata> {
+  const res = await axios.get(`/contents/prakerin/${params.slug}`);
+  const prakerin = res.data.data;
+
+  return {
+    title: prakerin.title,
+    description: prakerin.description,
+    openGraph: {
+      title: prakerin.title,
+      description: prakerin.description,
+      images: [
+        {
+          url: prakerin.thumbnail,
+        },
+      ],
+      url: `${process.env.NEXT_PUBLIC_FRONTEND_URL}/prakerin/${prakerin.uuid}`,
+    },
+  };
+}
+
 export default async function ReportDetail({ params }: any) {
   const { slug } = params;
 
