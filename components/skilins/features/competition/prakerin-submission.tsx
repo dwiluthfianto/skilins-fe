@@ -2,14 +2,12 @@
 
 import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Tag, TagInput } from 'emblor';
 import { Button } from '@/components/ui/button';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from '@/utils/axios';
 import { toast } from '@/hooks/use-toast';
-import { AxiosError } from 'axios';
 import {
   Form,
   FormControl,
@@ -22,9 +20,6 @@ import ImageUploader from '@/components/imageUploader';
 import { useParams, useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
-import { useTag } from '@/hooks/use-tag';
-import { AutoComplete } from '@/components/autocomplete';
-import { useCategorySearch } from '@/hooks/use-category';
 import { Input } from '@/components/ui/input';
 import { AutosizeTextarea } from '@/components/autosize-textarea';
 import MinimalTiptapOne from '@/components/minimal-tiptap/minimal-tiptap-one';
@@ -56,15 +51,6 @@ const ContentSchema = z.object({
       message: 'File size must be less than 2MB',
     }),
   description: z.string().min(1, { message: 'Description is required.' }),
-  tags: z
-    .array(
-      z.object({
-        id: z.string(),
-        text: z.string(),
-      })
-    )
-    .optional(),
-  category: z.string().min(1, { message: 'Category is required.' }),
   pages: z
     .number()
     .min(1, { message: 'Duration must be greater than 0.' })
@@ -86,42 +72,32 @@ export default function PrakerinSubmission() {
       title: '',
       thumbnail: undefined,
       description: '',
-      category: '',
       pages: 0,
       file: undefined,
-      tags: [],
     },
   });
-  const { autocompleteTags } = useTag();
-
-  const [tags, setTags] = useState<Tag[]>([]);
-  const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
 
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
   const params = useParams<{ type: string; slug: string }>();
 
-  const { categories, isLoading } = useCategorySearch(form.watch('category'));
-
   async function onSubmit(data: z.infer<typeof ContentSchema>) {
     setLoading(true);
 
     const formData = new FormData();
     formData.append('competition_slug', params.slug);
-    formData.append('type', params.type.toUpperCase());
+    formData.append('type', params.type);
 
     if (data.thumbnail) formData.append('thumbnail', data.thumbnail);
     formData.append('prakerinData[title]', data.title);
     formData.append('prakerinData[description]', data.description);
-    formData.append('prakerinData[category_name]', data.category);
     formData.append('prakerinData[pages]', String(data.pages));
     if (file) formData.append('file', file);
-    formData.append('prakerinData[tags]', JSON.stringify(data.tags));
 
     try {
       const { data: contentData } = await axios.post(
-        '/competitions/submit',
+        '/competitions/submissions/submit',
         formData,
         {
           headers: {
@@ -175,68 +151,6 @@ export default function PrakerinSubmission() {
                             {...useGuidedField('title')}
                             placeholder='New prakerin title here...'
                             className='outline-none w-full text-4xl p-0 border-none  shadow-none focus-visible:ring-0  font-bold placeholder:text-slate-700 h-full resize-none overflow-hidden '
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Separator />
-                  <FormField
-                    control={form.control}
-                    name='category'
-                    render={({ field }) => (
-                      <FormItem {...useGuidedField('category')}>
-                        <FormControl>
-                          <AutoComplete
-                            selectedValue={form.watch('category')}
-                            onSelectedValueChange={(value) =>
-                              field.onChange(value)
-                            }
-                            searchValue={field.value}
-                            onSearchValueChange={field.onChange}
-                            items={categories ?? []}
-                            isLoading={isLoading}
-                            placeholder='Category name here...'
-                            emptyMessage='No category found.'
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Separator />
-                  <FormField
-                    control={form.control}
-                    name='tags'
-                    render={({ field }) => (
-                      <FormItem {...useGuidedField('tags')}>
-                        <FormControl>
-                          <TagInput
-                            {...field}
-                            tags={tags}
-                            setTags={(newTags) => {
-                              setTags(newTags);
-                              form.setValue('tags', newTags as [Tag, ...Tag[]]);
-                            }}
-                            placeholder='Add up to 4 tags...'
-                            styleClasses={{
-                              input:
-                                'w-full h-fit outline-none border-none shadow-none  text-base p-0',
-                              inlineTagsContainer: 'border-none p-0',
-                              autoComplete: {
-                                command: '[&>div]:border-none',
-                                popoverContent: 'p-4',
-                                commandList: 'list-none',
-                                commandGroup: 'font-bold',
-                              },
-                            }}
-                            activeTagIndex={activeTagIndex}
-                            setActiveTagIndex={setActiveTagIndex}
-                            enableAutocomplete={true}
-                            autocompleteOptions={autocompleteTags}
-                            restrictTagsToAutocompleteOptions={true}
-                            maxTags={4}
                           />
                         </FormControl>
                         <FormMessage />

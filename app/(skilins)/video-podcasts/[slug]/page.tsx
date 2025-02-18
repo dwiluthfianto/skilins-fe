@@ -25,6 +25,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import FeedbackComponent from '@/components/skilins/features/feedback';
 import { Metadata } from 'next';
+import MinimalTiptapPreview from '@/components/minimal-tiptap/minimal-tiptap-preview';
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -39,7 +40,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const video = res.data;
 
   return {
-    title: `${video.title} - ${video.creator} | skilins.`,
+    title: `${video.title} - ${video.video_podcast.creator.name} | skilins.`,
     openGraph: {
       images: [`${video.thumbnail}`],
     },
@@ -66,7 +67,7 @@ export default async function VideoDetail({ params }: any) {
     }
   }
 
-  const embedUrl = convertToEmbedLink(video.file);
+  const embedUrl = convertToEmbedLink(video.video_podcast.link);
 
   return (
     <ContentLayout title={video.title}>
@@ -109,7 +110,7 @@ export default async function VideoDetail({ params }: any) {
               <Card className=' rounded-lg '>
                 <CardContent className='p-6'>
                   <p className=' text-lg text-muted-foreground'>
-                    {video.creator}
+                    {video.video_podcast.creator.name}
                   </p>
                   <h2 className='text-balance text-3xl font-medium md:text-5xl'>
                     {video.title}
@@ -117,9 +118,10 @@ export default async function VideoDetail({ params }: any) {
                   <p className='mt-1 md:mt-6 text text-lg max-w-xl lg:max-w-xl leading-relaxed tracking-tight font-medium'>
                     Description
                   </p>
-                  <p className='mt-1 text-muted-foreground line-clamp-3 text-justify'>
-                    {video.description}
-                  </p>
+                  <MinimalTiptapPreview
+                    value={video.description}
+                    editable={false}
+                  />
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button
@@ -136,9 +138,10 @@ export default async function VideoDetail({ params }: any) {
                         </DialogTitle>
                       </DialogHeader>
                       <ScrollArea className='max-h-[600px] pr-4'>
-                        <p className='text-justify text-muted-foreground	'>
-                          {video.description}
-                        </p>
+                        <MinimalTiptapPreview
+                          value={video.description}
+                          editable={false}
+                        />
                       </ScrollArea>
                     </DialogContent>
                   </Dialog>
@@ -155,7 +158,7 @@ export default async function VideoDetail({ params }: any) {
                             <p className='text-muted-foreground text-sm'>
                               Category
                             </p>
-                            <p>{video.category}</p>
+                            <p>{video.category.name}</p>
                           </div>
                         </div>
                         <div className='flex flex-row gap-6 items-start'>
@@ -172,7 +175,7 @@ export default async function VideoDetail({ params }: any) {
                               Subjects
                             </p>
                             <p>
-                              {video.genres.map((genre: any, index: number) => (
+                              {video.genre.map((genre: any, index: number) => (
                                 <Badge key={index} className='mr-2'>
                                   {genre.text}
                                 </Badge>
@@ -186,7 +189,7 @@ export default async function VideoDetail({ params }: any) {
                               Tags
                             </p>
                             <p>
-                              {video.tags.map((tag: any, index: number) => (
+                              {video.tag.map((tag: any, index: number) => (
                                 <Badge
                                   key={index}
                                   className='mr-2 items-center'
@@ -205,9 +208,9 @@ export default async function VideoDetail({ params }: any) {
             </div>
           </div>
           <FeedbackComponent
-            comments={video.comments}
+            comments={video.comment}
             contentUuid={video.uuid}
-            creator={video.creator}
+            creator={video.video_podcast.creator.name}
             shareUrl={`${process.env.NEXT_PUBLIC_FRONTEND_URL}/video-podcasts/${video.slug}`}
             titleContent={video.title}
             avgRating={Number(video.avg_rating)}
@@ -217,31 +220,4 @@ export default async function VideoDetail({ params }: any) {
       </section>
     </ContentLayout>
   );
-}
-
-export async function generateStaticParams() {
-  let page = 1;
-  const limit = 25;
-  let allVideos: any[] = [];
-  let hasMore = true;
-
-  // Lakukan fetching hingga tidak ada lagi data yang dikembalikan
-  while (hasMore) {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/contents/videos?page=${page}&limit=${limit}`
-    );
-    const data = await res.json();
-    const videos = data?.data || [];
-
-    // Gabungkan data dari halaman saat ini
-    allVideos = allVideos.concat(videos);
-
-    // Cek apakah data masih ada di halaman berikutnya
-    hasMore = videos.length === limit;
-    page++;
-  }
-
-  return allVideos.map((video: any) => ({
-    slug: video.uuid,
-  }));
 }

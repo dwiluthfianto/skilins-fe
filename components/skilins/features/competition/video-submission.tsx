@@ -93,14 +93,13 @@ export default function VideoCreate() {
 
   const { categories, isLoading } = useCategorySearch(form.watch('category'));
   const params = useParams<{ type: string; slug: string }>();
-  const { user } = useUser();
 
   async function onSubmit(data: z.infer<typeof ContentSchema>) {
     setLoading(true);
 
     const formData = new FormData();
     formData.append('competition_slug', params.slug);
-    formData.append('type', params.type.toUpperCase());
+    formData.append('type', params.type);
     if (data.thumbnail) formData.append('thumbnail', data.thumbnail);
     formData.append('videoData[title]', data.title);
     formData.append('videoData[description]', data.description);

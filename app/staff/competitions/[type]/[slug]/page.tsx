@@ -1,5 +1,4 @@
 'use client';
-import { ContentLayout } from '@/components/user-panel/content-layout';
 import {
   Tabs,
   TabsContent,
@@ -26,6 +25,7 @@ import { notFound } from 'next/navigation';
 import { useState } from 'react';
 import { useCompetitionDetail } from '@/hooks/use-competition';
 import { Loading } from '@/components/loading';
+import { ContentLayout } from '@/components/staff-panel/content-layout';
 
 export default function CompetitionPage({
   params,

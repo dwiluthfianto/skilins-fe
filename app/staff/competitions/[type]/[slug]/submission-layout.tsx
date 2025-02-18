@@ -75,19 +75,21 @@ const SubmissionLayout: FC<SubmissionProps> = ({
       </div>
       <div className='w-full grid gap-2 grid-cols-2 md:grid-cols-5'>
         {submissions.map((item: any) => {
+          console.log(item);
+
           return (
             <div className='relative' key={item.content.slug}>
               {' '}
               {item.content.type === 'audio' ? (
                 <ContentCard
-                  href={`/staff/student-works/audio-podcasts/${item.content.slug}`}
+                  href={`/audio-podcasts/${item.content.slug}`}
                   variant='audio'
                   imageSrc={item.content.thumbnail}
                   title={item.content.title}
                 />
               ) : item.content.type === 'video' ? (
                 <ContentCard
-                  href={`/staff/student-works/video-podcasts/${item.content.slug}`}
+                  href={`/video-podcasts/${item.content.slug}`}
                   variant='video'
                   imageSrc={item.content.thumbnail}
                   title={item.content.title}
@@ -95,7 +97,7 @@ const SubmissionLayout: FC<SubmissionProps> = ({
               ) : (
                 <ContentCard
                   className='max-w-[250px]'
-                  href={`/staff/student-works/prakerin/${item.content.slug}`}
+                  href={`/prakerin/${item.content.slug}`}
                   variant='default'
                   imageSrc={item.content.thumbnail}
                   title={item.content.title}
@@ -112,19 +114,23 @@ const SubmissionLayout: FC<SubmissionProps> = ({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align='end'>
-                  <DropdownMenuLabel>Status</DropdownMenuLabel>
-                  <DropdownMenuItem
-                    className='cursor-pointer'
-                    onClick={() => setApproveOpen(true)}
-                  >
-                    <Signature className='mr-2' width={16} /> Approve
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    className='cursor-pointer'
-                    onClick={() => setRejectOpen(true)}
-                  >
-                    <CircleOff className='mr-2' width={16} /> Reject
-                  </DropdownMenuItem>
+                  {item.content.status === 'pending' && (
+                    <>
+                      <DropdownMenuLabel>Status</DropdownMenuLabel>
+                      <DropdownMenuItem
+                        className='cursor-pointer'
+                        onClick={() => setApproveOpen(true)}
+                      >
+                        <Signature className='mr-2' width={16} /> Approve
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        className='cursor-pointer'
+                        onClick={() => setRejectOpen(true)}
+                      >
+                        <CircleOff className='mr-2' width={16} /> Reject
+                      </DropdownMenuItem>
+                    </>
+                  )}
                   <DropdownMenuLabel>Actions</DropdownMenuLabel>
                   <DropdownMenuItem
                     className='cursor-pointer'

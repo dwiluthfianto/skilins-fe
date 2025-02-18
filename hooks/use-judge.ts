@@ -71,8 +71,8 @@ export function useJudgeSubmission(isScore: boolean, competitionUuid: string) {
   );
 
   return {
-    data: data?.data,
-    summary: data?.summary,
+    data: data?.data.data,
+    summary: data?.data.summary,
     isLoading: !error && !data,
     isError: error,
     mutate,

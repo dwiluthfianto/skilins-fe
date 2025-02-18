@@ -36,13 +36,13 @@ api.interceptors.response.use(
             { withCredentials: true }
           );
 
-          Cookies.set('access_token', data.access_token, {
+          Cookies.set('access_token', data.data.access_token, {
             expires: 15 / 1440,
           });
 
           originalRequest.headers[
             'Authorization'
-          ] = `Bearer ${data.access_token}`;
+          ] = `Bearer ${data.data.access_token}`;
 
           // Setelah refresh token berhasil, lakukan permintaan ulang
           return axios(originalRequest);

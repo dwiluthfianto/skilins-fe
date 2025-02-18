@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 import { Button } from '@/components/ui/button';
 import {
@@ -23,16 +22,16 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from '@/utils/axios';
 import { FC, useEffect, useState } from 'react';
-import { AxiosError } from 'axios';
+import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
 import { CommentRatings } from '../ratings';
 import { AutosizeTextarea } from '../autosize-textarea';
 import { useEvaluationParameter, useJudgeUser } from '@/hooks/use-judge';
 import { ScrollArea } from '../ui/scroll-area';
 import { handleAxiosError } from '@/utils/handle-axios-error';
 import { Loading } from '../loading';
+
 const FeedbackSchema = z.object({
   parameter_scores: z.array(
     z.object({
@@ -54,36 +53,44 @@ const FeedbackJudge: FC<FeedbackJudgeProps> = ({
 }) => {
   const { parameters, parameter_scores, isLoading } =
     useEvaluationParameter(competitionUuid);
-  const parameterScores = parameter_scores?.map((param: any) => ({
-    parameter_uuid: param.parameter.uuid,
-    notes: param.notes,
-    score: param.score,
-  }));
-
-  const form = useForm<z.infer<typeof FeedbackSchema>>({
-    resolver: zodResolver(FeedbackSchema),
-    defaultValues: {
-      parameter_scores: parameterScores || [],
-    },
-  });
   const [loading, setLoading] = useState(false);
   const { judge } = useJudgeUser();
   const router = useRouter();
 
+  // Initialize form with empty array
+  const form = useForm<z.infer<typeof FeedbackSchema>>({
+    resolver: zodResolver(FeedbackSchema),
+    defaultValues: {
+      parameter_scores: [],
+    },
+  });
+
   useEffect(() => {
-    if (parameters) {
+    if (parameters && parameters.length > 0) {
+      const initialScores = parameters.map((param: any) => {
+        const existingScore = parameter_scores?.find(
+          (score: any) => score.parameter.uuid === param.uuid
+        );
+
+        return {
+          parameter_uuid: param.uuid,
+          notes: existingScore?.notes || '',
+          score: existingScore?.score || 0,
+        };
+      });
+
       form.reset({
-        parameter_scores: parameterScores,
+        parameter_scores: initialScores,
       });
     }
-  }, [parameters, form]);
+  }, [parameters, parameter_scores, form]);
 
   async function onSubmit(data: z.infer<typeof FeedbackSchema>) {
     setLoading(true);
 
     try {
       const { data: judgeData } = await axios.patch(
-        `/judges/${judge && judge.uuid}/submission`,
+        `/judges/${judge?.uuid}/submission`,
         {
           submission_uuid: submissionUuid,
           parameter_scores: data.parameter_scores,
@@ -128,16 +135,20 @@ const FeedbackJudge: FC<FeedbackJudgeProps> = ({
                       <FormLabel>{param.parameter_name}</FormLabel>
                       <FormControl>
                         <CommentRatings
-                          rating={field.value}
+                          rating={field.value || 0}
                           totalStars={5}
                           size={32}
                           variant='yellow'
-                          onRatingChange={(value) =>
+                          onRatingChange={(value) => {
                             form.setValue(
                               `parameter_scores.${index}.score`,
                               value
-                            )
-                          }
+                            );
+                            form.setValue(
+                              `parameter_scores.${index}.parameter_uuid`,
+                              param.uuid
+                            );
+                          }}
                         />
                       </FormControl>
                       <FormField

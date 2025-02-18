@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const video = res.data;
 
   return {
-    title: `${video.title} - ${video.creator} | skilins.`,
+    title: `${video.title} - ${video.video_podcast.creator.name} | skilins.`,
     openGraph: {
       images: [`${video.thumbnail}`],
     },
@@ -58,15 +58,15 @@ export default async function VideoDetail({ params }: any) {
     }
   }
 
-  const embedUrl = convertToEmbedLink(video.file);
+  const embedUrl = convertToEmbedLink(video.video_podcast.link);
 
   return (
     <ContentLayout>
       <section className='md:py-2'>
         <div className='md:container'>
           <FeedbackJudge
-            submissionUuid={video.submission_uuid}
-            competitionUuid={video.competition_uuid}
+            submissionUuid={video.submission.uuid}
+            competitionUuid={video.submission.competition.uuid}
           />
           <div className='mt-4'>
             <AspectRatio ratio={16 / 9}>
@@ -86,7 +86,7 @@ export default async function VideoDetail({ params }: any) {
               <Card className=' rounded-lg '>
                 <CardContent className='p-6'>
                   <p className=' text-lg text-muted-foreground'>
-                    {video.creator}
+                    {video.video_podcast.creator.name}
                   </p>
                   <h2 className='text-balance text-3xl font-medium md:text-5xl'>
                     {video.title}
@@ -134,7 +134,7 @@ export default async function VideoDetail({ params }: any) {
                             <p className='text-muted-foreground text-sm'>
                               Category
                             </p>
-                            <p>{video.category}</p>
+                            <p>{video.category.name}</p>
                           </div>
                         </div>
                         <div className='flex flex-row gap-6 items-start'>
@@ -151,7 +151,7 @@ export default async function VideoDetail({ params }: any) {
                               Subjects
                             </p>
                             <p>
-                              {video.genres.map((genre: any, index: number) => (
+                              {video.genre.map((genre: any, index: number) => (
                                 <Badge key={index} className='mr-2'>
                                   {genre.text}
                                 </Badge>
@@ -165,7 +165,7 @@ export default async function VideoDetail({ params }: any) {
                               Tags
                             </p>
                             <p>
-                              {video.tags.map((tag: any, index: number) => (
+                              {video.tag.map((tag: any, index: number) => (
                                 <Badge
                                   key={index}
                                   className='mr-2 items-center'

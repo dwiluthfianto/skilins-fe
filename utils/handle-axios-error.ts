@@ -34,7 +34,6 @@ export function handleAxiosError(
           'You are not authorized to access this resource.',
         variant: 'destructive',
       });
-      return;
     }
 
     if (status === 403) {

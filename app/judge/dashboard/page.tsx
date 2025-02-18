@@ -18,6 +18,7 @@ export default function JudgeDashboard() {
     scored,
     judge && judge.judge.competition.uuid
   );
+
   if (isLoading) return <Loading />;
   if (isError) return <Error />;
   return (
