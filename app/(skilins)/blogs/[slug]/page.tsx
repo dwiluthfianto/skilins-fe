@@ -60,7 +60,7 @@ export default async function EbookDetail({ params }: any) {
           </div>
         </div>
         <div className='mt-6 text-gray-700'>
-          <MinimalTiptapPreview content={res.description} />
+          <MinimalTiptapPreview content={res.description} editable={false} />
         </div>
         <div className='mt-8'>
           {res.latest_blogs.length > 0 ? (

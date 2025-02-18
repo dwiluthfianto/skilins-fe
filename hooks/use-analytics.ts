@@ -1,11 +1,11 @@
-import { fetcher } from "@/utils/fetcher";
-import useSWR from "swr";
+import { fetcher } from '@/utils/fetcher';
+import useSWR from 'swr';
 
 export function useAnalyticsUser() {
   const { data, error, mutate } = useSWR(`/analytics/user-stats`, fetcher);
 
   return {
-    userAnalytics: data,
+    userAnalytics: data?.data,
     isLoading: !error && !data,
     isError: error,
     mutate,
@@ -19,7 +19,7 @@ export function useAnalyticsCountContent() {
   );
 
   return {
-    data,
+    contentStats: data?.data,
     isLoading: !error && !data,
     isError: error,
     mutate,
@@ -27,10 +27,10 @@ export function useAnalyticsCountContent() {
 }
 
 export function useFeedbackStats() {
-  const { data, error, mutate } = useSWR("/analytics/feedback-stats", fetcher);
+  const { data, error, mutate } = useSWR('/analytics/feedback-stats', fetcher);
 
   return {
-    data,
+    feedbackStats: data?.data,
     isLoading: !error && !data,
     isError: error,
     mutate,
@@ -41,7 +41,7 @@ export function useAnalyticsPklReportStats() {
   const { data, error, mutate } = useSWR(`/analytics/pkl-reports`, fetcher);
 
   return {
-    data,
+    pklReportStats: data?.data,
     isLoading: !error && !data,
     isError: error,
     mutate,
@@ -52,7 +52,7 @@ export function useAnalyticsContentStats() {
   const { data, error, mutate } = useSWR(`/analytics/content-stats`, fetcher);
 
   return {
-    data,
+    contentStats: data?.data,
     isLoading: !error && !data,
     isError: error,
     mutate,

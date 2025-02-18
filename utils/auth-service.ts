@@ -5,26 +5,17 @@ import jwt from 'jsonwebtoken';
 export const login = async (email: string, password: string) => {
   const response = await axios.post('/auth/login', { email, password });
 
-  const { access_token } = response.data.data;
-  if (response.status === 200) {
-    const decodedToken = jwt.decode(access_token) as jwt.JwtPayload;
+  const { access_token, role } = response.data.data;
 
-    if (decodedToken && decodedToken.role) {
-      const userRole = decodedToken.role;
+  Cookies.set('user_role', role, {
+    expires: 7,
+    sameSite: 'Lax',
+  });
 
-      Cookies.set('user_role', userRole, {
-        expires: 7,
-        sameSite: 'Lax',
-      });
-
-      Cookies.set('access_token', access_token, {
-        expires: 15 / 1440,
-        sameSite: 'Lax',
-      });
-    } else {
-      console.error('Failed to decode JWT or missing role.');
-    }
-  }
+  Cookies.set('access_token', access_token, {
+    expires: 15 / 1440,
+    sameSite: 'Lax',
+  });
 
   return response.data;
 };

@@ -22,9 +22,18 @@ const calculatePercentageChange = (newValue: number, oldValue: number) => {
 
 export default function DashboardPage() {
   const { userAnalytics, isLoading, isError } = useAnalyticsUser();
-  const { data } = useAnalyticsContentStats();
+  const {
+    contentStats,
+    isLoading: isLoadingContent,
+    isError: isErrorContent,
+  } = useAnalyticsContentStats();
   if (isLoading) return <Loading />;
   if (isError) return <Error />;
+  if (isLoadingContent) return <Loading />;
+  if (isErrorContent) return <Error />;
+
+  console.log(userAnalytics);
+  console.log(contentStats);
 
   const percentageChangeMonthly = calculatePercentageChange(
     userAnalytics.activeUsersMonthly,
@@ -37,8 +46,8 @@ export default function DashboardPage() {
   );
 
   const percentageChangeMonthlyContent = calculatePercentageChange(
-    data?.monthlyContent.monthlyContentCreate,
-    data?.monthlyContent.lastMonthContentCreate
+    contentStats.monthlyContent.monthlyContentCreate,
+    contentStats.monthlyContent.lastMonthContentCreate
   );
 
   return (
@@ -92,7 +101,7 @@ export default function DashboardPage() {
                   <MoveUpRight className='w-4 h-4 mb-10 text-primary' />
                 )}
                 <h2 className='flex flex-row items-end max-w-xl gap-4 text-4xl tracking-tighter text-left font-regular'>
-                  {data?.monthlyContent.monthlyContentCreate}
+                  {contentStats.monthlyContent.monthlyContentCreate}
                   <span className='text-sm tracking-normal text-muted-foreground'>
                     {percentageChangeMonthlyContent.toFixed(2)}%
                   </span>
@@ -106,7 +115,7 @@ export default function DashboardPage() {
               <CardContent className='p-6'>
                 <CircleFadingPlus className='w-4 h-4 mb-10 text-primary' />
                 <h2 className='flex flex-row items-end max-w-xl gap-4 text-4xl tracking-tighter text-left font-regular'>
-                  {data?.totalContents}
+                  {contentStats.totalContents}
                 </h2>
                 <p className='max-w-xl text-base leading-relaxed tracking-tight text-left text-muted-foreground'>
                   Total contents

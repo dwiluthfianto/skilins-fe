@@ -22,9 +22,9 @@ import { lastSixMonthsRange } from '@/utils/get-last-six-month-range';
 import { Loading } from '@/components/loading';
 import { Error } from '@/components/error';
 export default function ChartTwo() {
-  const { data, isLoading, isError } = useAnalyticsPklReportStats();
+  const { pklReportStats, isLoading, isError } = useAnalyticsPklReportStats();
 
-  const chartData = data?.lastSixMonthsReports;
+  const chartData = pklReportStats?.lastSixMonthsReports;
 
   const chartConfig = {
     count: {

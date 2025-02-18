@@ -35,13 +35,13 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export default function ChartThree() {
-  const { data, isLoading, isError } = useFeedbackStats();
+  const { feedbackStats, isLoading, isError } = useFeedbackStats();
 
-  const chartData = data?.lastThreeMonthsComment.map(
+  const chartData = feedbackStats?.lastThreeMonthsComment.map(
     (item: { date: any; count: any }, index: string | number) => ({
       date: item.date,
       comment: item.count,
-      rating: data.lastThreeMonthsRating[index]?.count || 0, // Assuming both arrays are same length
+      rating: feedbackStats.lastThreeMonthsRating[index]?.count || 0, // Assuming both arrays are same length
     })
   );
 
