@@ -1,10 +1,10 @@
-import { ContentLayout } from '@/components/user-panel/content-layout';
+import { ContentLayout } from "@/components/user-panel/content-layout";
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-} from '@/components/user-panel/ui/tabs';
+} from "@/components/user-panel/ui/tabs";
 import {
   CircleCheckBig,
   Crown,
@@ -13,25 +13,25 @@ import {
   Medal,
   Send,
   Users,
-} from 'lucide-react';
-import JudgeLayout from './judge-layout';
-import WinnerLayout from './winner-layout';
-import { AspectRatio } from '@/components/ui/aspect-ratio';
-import Image from 'next/image';
-import GuideLayout from './guide-layout';
-import SubmissionLayout from './submission-layout';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import axios from '@/utils/axios';
-import { format } from 'date-fns';
+} from "lucide-react";
+import JudgeLayout from "@/components/shared/judge-layout";
+import WinnerLayout from "@/components/shared/winner-layout";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import Image from "next/image";
+import GuideLayout from "@/components/shared/guide-layout";
+import SubmissionLayout from "./submission-layout";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import axios from "@/utils/axios";
+import { format } from "date-fns";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/components/ui/tooltip';
-import Link from 'next/link';
-import { notFound } from 'next/navigation';
+} from "@/components/ui/tooltip";
+import Link from "next/link";
+import { notFound } from "next/navigation";
 
 export default async function CompetitionPage({
   params,
@@ -88,15 +88,15 @@ export default async function CompetitionPage({
                         </TooltipTrigger>
                         <TooltipContent>
                           <p>
-                            Deadline:{' '}
-                            {format(res.submission_deadline, 'dd MMM yyyy')}
+                            Deadline:{" "}
+                            {format(res.submission_deadline, "dd MMM yyyy")}
                           </p>
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
                     <Button variant='outline' className='w-full sm:w-auto'>
-                      {format(res.start_date, 'dd MMM')} -{' '}
-                      {format(res.end_date, 'dd MMM yyyy')}
+                      {format(res.start_date, "dd MMM")} -{" "}
+                      {format(res.end_date, "dd MMM yyyy")}
                     </Button>
                   </div>
                 </div>
@@ -129,14 +129,14 @@ export default async function CompetitionPage({
                 <p className='text-sm text-muted-foreground'>Guide</p>
               </TabsTrigger>
               <TabsTrigger value='winner'>
-                {' '}
+                {" "}
                 <span className='flex size-12 items-center justify-center rounded-md bg-muted transition-colors duration-300 group-data-[state=active]:bg-primary group-data-[state=active]:text-background'>
                   <Crown width={18} />
                 </span>
                 <p className='text-sm text-muted-foreground'>Winner</p>
               </TabsTrigger>
               <TabsTrigger value='judge'>
-                {' '}
+                {" "}
                 <span className='flex size-12 items-center justify-center rounded-md bg-muted transition-colors duration-300 group-data-[state=active]:bg-primary group-data-[state=active]:text-background'>
                   <Users width={18} />
                 </span>

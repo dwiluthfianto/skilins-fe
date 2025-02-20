@@ -1,5 +1,5 @@
-import { fetcher } from '@/utils/fetcher';
-import useSWR from 'swr';
+import { fetcher } from "@/utils/fetcher";
+import useSWR from "swr";
 
 export function useAnalyticsUser() {
   const { data, error, mutate } = useSWR(`/analytics/user-stats`, fetcher);
@@ -27,7 +27,7 @@ export function useAnalyticsCountContent() {
 }
 
 export function useFeedbackStats() {
-  const { data, error, mutate } = useSWR('/analytics/feedback-stats', fetcher);
+  const { data, error, mutate } = useSWR("/analytics/feedback-stats", fetcher);
 
   return {
     feedbackStats: data?.data,

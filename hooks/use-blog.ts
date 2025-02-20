@@ -1,6 +1,6 @@
-import { fetcher } from '@/utils/fetcher';
-import useSWR from 'swr';
-import useSWRInfinite from 'swr/infinite';
+import { fetcher } from "@/utils/fetcher";
+import useSWR from "swr";
+import useSWRInfinite from "swr/infinite";
 
 type BlogFilter = {
   page: number;
@@ -15,9 +15,9 @@ export function useBlog({ page, limit, search, tag, latest }: BlogFilter) {
     page: page.toString(),
     limit: limit.toString(),
   });
-  if (search) params.append('search', search);
-  if (tag) params.append('tag', tag);
-  if (latest) params.append('latest', latest.toString());
+  if (search) params.append("search", search);
+  if (tag) params.append("tag", tag);
+  if (latest) params.append("latest", latest.toString());
 
   const { data, error, mutate } = useSWR(
     `/contents/blogs?${params.toString()}`,
@@ -33,12 +33,20 @@ export function useBlog({ page, limit, search, tag, latest }: BlogFilter) {
   };
 }
 
-export function useBlogInfinite() {
+export function useBlogInfinite(filter?: Partial<BlogFilter>) {
   const getKey = (pageIndex: number, previousPageData: any) => {
     if (previousPageData && !previousPageData.data) return null;
 
-    if (pageIndex === 0) return `/contents/blogs?page=1&limit=12`;
-    return `/contents/blogs?page=${pageIndex + 1}&limit=12`;
+    const params = new URLSearchParams({
+      page: (pageIndex + 1).toString(),
+      limit: "12",
+    });
+
+    if (filter?.search) params.append("search", filter.search);
+    if (filter?.tag) params.append("tag", filter.tag);
+    if (filter?.latest) params.append("latest", filter.latest.toString());
+
+    return `/contents/blogs?${params.toString()}`;
   };
 
   const { data, error, size, setSize, isLoading, mutate } = useSWRInfinite(
@@ -48,7 +56,7 @@ export function useBlogInfinite() {
 
   const blogs = data ? [].concat(...data.map((page) => page.data)) : [];
   const isLoadingMore =
-    isLoading || (size > 0 && data && typeof data[size - 1] === 'undefined');
+    isLoading || (size > 0 && data && typeof data[size - 1] === "undefined");
   const isEmpty = data?.[0]?.data?.length === 0;
   const isReachingEnd =
     isEmpty ||

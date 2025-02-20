@@ -1,15 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-'use client';
-import ContentCard from '@/components/content-card';
-import { ContentLayout } from '@/components/judge-panel/content-layout';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useJudgeSubmission, useJudgeUser } from '@/hooks/use-judge';
-import { format } from 'date-fns';
-import { Badge, BadgeCheck, BadgePercent, CalendarClock } from 'lucide-react';
-import { useState } from 'react';
-import { Loading } from '@/components/loading';
-import { Error } from '@/components/error';
+"use client";
+import ContentCard from "@/components/content-card";
+import { ContentLayout } from "@/components/judge-panel/content-layout";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useJudgeSubmission, useJudgeUser } from "@/hooks/use-judge";
+import { format } from "date-fns";
+import {
+  AlertTriangle,
+  Badge,
+  BadgeCheck,
+  BadgePercent,
+  CalendarClock,
+  CheckCircle,
+  List,
+} from "lucide-react";
+import { useState } from "react";
+import { Loading } from "@/components/loading";
+import { Error } from "@/components/error";
+import { SummaryStats } from "@/components/summary-stats";
 export default function JudgeDashboard() {
   const [scored, setScored] = useState(true);
   const { judge } = useJudgeUser();
@@ -19,68 +28,48 @@ export default function JudgeDashboard() {
     judge && judge.judge.competition.uuid
   );
 
+  const summaryItems = [
+    {
+      label: "Scored",
+      value: summary?.scored || 0,
+      variant: "success" as const,
+      icon: CheckCircle,
+    },
+    {
+      label: "Unscored",
+      value: summary?.unscored || 0,
+      variant: "danger" as const,
+      icon: AlertTriangle,
+    },
+    {
+      label: "Total",
+      value: summary?.total || 0,
+      variant: "success" as const,
+      icon: List,
+    },
+    {
+      label: "Deadline",
+      value: summary?.deadline.end_date || "No deadline",
+      variant: "info" as const,
+      icon: CalendarClock,
+    },
+  ];
+
   if (isLoading) return <Loading />;
   if (isError) return <Error />;
   return (
     <ContentLayout>
       <div className='md:container'>
-        <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
-          <Card>
-            <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-              <CardTitle className='text-sm font-medium'>
-                Scored Submissions
-              </CardTitle>
-              <BadgeCheck className='h-4 w-4' />
-            </CardHeader>
-            <CardContent>
-              <div className='text-2xl font-bold'>{summary.scored}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-              <CardTitle className='text-sm font-medium'>
-                Unscored Submissions
-              </CardTitle>
-              <Badge className='h-4 w-4' />
-            </CardHeader>
-            <CardContent>
-              <div className='text-2xl font-bold'>{summary.unscored}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-              <CardTitle className='text-sm font-medium'>
-                Total Submissions
-              </CardTitle>
-              <BadgePercent className='h-4 w-4' />
-            </CardHeader>
-            <CardContent>
-              <div className='text-2xl font-bold'>{summary.total}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-              <CardTitle className='text-sm font-medium'>
-                Deadline judge
-              </CardTitle>
-              <CalendarClock className='h-4 w-4' />
-            </CardHeader>
-            <CardContent>
-              <div className='text-2xl font-bold'>
-                {format(summary.deadline.end_date, 'dd MMM yyyy')}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        <SummaryStats items={summaryItems} />
         <div className='flex flex-wrap gap-2 py-8'>
           <Button
-            variant={scored ? 'default' : 'outline'}
+            variant={scored ? "default" : "outline"}
             onClick={() => setScored(true)}
           >
             Scored
           </Button>
           <Button
-            variant={!scored ? 'default' : 'outline'}
+            variant={!scored ? "default" : "outline"}
             onClick={() => setScored(false)}
           >
             Unscored
@@ -88,7 +77,7 @@ export default function JudgeDashboard() {
         </div>
         <div className='w-full grid gap-2 grid-cols-2 md:grid-cols-4 lg:grid-cols-6'>
           {data.map((item: any) => {
-            return item.competition.type === 'audio' ? (
+            return item.competition.type === "audio" ? (
               <ContentCard
                 key={item.content.slug}
                 href={`/judge/audio-podcasts/${item.content.slug}`}
@@ -96,7 +85,7 @@ export default function JudgeDashboard() {
                 imageSrc={item.content.thumbnail}
                 title={item.content.title}
               />
-            ) : item.competition.type === 'video' ? (
+            ) : item.competition.type === "video" ? (
               <ContentCard
                 key={item.content.slug}
                 href={`/judge/video-podcasts/${item.content.slug}`}

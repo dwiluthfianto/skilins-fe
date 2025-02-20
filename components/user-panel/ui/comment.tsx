@@ -1,28 +1,28 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-'use client';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+"use client";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Textarea } from '@/components/ui/textarea';
-import { useUser } from '@/hooks/use-user';
-import { zodResolver } from '@hookform/resolvers/zod';
-import axios from '@/utils/axios';
-import { format } from 'date-fns';
+} from "@/components/ui/dropdown-menu";
+import { Textarea } from "@/components/ui/textarea";
+import { useUser } from "@/hooks/use-user";
+import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "@/utils/axios";
+import { format } from "date-fns";
 import {
   MessageSquareWarning,
   MoreHorizontal,
   PencilRuler,
   Trash2,
-} from 'lucide-react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+} from "lucide-react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 import {
   Form,
   FormControl,
@@ -30,26 +30,26 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
+} from "@/components/ui/form";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { GetFirstLetterStr } from '@/utils/get-first-letter-str';
-import { FC } from 'react';
-import { cn } from '@/lib/utils';
-import RatingComponent from './rating';
-import { handleAxiosError } from '@/utils/handle-axios-error';
+} from "@/components/ui/tooltip";
+import { GetFirstLetterStr } from "@/utils/get-first-letter-str";
+import { FC } from "react";
+import { cn } from "@/lib/utils";
+import RatingComponent from "./rating";
+import { handleAxiosError } from "@/utils/handle-axios-error";
 const CommentSchema = z.object({
   content: z
     .string()
     .min(10, {
-      message: 'Comment must be at least 10 characters.',
+      message: "Comment must be at least 10 characters.",
     })
     .max(160, {
-      message: 'Comment must not be longer than 30 characters.',
+      message: "Comment must not be longer than 30 characters.",
     }),
 });
 
@@ -67,7 +67,7 @@ const CommentComponent: FC<CommentProps> = ({
   const form = useForm<z.infer<typeof CommentSchema>>({
     resolver: zodResolver(CommentSchema),
     defaultValues: {
-      content: '',
+      content: "",
     },
   });
 
@@ -75,18 +75,18 @@ const CommentComponent: FC<CommentProps> = ({
 
   async function onSubmit(data: z.infer<typeof CommentSchema>) {
     const formData = new FormData();
-    formData.append('commented_by', user?.data.uuid);
-    formData.append('comment_content', data.content);
+    formData.append("commented_by", user?.data.uuid);
+    formData.append("comment_content", data.content);
 
     try {
       await axios.post(`/comments/${contentId}/create`, formData, {
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
       window.location.reload();
     } catch (error) {
-      handleAxiosError(error, 'An error occurred while create the comment.');
+      handleAxiosError(error, "An error occurred while create the comment.");
     }
   }
 
@@ -99,11 +99,11 @@ const CommentComponent: FC<CommentProps> = ({
 
       window.location.reload();
     } catch (error) {
-      handleAxiosError(error, 'An error occurred while delete the comment.');
+      handleAxiosError(error, "An error occurred while delete the comment.");
     }
   }
   return (
-    <div className={cn('space-y-4', className)}>
+    <div className={cn("space-y-4", className)}>
       <Card>
         <CardContent>
           <CardHeader className='px-0 pt-6 pb-2'>
@@ -164,8 +164,8 @@ const CommentComponent: FC<CommentProps> = ({
                       <div className='flex items-center space-x-2'>
                         <Avatar>
                           <AvatarImage
-                            key={comment?.profile}
-                            src={`${comment?.profile}`}
+                            key={comment?.user?.profile}
+                            src={`${comment?.user?.profile}`}
                             className='object-cover object-center'
                           />
                           <AvatarFallback>
@@ -173,13 +173,13 @@ const CommentComponent: FC<CommentProps> = ({
                           </AvatarFallback>
                         </Avatar>
                         <p className='text-gray-900 dark:text-white font-semibold'>
-                          {comment.commented_by}
+                          {comment?.user?.full_name}
                         </p>
                         <p className='text-sm text-gray-600 dark:text-gray-400'>
-                          {format(comment.created_at, 'MMM. dd, yyyy')}
+                          {format(comment.created_at, "MMM. dd, yyyy")}
                         </p>
                       </div>
-                      {user?.data.uuid === comment.commented_by_uuid ? (
+                      {user?.data.uuid === comment?.user?.uuid ? (
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant='ghost' className='h-8 w-8 p-0'>
@@ -197,7 +197,7 @@ const CommentComponent: FC<CommentProps> = ({
                               onClick={() =>
                                 handleDeleteComment(
                                   user?.data.uuid,
-                                  comment.uuid
+                                  comment?.user?.uuid
                                 )
                               }
                             >
@@ -219,7 +219,7 @@ const CommentComponent: FC<CommentProps> = ({
                               <MessageSquareWarning
                                 className='mr-2'
                                 width={16}
-                              />{' '}
+                              />{" "}
                               Report
                             </DropdownMenuItem>
                           </DropdownMenuContent>
@@ -233,7 +233,7 @@ const CommentComponent: FC<CommentProps> = ({
                 </Card>
               );
             })
-          : ''}
+          : ""}
       </div>
     </div>
   );

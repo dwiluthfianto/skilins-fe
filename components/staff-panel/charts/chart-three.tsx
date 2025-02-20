@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-'use client';
+"use client";
 
-import * as React from 'react';
-import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
+import * as React from "react";
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 
 import {
   Card,
@@ -10,52 +10,52 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
+} from "@/components/ui/card";
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from '@/components/ui/chart';
-import { useFeedbackStats } from '@/hooks/use-analytics';
-import { Loading } from '@/components/loading';
-import { Error } from '@/components/error';
+} from "@/components/ui/chart";
+import { useFeedbackStats } from "@/hooks/use-analytics";
+import { Loading } from "@/components/loading";
+import { Error } from "@/components/error";
 const chartConfig = {
   feedbacks: {
-    label: 'Page feedbacks',
+    label: "Page feedbacks",
   },
   comment: {
-    label: 'Comments',
-    color: 'hsl(var(--chart-1))',
+    label: "Comments",
+    color: "hsl(var(--chart-1))",
   },
   rating: {
-    label: 'Ratings',
-    color: 'hsl(var(--chart-2))',
+    label: "Ratings",
+    color: "hsl(var(--chart-2))",
   },
 } satisfies ChartConfig;
 
 export default function ChartThree() {
   const { feedbackStats, isLoading, isError } = useFeedbackStats();
 
-  const chartData = feedbackStats?.lastThreeMonthsComment.map(
+  const chartData = feedbackStats?.last_three_months_comments.map(
     (item: { date: any; count: any }, index: string | number) => ({
       date: item.date,
-      comment: item.count,
-      rating: feedbackStats.lastThreeMonthsRating[index]?.count || 0, // Assuming both arrays are same length
+      comment: Number(item.count),
+      rating: Number(feedbackStats.last_three_months_rating[index]?.count || 0),
     })
   );
 
   const [activeChart, setActiveChart] =
-    React.useState<keyof typeof chartConfig>('comment');
+    React.useState<keyof typeof chartConfig>("comment");
 
   const total = React.useMemo(
     () => ({
       comment: chartData?.reduce(
-        (acc: any, curr: { comment: any }) => acc + curr.comment,
+        (acc: number, curr: { comment: number }) => acc + curr.comment,
         0
       ),
       rating: chartData?.reduce(
-        (acc: any, curr: { rating: any }) => acc + curr.rating,
+        (acc: number, curr: { rating: number }) => acc + curr.rating,
         0
       ),
     }),
@@ -74,7 +74,7 @@ export default function ChartThree() {
           </CardDescription>
         </div>
         <div className='flex'>
-          {['comment', 'rating'].map((key) => {
+          {["comment", "rating"].map((key) => {
             const chart = key as keyof typeof chartConfig;
             return (
               <button
@@ -116,9 +116,9 @@ export default function ChartThree() {
               minTickGap={32}
               tickFormatter={(value) => {
                 const date = new Date(value);
-                return date.toLocaleDateString('en-US', {
-                  month: 'short',
-                  day: 'numeric',
+                return date.toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
                 });
               }}
             />
@@ -128,10 +128,10 @@ export default function ChartThree() {
                   className='w-[150px]'
                   nameKey='feedbacks'
                   labelFormatter={(value) => {
-                    return new Date(value).toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                      year: 'numeric',
+                    return new Date(value).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
                     });
                   }}
                 />

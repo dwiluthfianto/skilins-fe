@@ -1,28 +1,28 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-'use client';
-import ContentCard from '@/components/content-card';
-import TabsStatus from '@/components/tabs-status';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { ContentLayout } from '@/components/user-panel/content-layout';
-import withRole from '@/utils/with-role';
-import { Clapperboard, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
-import Link from 'next/link';
-import { useState } from 'react';
+"use client";
+import ContentCard from "@/components/content-card";
+import TabsStatus from "@/components/tabs-status";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { ContentLayout } from "@/components/user-panel/content-layout";
+import withRole from "@/utils/with-role";
+import { Clapperboard, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import DeleteDialog from '@/components/staff-panel/delete-dialog';
-import { useVideoByStudent } from '@/hooks/use-video';
-import { Loading } from '@/components/loading';
-import { Error } from '@/components/error';
-
+} from "@/components/ui/dropdown-menu";
+import DeleteDialog from "@/components/staff-panel/delete-dialog";
+import { useVideoByStudent, useVideoSummaryByStudent } from "@/hooks/use-video";
+import { Loading } from "@/components/loading";
+import { Error } from "@/components/error";
+import { SummaryStats } from "@/components/summary-stats";
 function VideoStudent() {
-  const [contentStatus, setContentStatus] = useState('approved');
+  const [contentStatus, setContentStatus] = useState("approved");
   const [currentPage, setCurrentPage] = useState(1);
   const [deleteData, setDeleteData] = useState<{
     isOpen: boolean;
@@ -37,8 +37,40 @@ function VideoStudent() {
     status: contentStatus,
   });
 
-  if (isLoading) return <Loading />;
-  if (isError) return <Error />;
+  const {
+    summary,
+    isLoading: isLoadingSummary,
+    isError: isErrorSummary,
+  } = useVideoSummaryByStudent();
+
+  const summaryItems = [
+    {
+      label: "Approved",
+      value: summary?.approved || 0,
+      variant: "success" as const,
+    },
+    {
+      label: "Rejected",
+      value: summary?.rejected || 0,
+      variant: "danger" as const,
+    },
+    {
+      label: "Pending",
+      value: summary?.pending || 0,
+      variant: "warning" as const,
+    },
+    {
+      label: "Total",
+      value:
+        (summary?.approved || 0) +
+        (summary?.rejected || 0) +
+        (summary?.pending || 0),
+      variant: "info" as const,
+    },
+  ];
+
+  if (isLoading || isLoadingSummary) return <Loading />;
+  if (isError || isErrorSummary) return <Error />;
 
   return (
     <ContentLayout title=''>
@@ -56,12 +88,13 @@ function VideoStudent() {
             </p>
           </div>
         </div>
-        <Link href={'video-podcasts/create'}>
+        <Link href={"video-podcasts/create"}>
           <Button>
             <Clapperboard width={18} /> Create video
           </Button>
         </Link>
       </div>
+      <SummaryStats items={summaryItems} />
       <TabsStatus status={contentStatus} onUpdateStatus={setContentStatus} />
       <div className='w-full grid gap-2 grid-cols-2 md:grid-cols-5'>
         {videos.map((item: any) => {
@@ -137,8 +170,8 @@ function VideoStudent() {
                       onClick={() => setCurrentPage(pageIndex)}
                       className={`mx-1 ${
                         currentPage === pageIndex
-                          ? 'bg-blue-500 text-white'
-                          : 'bg-gray-200'
+                          ? "bg-blue-500 text-white"
+                          : "bg-gray-200"
                       }`}
                     >
                       {pageIndex}
@@ -166,11 +199,8 @@ function VideoStudent() {
               <Button
                 key={index + 1}
                 onClick={() => setCurrentPage(index + 1)}
-                className={`mx-1 ${
-                  currentPage === index + 1
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-200'
-                }`}
+                className='mx-1'
+                variant={currentPage === index + 1 ? "default" : "outline"}
               >
                 {index + 1}
               </Button>
@@ -191,4 +221,4 @@ function VideoStudent() {
   );
 }
 
-export default withRole(VideoStudent, ['student'], '/auth/user/login');
+export default withRole(VideoStudent, ["student"], "/auth/user/login");

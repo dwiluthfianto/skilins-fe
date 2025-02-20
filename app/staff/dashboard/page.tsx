@@ -1,20 +1,20 @@
-'use client';
+"use client";
 
-import { ContentLayout } from '@/components/staff-panel/content-layout';
+import { ContentLayout } from "@/components/staff-panel/content-layout";
 
-import { CircleFadingPlus, MoveDownLeft, MoveUpRight } from 'lucide-react';
-import ContentChart from '@/components/staff-panel/charts/content-chart';
-import ChartTwo from '@/components/staff-panel/charts/chart-two';
-import ChartThree from '@/components/staff-panel/charts/chart-three';
+import { CircleFadingPlus, MoveDownLeft, MoveUpRight } from "lucide-react";
+import ContentChart from "@/components/staff-panel/charts/content-chart";
+import ChartTwo from "@/components/staff-panel/charts/chart-two";
+import ChartThree from "@/components/staff-panel/charts/chart-three";
 import {
   useAnalyticsContentStats,
   useAnalyticsUser,
-} from '@/hooks/use-analytics';
-import { DataTable } from './report-table';
-import { columns } from './columns';
-import { Card, CardContent } from '@/components/ui/card';
-import { Loading } from '@/components/loading';
-import { Error } from '@/components/error';
+} from "@/hooks/use-analytics";
+import { DataTable } from "./report-table";
+import { columns } from "./columns";
+import { Card, CardContent } from "@/components/ui/card";
+import { Loading } from "@/components/loading";
+import { Error } from "@/components/error";
 const calculatePercentageChange = (newValue: number, oldValue: number) => {
   if (oldValue === 0) return newValue === 0 ? 0 : 100;
   return ((newValue - oldValue) / oldValue) * 100;
@@ -27,27 +27,22 @@ export default function DashboardPage() {
     isLoading: isLoadingContent,
     isError: isErrorContent,
   } = useAnalyticsContentStats();
-  if (isLoading) return <Loading />;
-  if (isError) return <Error />;
-  if (isLoadingContent) return <Loading />;
-  if (isErrorContent) return <Error />;
-
-  console.log(userAnalytics);
-  console.log(contentStats);
+  if (isLoading || isLoadingContent) return <Loading />;
+  if (isError || isErrorContent) return <Error />;
 
   const percentageChangeMonthly = calculatePercentageChange(
-    userAnalytics.activeUsersMonthly,
-    userAnalytics.lastMonthActiveUsers
+    userAnalytics.active_users_monthly,
+    userAnalytics.last_month_active_users
   );
 
   const percentageChangeDaily = calculatePercentageChange(
-    userAnalytics.activeUsersDaily,
-    userAnalytics.lastDailyActiveUsers
+    userAnalytics.active_users_daily,
+    userAnalytics.last_daily_active_users
   );
 
   const percentageChangeMonthlyContent = calculatePercentageChange(
-    contentStats.monthlyContent.monthlyContentCreate,
-    contentStats.monthlyContent.lastMonthContentCreate
+    contentStats.monthly_stats.current_month_created,
+    contentStats.monthly_stats.last_month_created
   );
 
   return (
@@ -63,7 +58,7 @@ export default function DashboardPage() {
                   <MoveUpRight className='w-4 h-4 mb-10 text-primary' />
                 )}
                 <h2 className='flex flex-row items-end max-w-xl gap-4 text-4xl tracking-tighter text-left font-regular'>
-                  {userAnalytics.activeUsersMonthly}
+                  {userAnalytics.active_users_monthly}
                   <span
                     className={`text-sm tracking-normal text-muted-foreground`}
                   >
@@ -83,7 +78,7 @@ export default function DashboardPage() {
                   <MoveUpRight className='w-4 h-4 mb-10 text-primary' />
                 )}
                 <h2 className='flex flex-row items-end max-w-xl gap-4 text-4xl tracking-tighter text-left font-regular'>
-                  {userAnalytics.activeUsersDaily}
+                  {userAnalytics.active_users_daily}
                   <span className='text-sm tracking-normal text-muted-foreground'>
                     {percentageChangeDaily.toFixed(2)}%
                   </span>
@@ -101,7 +96,7 @@ export default function DashboardPage() {
                   <MoveUpRight className='w-4 h-4 mb-10 text-primary' />
                 )}
                 <h2 className='flex flex-row items-end max-w-xl gap-4 text-4xl tracking-tighter text-left font-regular'>
-                  {contentStats.monthlyContent.monthlyContentCreate}
+                  {contentStats.monthly_stats.current_month_created}
                   <span className='text-sm tracking-normal text-muted-foreground'>
                     {percentageChangeMonthlyContent.toFixed(2)}%
                   </span>
@@ -115,7 +110,7 @@ export default function DashboardPage() {
               <CardContent className='p-6'>
                 <CircleFadingPlus className='w-4 h-4 mb-10 text-primary' />
                 <h2 className='flex flex-row items-end max-w-xl gap-4 text-4xl tracking-tighter text-left font-regular'>
-                  {contentStats.totalContents}
+                  {contentStats.total_contents}
                 </h2>
                 <p className='max-w-xl text-base leading-relaxed tracking-tight text-left text-muted-foreground'>
                   Total contents

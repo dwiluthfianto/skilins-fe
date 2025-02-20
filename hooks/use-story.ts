@@ -1,6 +1,6 @@
-import { fetcher } from '@/utils/fetcher';
-import useSWR from 'swr';
-import useSWRInfinite from 'swr/infinite';
+import { fetcher } from "@/utils/fetcher";
+import useSWR from "swr";
+import useSWRInfinite from "swr/infinite";
 
 type StoryFilter = {
   page: number;
@@ -28,12 +28,12 @@ export function useStory({
     page: page.toString(),
     limit: limit.toString(),
   });
-  if (search) params.append('search', search);
-  if (category) params.append('category', category);
-  if (tag) params.append('tag', tag);
-  if (genre) params.append('genre', genre);
-  if (type) params.append('type', type);
-  if (latest) params.append('latest', latest.toString());
+  if (search) params.append("search", search);
+  if (category) params.append("category", category);
+  if (tag) params.append("tag", tag);
+  if (genre) params.append("genre", genre);
+  if (type) params.append("type", type);
+  if (latest) params.append("latest", latest.toString());
 
   const { data, error, mutate } = useSWR(
     `/contents/stories?${params.toString()}`,
@@ -49,13 +49,23 @@ export function useStory({
   };
 }
 
-export function useStoryInfinite() {
+export function useStoryInfinite(filter?: Partial<StoryFilter>) {
   const getKey = (pageIndex: number, previousPageData: any) => {
     if (previousPageData && !previousPageData.data) return null;
 
-    if (pageIndex === 0) return `/contents/stories?page=1&limit=12`;
+    const params = new URLSearchParams({
+      page: (pageIndex + 1).toString(),
+      limit: "12",
+    });
 
-    return `/contents/stories?page=${pageIndex + 1}&limit=12`;
+    if (filter?.search) params.append("search", filter.search);
+    if (filter?.category) params.append("category", filter.category);
+    if (filter?.tag) params.append("tag", filter.tag);
+    if (filter?.genre) params.append("genre", filter.genre);
+    if (filter?.type) params.append("type", filter.type);
+    if (filter?.latest) params.append("latest", filter.latest.toString());
+
+    return `/contents/stories?${params.toString()}`;
   };
 
   const { data, error, size, setSize, isLoading, mutate } = useSWRInfinite(
@@ -65,7 +75,7 @@ export function useStoryInfinite() {
 
   const stories = data ? [].concat(...data.map((page) => page.data)) : [];
   const isLoadingMore =
-    isLoading || (size > 0 && data && typeof data[size - 1] === 'undefined');
+    isLoading || (size > 0 && data && typeof data[size - 1] === "undefined");
   const isEmpty = data?.[0]?.data?.length === 0;
   const isReachingEnd =
     isEmpty ||
@@ -100,13 +110,13 @@ export function useStoryByStaff({
     page: page.toString(),
     limit: limit.toString(),
   });
-  if (search) params.append('search', search);
-  if (category) params.append('category', category);
-  if (tag) params.append('tag', tag);
-  if (genre) params.append('genre', genre);
-  if (type) params.append('type', type);
-  if (latest) params.append('latest', latest.toString());
-  if (status) params.append('status', status);
+  if (search) params.append("search", search);
+  if (category) params.append("category", category);
+  if (tag) params.append("tag", tag);
+  if (genre) params.append("genre", genre);
+  if (type) params.append("type", type);
+  if (latest) params.append("latest", latest.toString());
+  if (status) params.append("status", status);
 
   const { data, error, mutate } = useSWR(
     `/contents/stories/staff?${params.toString()}`,
@@ -147,15 +157,56 @@ export function useStoryEpisode(slug: string, order: string) {
   };
 }
 
-export function useUserStory(page?: number, limit?: number, status?: string) {
+export function useStoryByStudent(filter?: Partial<StoryFilter>) {
+  const params = new URLSearchParams({
+    page: filter?.page?.toString() || "1",
+    limit: filter?.limit?.toString() || "12",
+  });
+
+  if (filter?.status) params.append("status", filter.status);
+  if (filter?.search) params.append("search", filter.search);
+  if (filter?.category) params.append("category", filter.category);
+  if (filter?.tag) params.append("tag", filter.tag);
+  if (filter?.genre) params.append("genre", filter.genre);
+  if (filter?.type) params.append("type", filter.type);
+  if (filter?.latest) params.append("latest", filter.latest.toString());
+
   const { data, error, mutate } = useSWR(
-    `/contents/stories/student?page=${page}&limit=${limit}&status=${status}`,
+    `/contents/stories/student?${params.toString()}`,
     fetcher
   );
 
   return {
     stories: data?.data,
-    totalPages: data?.lastPage || 1,
+    last_page: data?.pagination.last_page || 1,
+    isLoading: !error && !data,
+    isError: error,
+    mutate,
+  };
+}
+
+export function useStorySummaryByStaff() {
+  const { data, error, mutate } = useSWR(
+    `/contents/stories/summary-staff`,
+    fetcher
+  );
+
+  return {
+    summary: data?.data,
+    isLoading: !error && !data,
+    isError: error,
+    mutate,
+  };
+}
+
+export function useStorySummaryByStudent() {
+  const { data, error, mutate } = useSWR(
+    `/contents/stories/summary-student`,
+    fetcher
+  );
+
+  return {
+    summary: data?.data,
     isLoading: !error && !data,
     isError: error,
     mutate,

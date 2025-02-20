@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ContentLayout } from "@/components/user-panel/content-layout";
-import Categories from "@/components/user-panel/categories";
+import Genre from "@/components/user-panel/genre";
 
 export default async function Category({
   params,
 }: {
-  params: { category: string };
+  params: { genre: string };
 }) {
-  const { category } = params;
+  const { genre } = params;
 
   return (
     <ContentLayout title=''>
-      <Categories category={category} />
+      <Genre genre={genre} />
     </ContentLayout>
   );
 }

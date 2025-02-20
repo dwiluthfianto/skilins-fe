@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-'use client';
+"use client";
 
-import { ColumnDef } from '@tanstack/react-table';
+import { ColumnDef } from "@tanstack/react-table";
 
 import {
   CircleOff,
@@ -10,25 +10,25 @@ import {
   MoreHorizontal,
   Signature,
   Trash2,
-} from 'lucide-react';
+} from "lucide-react";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 
-import { ArrowUpDown } from 'lucide-react';
-import { AspectRatio } from '@/components/ui/aspect-ratio';
-import Image from 'next/image';
-import React from 'react';
-import DeleteDialog from '@/components/staff-panel/delete-dialog';
-import ApproveDialog from '@/components/staff-panel/approve-dialog';
-import RejectDialog from '@/components/staff-panel/reject-dialog';
-import { Badge } from '@/components/ui/badge';
+import { ArrowUpDown } from "lucide-react";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import Image from "next/image";
+import React from "react";
+import DeleteDialog from "@/components/staff-panel/delete-dialog";
+import ApproveDialog from "@/components/staff-panel/approve-dialog";
+import RejectDialog from "@/components/staff-panel/reject-dialog";
+import { Badge } from "@/components/ui/badge";
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type Audio = {
@@ -47,7 +47,7 @@ export type Audio = {
 
 export const columns: ColumnDef<Audio>[] = [
   {
-    accessorKey: 'No',
+    accessorKey: "No",
     header: () => {
       return <p>No</p>;
     },
@@ -56,7 +56,7 @@ export const columns: ColumnDef<Audio>[] = [
     },
   },
   {
-    accessorKey: 'thumbnail',
+    accessorKey: "thumbnail",
     header: () => <div className='text-right'>Image</div>,
     cell: ({ row }) => (
       <AspectRatio ratio={1 / 1} className='h-full relative'>
@@ -71,12 +71,12 @@ export const columns: ColumnDef<Audio>[] = [
     ),
   },
   {
-    accessorKey: 'title',
+    accessorKey: "title",
     header: ({ column }) => {
       return (
         <Button
           variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Title
           <ArrowUpDown className='ml-2 h-4 w-4' />
@@ -91,12 +91,12 @@ export const columns: ColumnDef<Audio>[] = [
   },
 
   {
-    accessorKey: 'category',
+    accessorKey: "category",
     header: ({ column }) => {
       return (
         <Button
           variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Category
           <ArrowUpDown className='ml-2 h-4 w-4' />
@@ -108,12 +108,12 @@ export const columns: ColumnDef<Audio>[] = [
     },
   },
   {
-    accessorKey: 'creator',
+    accessorKey: "creator",
     header: ({ column }) => {
       return (
         <Button
           variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Creator
           <ArrowUpDown className='ml-2 h-4 w-4' />
@@ -125,12 +125,12 @@ export const columns: ColumnDef<Audio>[] = [
     },
   },
   {
-    accessorKey: 'duration',
+    accessorKey: "duration",
     header: ({ column }) => {
       return (
         <Button
           variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Duration
           <ArrowUpDown className='ml-2 h-4 w-4' />
@@ -141,16 +141,16 @@ export const columns: ColumnDef<Audio>[] = [
       return new Date(1000 * row.original.audio_podcast.duration)
         .toISOString()
         .substring(11, 19)
-        .replace(/^[0:]+/, '');
+        .replace(/^[0:]+/, "");
     },
   },
   {
-    accessorKey: 'file',
+    accessorKey: "file",
     header: ({ column }) => {
       return (
         <Button
           variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           File
           <ArrowUpDown className='ml-2 h-4 w-4' />
@@ -172,12 +172,12 @@ export const columns: ColumnDef<Audio>[] = [
     },
   },
   {
-    accessorKey: 'status',
+    accessorKey: "status",
     header: ({ column }) => {
       return (
         <Button
           variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Status
           <ArrowUpDown className='ml-2 h-4 w-4' />
@@ -185,23 +185,23 @@ export const columns: ColumnDef<Audio>[] = [
       );
     },
     cell: ({ row }) => {
-      return row.original.status === 'pending' ? (
-        <Badge className='bg-yellow-500 text-white' variant={'outline'}>
+      return row.original.status === "pending" ? (
+        <Badge className='bg-yellow-500 text-white' variant={"outline"}>
           {row.original.status}
         </Badge>
-      ) : row.original.status === 'approved' ? (
-        <Badge className='bg-green-500 text-white' variant={'outline'}>
+      ) : row.original.status === "approved" ? (
+        <Badge className='bg-green-500 text-white' variant={"outline"}>
           {row.original.status}
         </Badge>
       ) : (
-        <Badge className='bg-red-500 text-white' variant={'outline'}>
+        <Badge className='bg-red-500 text-white' variant={"outline"}>
           {row.original.status}
         </Badge>
       );
     },
   },
   {
-    id: 'actions',
+    id: "actions",
     cell: ({ row }) => {
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const [approveOpen, setApproveOpen] = React.useState(false);

@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { TrendingUp } from 'lucide-react';
-import { Bar, BarChart, XAxis, YAxis } from 'recharts';
+import { TrendingUp } from "lucide-react";
+import { Bar, BarChart, XAxis, YAxis } from "recharts";
 
 import {
   Card,
@@ -10,26 +10,26 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
+} from "@/components/ui/card";
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from '@/components/ui/chart';
-import { useAnalyticsPklReportStats } from '@/hooks/use-analytics';
-import { lastSixMonthsRange } from '@/utils/get-last-six-month-range';
-import { Loading } from '@/components/loading';
-import { Error } from '@/components/error';
+} from "@/components/ui/chart";
+import { useAnalyticsPklReportStats } from "@/hooks/use-analytics";
+import { lastSixMonthsRange } from "@/utils/get-last-six-month-range";
+import { Loading } from "@/components/loading";
+import { Error } from "@/components/error";
 export default function ChartTwo() {
   const { pklReportStats, isLoading, isError } = useAnalyticsPklReportStats();
 
-  const chartData = pklReportStats?.lastSixMonthsReports;
+  const chartData = pklReportStats?.last_six_months_reports;
 
   const chartConfig = {
     count: {
-      label: 'Count',
-      color: 'hsl(var(--chart-1))',
+      label: "Count",
+      color: "hsl(var(--chart-1))",
     },
   } satisfies ChartConfig;
 

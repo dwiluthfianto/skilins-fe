@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   ColumnDef,
@@ -10,9 +10,9 @@ import {
   ColumnFiltersState,
   getFilteredRowModel,
   VisibilityState,
-} from '@tanstack/react-table';
+} from "@tanstack/react-table";
 
-import * as React from 'react';
+import * as React from "react";
 
 import {
   Table,
@@ -21,7 +21,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table";
 
 import {
   Select,
@@ -30,24 +30,27 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from "@/components/ui/select";
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { useAudioByStaff } from '@/hooks/use-audio';
-import useDebounce from '@/lib/debounce';
-import { useCategory } from '@/hooks/use-category';
-import Combobox from '@/components/skilins/combo-box';
-import { Loading } from '@/components/loading';
-import { Error } from '@/components/error';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useAudioByStaff, useAudioSummaryByStaff } from "@/hooks/use-audio";
+import useDebounce from "@/lib/debounce";
+import { useCategory } from "@/hooks/use-category";
+import Combobox from "@/components/skilins/combo-box";
+import { Loading } from "@/components/loading";
+import { Error } from "@/components/error";
+import { SummaryStats } from "@/components/summary-stats";
+import { AlertTriangle, Clock, List } from "lucide-react";
+import { CheckCircle } from "lucide-react";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
 }
 
 const statusComponent = [
-  { name: 'pending' },
-  { name: 'rejected' },
-  { name: 'approved' },
+  { name: "pending" },
+  { name: "rejected" },
+  { name: "approved" },
 ];
 
 export function DataTable<TData, TValue>({
@@ -62,11 +65,11 @@ export function DataTable<TData, TValue>({
 
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const [search, setSearch] = React.useState('');
-  const [category, setCategory] = React.useState('');
-  const [status, setStatus] = React.useState('');
+  const [search, setSearch] = React.useState("");
+  const [category, setCategory] = React.useState("");
+  const [status, setStatus] = React.useState("");
 
-  const [limit, setLimit] = React.useState('10');
+  const [limit, setLimit] = React.useState("10");
 
   const [pagination, setPagination] = React.useState({
     pageIndex: 0,
@@ -75,6 +78,42 @@ export function DataTable<TData, TValue>({
   const debouncedSearch = useDebounce(search, 1000);
 
   const { categories } = useCategory();
+  const {
+    summary,
+    isLoading: isLoadingSummary,
+    isError: isErrorSummary,
+  } = useAudioSummaryByStaff();
+
+  const summaryItems = [
+    {
+      label: "Approved",
+      value: summary?.approved || 0,
+      variant: "success" as const,
+      icon: CheckCircle,
+    },
+    {
+      label: "Rejected",
+      value: summary?.rejected || 0,
+      variant: "danger" as const,
+      icon: AlertTriangle,
+    },
+    {
+      label: "Pending",
+      value: summary?.pending || 0,
+      variant: "warning" as const,
+      icon: Clock,
+    },
+    {
+      label: "Total",
+      value:
+        (summary?.approved || 0) +
+        (summary?.rejected || 0) +
+        (summary?.pending || 0),
+      variant: "info" as const,
+      icon: List,
+    },
+  ];
+
   const { audios, isLoading, isError, last_page } = useAudioByStaff({
     page: pagination.pageIndex + 1,
     limit: parseInt(limit, 10),
@@ -101,7 +140,7 @@ export function DataTable<TData, TValue>({
     initialState: {
       columnPinning: {
         left: [],
-        right: ['actions'],
+        right: ["actions"],
       },
     },
 
@@ -117,8 +156,8 @@ export function DataTable<TData, TValue>({
     onPaginationChange: setPagination,
   });
 
-  if (isLoading) return <Loading />;
-  if (isError) return <Error />;
+  if (isLoading || isLoadingSummary) return <Loading />;
+  if (isError || isErrorSummary) return <Error />;
   return (
     <div className='bg-white dark:bg-black border rounded-md p-6 aspect-square lg:aspect-auto flex justify-between flex-col'>
       <div className='flex flex-col items-start md:items-center md:flex-row justify-between gap-4'>
@@ -127,6 +166,7 @@ export function DataTable<TData, TValue>({
           <p className='text-sm'>Voices that Inspire, Stories that Connect.</p>
         </div>
       </div>
+      <SummaryStats items={summaryItems} />
       <div className='flex flex-wrap items-center py-4 gap-2 justify-between'>
         <Input
           placeholder='Filter title...'
@@ -173,15 +213,15 @@ export function DataTable<TData, TValue>({
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
+                  data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}
                       className={
                         cell.column.getIsPinned()
-                          ? 'sticky right-0 z-50 bg-white dark:bg-black'
-                          : ''
+                          ? "sticky right-0 z-50 bg-white dark:bg-black"
+                          : ""
                       }
                     >
                       {flexRender(
@@ -210,7 +250,7 @@ export function DataTable<TData, TValue>({
           <p className='font-semibold text-sm'>Rows per page</p>
           <Select onValueChange={(value) => setLimit(value)} defaultValue='10'>
             <SelectTrigger className='w-fit'>
-              <SelectValue defaultValue={'10'} />
+              <SelectValue defaultValue={"10"} />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
@@ -250,7 +290,7 @@ export function DataTable<TData, TValue>({
                   return (
                     <Button
                       key={idx}
-                      variant={isCurrentPage ? 'default' : 'outline'}
+                      variant={isCurrentPage ? "default" : "outline"}
                       size='sm'
                       onClick={() =>
                         setPagination({ ...pagination, pageIndex: idx })

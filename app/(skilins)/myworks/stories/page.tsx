@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-'use client';
-import ContentCard from '@/components/content-card';
-import TabsStatus from '@/components/tabs-status';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { ContentLayout } from '@/components/user-panel/content-layout';
-import withRole from '@/utils/with-role';
+"use client";
+import ContentCard from "@/components/content-card";
+import TabsStatus from "@/components/tabs-status";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { ContentLayout } from "@/components/user-panel/content-layout";
+import withRole from "@/utils/with-role";
 import {
   Binoculars,
   LibrarySquare,
@@ -13,29 +13,67 @@ import {
   Plus,
   SquareLibrary,
   Trash2,
-} from 'lucide-react';
-import Link from 'next/link';
-import { useState } from 'react';
+} from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import DeleteDialog from '@/components/staff-panel/delete-dialog';
-import { useUserStory } from '@/hooks/use-story';
-import { Card, CardContent } from '@/components/ui/card';
-import { Loading } from '@/components/loading';
-import { Error } from '@/components/error';
+} from "@/components/ui/dropdown-menu";
+import DeleteDialog from "@/components/staff-panel/delete-dialog";
+import { useStorySummaryByStudent, useStoryByStudent } from "@/hooks/use-story";
+import { Card, CardContent } from "@/components/ui/card";
+import { Loading } from "@/components/loading";
+import { Error } from "@/components/error";
+import { SummaryStats } from "@/components/summary-stats";
 
 function StoryStudent() {
-  const [contentStatus, setContentStatus] = useState('approved');
+  const [contentStatus, setContentStatus] = useState("approved");
+  const [currentPage, setCurrentPage] = useState(1);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const { stories, isLoading, isError } = useUserStory(1, 10, contentStatus);
+  const { stories, isLoading, isError, last_page } = useStoryByStudent({
+    page: currentPage,
+    limit: 10,
+    status: contentStatus,
+  });
 
-  if (isLoading) return <Loading />;
-  if (isError) return <Error />;
+  const {
+    summary,
+    isLoading: isLoadingSummary,
+    isError: isErrorSummary,
+  } = useStorySummaryByStudent();
+
+  const summaryItems = [
+    {
+      label: "Approved",
+      value: summary?.approved || 0,
+      variant: "success" as const,
+    },
+    {
+      label: "Rejected",
+      value: summary?.rejected || 0,
+      variant: "danger" as const,
+    },
+    {
+      label: "Pending",
+      value: summary?.pending || 0,
+      variant: "warning" as const,
+    },
+    {
+      label: "Total",
+      value:
+        (summary?.approved || 0) +
+        (summary?.rejected || 0) +
+        (summary?.pending || 0),
+      variant: "info" as const,
+    },
+  ];
+
+  if (isLoading || isLoadingSummary) return <Loading />;
+  if (isError || isErrorSummary) return <Error />;
 
   return (
     <ContentLayout title=''>
@@ -53,12 +91,13 @@ function StoryStudent() {
             </p>
           </div>
         </div>
-        <Link href={'stories/create'}>
+        <Link href={"stories/create"}>
           <Button>
             <LibrarySquare width={18} /> Create story
           </Button>
         </Link>
       </div>
+      <SummaryStats items={summaryItems} />
       <TabsStatus status={contentStatus} onUpdateStatus={setContentStatus} />
       {stories.length > 0 ? (
         <div className='w-full grid gap-2 grid-cols-2 md:grid-cols-5'>
@@ -114,7 +153,7 @@ function StoryStudent() {
                 <SquareLibrary className='w-32 h-32 md:w-52 md:h-52 text-muted-foreground' />
               </div>
               <p className='text-center font-semibold text-xl text-muted-foreground'>{`Hi, You haven't written any stories yet.`}</p>
-              <Link href={'stories/create'} className='mt-4'>
+              <Link href={"stories/create"} className='mt-4'>
                 <Button>
                   <Plus width={18} /> Create story
                 </Button>
@@ -123,8 +162,83 @@ function StoryStudent() {
           </Card>
         </>
       )}
+      {last_page > 1 && (
+        <div className='flex justify-center items-center mt-4'>
+          <Button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            className='mr-2'
+          >
+            Previous
+          </Button>
+          {last_page > 5 ? (
+            <>
+              {currentPage > 3 && (
+                <>
+                  <Button onClick={() => setCurrentPage(1)} className='mx-1'>
+                    1
+                  </Button>
+                  {currentPage > 4 && <span className='mx-1'>...</span>}
+                </>
+              )}
+              {Array.from({ length: Math.min(5, last_page) }, (_, index) => {
+                const pageIndex = index + Math.max(1, currentPage - 2);
+                if (pageIndex <= last_page) {
+                  return (
+                    <Button
+                      key={pageIndex}
+                      onClick={() => setCurrentPage(pageIndex)}
+                      className={`mx-1 ${
+                        currentPage === pageIndex
+                          ? "bg-blue-500 text-white"
+                          : "bg-gray-200"
+                      }`}
+                    >
+                      {pageIndex}
+                    </Button>
+                  );
+                }
+                return null;
+              })}
+              {currentPage < last_page - 2 && (
+                <>
+                  {currentPage < last_page - 3 && (
+                    <span className='mx-1'>...</span>
+                  )}
+                  <Button
+                    onClick={() => setCurrentPage(last_page)}
+                    className='mx-1'
+                  >
+                    {last_page}
+                  </Button>
+                </>
+              )}
+            </>
+          ) : (
+            Array.from({ length: last_page }, (_, index) => (
+              <Button
+                key={index + 1}
+                onClick={() => setCurrentPage(index + 1)}
+                className='mx-1'
+                variant={currentPage === index + 1 ? "default" : "outline"}
+              >
+                {index + 1}
+              </Button>
+            ))
+          )}
+          <Button
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, last_page))
+            }
+            disabled={currentPage === last_page}
+            className='ml-2'
+          >
+            Next
+          </Button>
+        </div>
+      )}
     </ContentLayout>
   );
 }
 
-export default withRole(StoryStudent, ['student'], '/auth/user/login');
+export default withRole(StoryStudent, ["student"], "/auth/user/login");

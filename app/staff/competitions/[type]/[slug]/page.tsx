@@ -1,10 +1,10 @@
-'use client';
+"use client";
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-} from '@/components/user-panel/ui/tabs';
+} from "@/components/user-panel/ui/tabs";
 import {
   CircleCheckBig,
   Crown,
@@ -13,26 +13,26 @@ import {
   Medal,
   Send,
   Users,
-} from 'lucide-react';
-import JudgeLayout from './judge-layout';
-import WinnerLayout from './winner-layout';
-import { AspectRatio } from '@/components/ui/aspect-ratio';
-import Image from 'next/image';
-import GuideLayout from './guide-layout';
-import SubmissionLayout from './submission-layout';
-import { Badge } from '@/components/ui/badge';
-import { notFound } from 'next/navigation';
-import { useState } from 'react';
-import { useCompetitionDetail } from '@/hooks/use-competition';
-import { Loading } from '@/components/loading';
-import { ContentLayout } from '@/components/staff-panel/content-layout';
+} from "lucide-react";
+import JudgeLayout from "@/components/shared/judge-layout";
+import WinnerLayout from "@/components/shared/winner-layout";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import Image from "next/image";
+import GuideLayout from "@/components/shared/guide-layout";
+import SubmissionLayout from "./submission-layout";
+import { Badge } from "@/components/ui/badge";
+import { notFound } from "next/navigation";
+import { useState } from "react";
+import { useCompetitionDetail } from "@/hooks/use-competition";
+import { Loading } from "@/components/loading";
+import { ContentLayout } from "@/components/staff-panel/content-layout";
 
 export default function CompetitionPage({
   params,
 }: {
   params: { slug: string; type: string };
 }) {
-  const [contentStatus, setContentStatus] = useState('approved');
+  const [contentStatus, setContentStatus] = useState("approved");
   const {
     competition: data,
     isLoading,
@@ -102,14 +102,14 @@ export default function CompetitionPage({
               <p className='text-sm text-muted-foreground'>Guide</p>
             </TabsTrigger>
             <TabsTrigger value='winner'>
-              {' '}
+              {" "}
               <span className='flex size-12 items-center justify-center rounded-md bg-muted transition-colors duration-300 group-data-[state=active]:bg-primary group-data-[state=active]:text-background'>
                 <Crown width={18} />
               </span>
               <p className='text-sm text-muted-foreground'>Winner</p>
             </TabsTrigger>
             <TabsTrigger value='judge'>
-              {' '}
+              {" "}
               <span className='flex size-12 items-center justify-center rounded-md bg-muted transition-colors duration-300 group-data-[state=active]:bg-primary group-data-[state=active]:text-background'>
                 <Users width={18} />
               </span>

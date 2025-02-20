@@ -1,6 +1,6 @@
-import { fetcher } from '@/utils/fetcher';
-import useSWR from 'swr';
-import useSWRInfinite from 'swr/infinite';
+import { fetcher } from "@/utils/fetcher";
+import useSWR from "swr";
+import useSWRInfinite from "swr/infinite";
 
 type EbookFilter = {
   page: number;
@@ -27,12 +27,12 @@ export function useEbook({
     page: page.toString(),
     limit: limit.toString(),
   });
-  if (search) params.append('search', search);
-  if (category) params.append('category', category);
-  if (tag) params.append('tag', tag);
-  if (genre) params.append('genre', genre);
-  if (type) params.append('type', type);
-  if (latest) params.append('latest', latest.toString());
+  if (search) params.append("search", search);
+  if (category) params.append("category", category);
+  if (tag) params.append("tag", tag);
+  if (genre) params.append("genre", genre);
+  if (type) params.append("type", type);
+  if (latest) params.append("latest", latest.toString());
 
   const { data, error, mutate } = useSWR(
     `/contents/ebooks?${params.toString()}`,
@@ -48,13 +48,23 @@ export function useEbook({
   };
 }
 
-export function useEbookInfinite() {
+export function useEbookInfinite(filter?: Partial<EbookFilter>) {
   const getKey = (pageIndex: number, previousPageData: any) => {
     if (previousPageData && !previousPageData.data) return null;
 
-    if (pageIndex === 0) return `/contents/ebooks?page=1&limit=12`;
+    const params = new URLSearchParams({
+      page: (pageIndex + 1).toString(),
+      limit: "12",
+    });
 
-    return `/contents/ebooks?page=${pageIndex + 1}&limit=12`;
+    if (filter?.search) params.append("search", filter.search);
+    if (filter?.category) params.append("category", filter.category);
+    if (filter?.tag) params.append("tag", filter.tag);
+    if (filter?.genre) params.append("genre", filter.genre);
+    if (filter?.type) params.append("type", filter.type);
+    if (filter?.latest) params.append("latest", filter.latest.toString());
+
+    return `/contents/ebooks?${params.toString()}`;
   };
 
   const { data, error, size, setSize, isLoading, mutate } = useSWRInfinite(
@@ -64,7 +74,7 @@ export function useEbookInfinite() {
 
   const ebooks = data ? [].concat(...data.map((page) => page.data)) : [];
   const isLoadingMore =
-    isLoading || (size > 0 && data && typeof data[size - 1] === 'undefined');
+    isLoading || (size > 0 && data && typeof data[size - 1] === "undefined");
   const isEmpty = data?.[0]?.data?.length === 0;
   const isReachingEnd =
     isEmpty ||

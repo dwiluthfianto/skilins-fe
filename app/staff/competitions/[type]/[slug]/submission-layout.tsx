@@ -1,25 +1,25 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import ContentCard from '@/components/content-card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import ContentCard from "@/components/content-card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   CircleOff,
   MoreHorizontal,
   Send,
   Signature,
   Trash2,
-} from 'lucide-react';
-import { FC, useState } from 'react';
+} from "lucide-react";
+import { FC, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import DeleteDialog from '@/components/staff-panel/delete-dialog';
-import ApproveDialog from '@/components/staff-panel/approve-dialog';
-import RejectDialog from '@/components/staff-panel/reject-dialog';
+} from "@/components/ui/dropdown-menu";
+import DeleteDialog from "@/components/staff-panel/delete-dialog";
+import ApproveDialog from "@/components/staff-panel/approve-dialog";
+import RejectDialog from "@/components/staff-panel/reject-dialog";
 
 interface SubmissionProps {
   onUpdateStatus: (status: string) => void;
@@ -39,7 +39,7 @@ const SubmissionLayout: FC<SubmissionProps> = ({
     <section className='w-full py-6'>
       <div className='container mx-auto'>
         <div className='flex text-center justify-center items-center gap-4 flex-col'>
-          <Badge variant={'outline'}>
+          <Badge variant={"outline"}>
             <Send width={14} className='mr-2' />
             Submission
           </Badge>
@@ -55,41 +55,39 @@ const SubmissionLayout: FC<SubmissionProps> = ({
       </div>
       <div className='space-x-2 py-8'>
         <Button
-          variant={status === 'approved' ? 'default' : 'outline'}
-          onClick={() => onUpdateStatus('approved')}
+          variant={status === "approved" ? "default" : "outline"}
+          onClick={() => onUpdateStatus("approved")}
         >
           approved
         </Button>
         <Button
-          variant={status === 'pending' ? 'default' : 'outline'}
-          onClick={() => onUpdateStatus('pending')}
+          variant={status === "pending" ? "default" : "outline"}
+          onClick={() => onUpdateStatus("pending")}
         >
           pending
         </Button>
         <Button
-          variant={status === 'rejected' ? 'default' : 'outline'}
-          onClick={() => onUpdateStatus('rejected')}
+          variant={status === "rejected" ? "default" : "outline"}
+          onClick={() => onUpdateStatus("rejected")}
         >
           Rejected
         </Button>
       </div>
       <div className='w-full grid gap-2 grid-cols-2 md:grid-cols-5'>
         {submissions.map((item: any) => {
-          console.log(item);
-
           return (
             <div className='relative' key={item.content.slug}>
-              {' '}
-              {item.content.type === 'audio' ? (
+              {" "}
+              {item.content.type === "audio" ? (
                 <ContentCard
-                  href={`/audio-podcasts/${item.content.slug}`}
+                  href={`/staff/student-works/audio-podcasts/${item.content.slug}`}
                   variant='audio'
                   imageSrc={item.content.thumbnail}
                   title={item.content.title}
                 />
-              ) : item.content.type === 'video' ? (
+              ) : item.content.type === "video" ? (
                 <ContentCard
-                  href={`/video-podcasts/${item.content.slug}`}
+                  href={`/staff/student-works/video-podcasts/${item.content.slug}`}
                   variant='video'
                   imageSrc={item.content.thumbnail}
                   title={item.content.title}
@@ -97,7 +95,7 @@ const SubmissionLayout: FC<SubmissionProps> = ({
               ) : (
                 <ContentCard
                   className='max-w-[250px]'
-                  href={`/prakerin/${item.content.slug}`}
+                  href={`/staff/student-works/prakerin/${item.content.slug}`}
                   variant='default'
                   imageSrc={item.content.thumbnail}
                   title={item.content.title}
@@ -114,7 +112,7 @@ const SubmissionLayout: FC<SubmissionProps> = ({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align='end'>
-                  {item.content.status === 'pending' && (
+                  {item.content.status === "pending" && (
                     <>
                       <DropdownMenuLabel>Status</DropdownMenuLabel>
                       <DropdownMenuItem

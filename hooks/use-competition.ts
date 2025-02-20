@@ -1,6 +1,6 @@
-import { fetcher } from '@/utils/fetcher';
-import useSWR from 'swr';
-import useSWRInfinite from 'swr/infinite';
+import { fetcher } from "@/utils/fetcher";
+import useSWR from "swr";
+import useSWRInfinite from "swr/infinite";
 
 type CompetitionFilter = {
   page: number;
@@ -22,9 +22,9 @@ export function useCompetition({
     limit: limit.toString(),
   });
 
-  if (search) params.append('search', search);
-  if (type) params.append('type', type);
-  if (status) params.append('status', status.toString());
+  if (search) params.append("search", search);
+  if (type) params.append("type", type);
+  if (status) params.append("status", status.toString());
 
   const { data, error, mutate } = useSWR(
     `/competitions?${params.toString()}`,
@@ -51,12 +51,20 @@ export function useCompetitionBySlug(slug: string) {
   };
 }
 
-export function useCompetitionInfinite() {
+export function useCompetitionInfinite(filter?: Partial<CompetitionFilter>) {
   const getKey = (pageIndex: number, previousPageData: any) => {
     if (previousPageData && !previousPageData.data) return null;
 
-    if (pageIndex === 0) return `/competitions?page=1&limit=12`;
-    return `/competitions?page=${pageIndex + 1}&limit=12`;
+    const params = new URLSearchParams({
+      page: (pageIndex + 1).toString(),
+      limit: "12",
+    });
+
+    if (filter?.search) params.append("search", filter.search);
+    if (filter?.type) params.append("type", filter.type);
+    if (filter?.status) params.append("status", filter.status.toString());
+
+    return `/competitions?${params.toString()}`;
   };
 
   const { data, error, size, setSize, isLoading, mutate } = useSWRInfinite(
@@ -66,7 +74,7 @@ export function useCompetitionInfinite() {
 
   const competitions = data ? [].concat(...data.map((page) => page.data)) : [];
   const isLoadingMore =
-    isLoading || (size > 0 && data && typeof data[size - 1] === 'undefined');
+    isLoading || (size > 0 && data && typeof data[size - 1] === "undefined");
   const isEmpty = data?.[0]?.data?.length === 0;
   const isReachingEnd =
     isEmpty ||

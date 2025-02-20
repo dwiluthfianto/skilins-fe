@@ -19,11 +19,12 @@ import {
 } from "@/components/ui/chart";
 import { useAnalyticsCountContent } from "@/hooks/use-analytics";
 import { format, subMonths } from "date-fns";
-
+import { Loading } from "@/components/loading";
+import { Error } from "@/components/error";
 export const description = "A bar chart with an active bar";
 
 export default function ContentChart() {
-  const { data, isLoading, isError } = useAnalyticsCountContent();
+  const { contentStats, isLoading, isError } = useAnalyticsCountContent();
 
   const chartConfig = {
     contents: {
@@ -33,15 +34,19 @@ export default function ContentChart() {
       label: "Ebook",
       color: "hsl(var(--chart-1))",
     },
-    novel: {
-      label: "Novel",
+    story: {
+      label: "Story",
       color: "hsl(var(--chart-1))",
     },
-    audioPodcast: {
+    prakerin: {
+      label: "Prakerin",
+      color: "hsl(var(--chart-1))",
+    },
+    audio: {
       label: "Audio",
       color: "hsl(var(--chart-1))",
     },
-    videoPodcast: {
+    video: {
       label: "Video",
       color: "hsl(var(--chart-1))",
     },
@@ -54,27 +59,32 @@ export default function ContentChart() {
   const chartData = [
     {
       content: "ebook",
-      counts: data?.contentType.ebook,
+      counts: contentStats?.content_types.ebook,
       fill: "var(--color-ebook)",
     },
     {
-      content: "novel",
-      counts: data?.contentType.novel,
-      fill: "var(--color-novel)",
+      content: "story",
+      counts: contentStats?.content_types.story,
+      fill: "var(--color-story)",
     },
     {
-      content: "audioPodcast",
-      counts: data?.contentType.audioPodcast,
-      fill: "var(--color-audioPodcast)",
+      content: "prakerin",
+      counts: contentStats?.content_types.prakerin,
+      fill: "var(--color-prakerin)",
     },
     {
-      content: "videoPodcast",
-      counts: data?.contentType.videoPodcast,
-      fill: "var(--color-videoPodcast)",
+      content: "audio",
+      counts: contentStats?.content_types.audio,
+      fill: "var(--color-audio)",
+    },
+    {
+      content: "video",
+      counts: contentStats?.content_types.video,
+      fill: "var(--color-video)",
     },
     {
       content: "blog",
-      counts: data?.contentType.blog,
+      counts: contentStats?.content_types.blog,
       fill: "var(--color-blog)",
     },
   ];
@@ -93,8 +103,8 @@ export default function ContentChart() {
 
   const lastSixMonthsRange = getLastSixMonthsRange();
 
-  if (isLoading) return <h1>loading</h1>;
-  if (isError) return <h1>error</h1>;
+  if (isLoading) return <Loading />;
+  if (isError) return <Error />;
 
   return (
     <Card>
@@ -107,7 +117,7 @@ export default function ContentChart() {
           <BarChart accessibilityLayer data={chartData}>
             <CartesianGrid vertical={false} />
             <XAxis
-              dataKey="content"
+              dataKey='content'
               tickLine={false}
               tickMargin={10}
               axisLine={false}
@@ -120,7 +130,7 @@ export default function ContentChart() {
               content={<ChartTooltipContent hideLabel />}
             />
             <Bar
-              dataKey="counts"
+              dataKey='counts'
               strokeWidth={2}
               radius={8}
               activeIndex={2}
@@ -139,16 +149,16 @@ export default function ContentChart() {
           </BarChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="flex gap-2 font-medium leading-none">
-          Trending up by {data?.trendingStat}% this month{" "}
-          {data?.trendingStat <= 0 ? (
-            <TrendingDown className="w-4 h-4" />
+      <CardFooter className='flex-col items-start gap-2 text-sm'>
+        <div className='flex gap-2 font-medium leading-none'>
+          Trending up by {contentStats?.trending_stat}% this month{" "}
+          {contentStats?.trending_stat <= 0 ? (
+            <TrendingDown className='w-4 h-4' />
           ) : (
-            <TrendingUp className="w-4 h-4" />
+            <TrendingUp className='w-4 h-4' />
           )}
         </div>
-        <div className="leading-none text-muted-foreground">
+        <div className='leading-none text-muted-foreground'>
           Showing total of contents for the last 6 months
         </div>
       </CardFooter>

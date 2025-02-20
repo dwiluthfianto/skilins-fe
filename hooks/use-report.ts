@@ -1,6 +1,6 @@
-import { fetcher } from '@/utils/fetcher';
-import useSWR from 'swr';
-import useSWRInfinite from 'swr/infinite';
+import { fetcher } from "@/utils/fetcher";
+import useSWR from "swr";
+import useSWRInfinite from "swr/infinite";
 
 type PrakerinFilter = {
   page: number;
@@ -15,8 +15,8 @@ export function useReport({ page, limit, search, latest }: PrakerinFilter) {
     page: page.toString(),
     limit: limit.toString(),
   });
-  if (search) params.append('search', search);
-  if (latest) params.append('latest', latest.toString());
+  if (search) params.append("search", search);
+  if (latest) params.append("latest", latest.toString());
 
   const { data, error, mutate } = useSWR(
     `/contents/prakerin?${params.toString()}`,
@@ -32,13 +32,20 @@ export function useReport({ page, limit, search, latest }: PrakerinFilter) {
   };
 }
 
-export function useReportInfinite() {
+export function useReportInfinite(filter?: Partial<PrakerinFilter>) {
   const getKey = (pageIndex: number, previousPageData: any) => {
     if (previousPageData && !previousPageData.data) return null;
 
-    if (pageIndex === 0) return `/contents/prakerin?page=1&limit=12`;
+    const params = new URLSearchParams({
+      page: (pageIndex + 1).toString(),
+      limit: "12",
+    });
 
-    return `/contents/prakerin?page=${pageIndex + 1}&limit=12`;
+    if (filter?.search) params.append("search", filter.search);
+    if (filter?.latest) params.append("latest", filter.latest.toString());
+    if (filter?.status) params.append("status", filter.status.toString());
+
+    return `/contents/prakerin?${params.toString()}`;
   };
 
   const { data, error, size, setSize, isLoading, mutate } = useSWRInfinite(
@@ -48,7 +55,7 @@ export function useReportInfinite() {
 
   const prakerin = data ? [].concat(...data.map((page) => page.data)) : [];
   const isLoadingMore =
-    isLoading || (size > 0 && data && typeof data[size - 1] === 'undefined');
+    isLoading || (size > 0 && data && typeof data[size - 1] === "undefined");
   const isEmpty = data?.[0]?.data?.length === 0;
   const isReachingEnd =
     isEmpty ||
@@ -79,9 +86,9 @@ export function useReportByStaff({
     page: page.toString(),
     limit: limit.toString(),
   });
-  if (search) params.append('search', search);
-  if (latest) params.append('latest', latest.toString());
-  if (status) params.append('status', status.toString());
+  if (search) params.append("search", search);
+  if (latest) params.append("latest", latest.toString());
+  if (status) params.append("status", status.toString());
 
   const { data, error, mutate } = useSWR(
     `/contents/prakerin/staff?${params.toString()}`,
@@ -113,6 +120,20 @@ export function useReportByStudent() {
 
   return {
     prakerin: data?.data,
+    isLoading: !error && !data,
+    isError: error,
+    mutate,
+  };
+}
+
+export function useReportSummaryByStaff() {
+  const { data, error, mutate } = useSWR(
+    `/contents/prakerin/summary-staff`,
+    fetcher
+  );
+
+  return {
+    summary: data?.data,
     isLoading: !error && !data,
     isError: error,
     mutate,

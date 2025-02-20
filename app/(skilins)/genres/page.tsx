@@ -1,20 +1,21 @@
-'use client';
-import { Loading } from '@/components/loading';
-import { Error } from '@/components/error';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { ContentLayout } from '@/components/user-panel/content-layout';
-import { useGenre } from '@/hooks/use-genre';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { useSearchParams } from 'next/navigation';
-import React from 'react';
-import { useInView } from 'react-intersection-observer';
+"use client";
+import { Loading } from "@/components/loading";
+import { Error } from "@/components/error";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { ContentLayout } from "@/components/user-panel/content-layout";
+import { useGenre } from "@/hooks/use-genre";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import React from "react";
+import { useInView } from "react-intersection-observer";
+import Link from "next/link";
 
 export default function GenrePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const initialQuery = searchParams.get('q') || '';
+  const initialQuery = searchParams.get("q") || "";
   const [searchQuery, setSearchQuery] = React.useState(initialQuery);
   const [activeQuery, setActiveQuery] = React.useState(initialQuery);
   const { ref, inView } = useInView();
@@ -29,13 +30,13 @@ export default function GenrePage() {
   }, [inView, isLoadingMore, isReachingEnd]);
 
   const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       setActiveQuery(searchQuery);
       const params = new URLSearchParams(searchParams);
       if (searchQuery) {
-        params.set('q', searchQuery);
+        params.set("q", searchQuery);
       } else {
-        params.delete('q');
+        params.delete("q");
       }
       router.replace(`/genres?${params.toString()}`, { scroll: false });
     }
@@ -71,8 +72,9 @@ export default function GenrePage() {
         </div>
         <div className='z-30 grid gap-6 md:grid-cols-3 lg:grid-cols-4'>
           {genres?.map((genre: any) => (
-            <div
+            <Link
               key={genre.uuid}
+              href={`/genres/${genre.name.toLowerCase()}`}
               className='flex flex-col gap-10 rounded-lg border bg-background p-8'
             >
               <div>
@@ -86,7 +88,7 @@ export default function GenrePage() {
                       priority={false}
                     />
                   ) : (
-                    ''
+                    ""
                   )}
                 </div>
                 <h3 className='mb-1 mt-2 font-medium'>{genre.name}</h3>
@@ -94,7 +96,7 @@ export default function GenrePage() {
                   {genre.description}
                 </p>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 

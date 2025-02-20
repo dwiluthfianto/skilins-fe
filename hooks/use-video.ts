@@ -1,6 +1,6 @@
-import { fetcher } from '@/utils/fetcher';
-import useSWR from 'swr';
-import useSWRInfinite from 'swr/infinite';
+import { fetcher } from "@/utils/fetcher";
+import useSWR from "swr";
+import useSWRInfinite from "swr/infinite";
 
 type VideoFilter = {
   page: number;
@@ -28,12 +28,12 @@ export function useVideo({
     page: page.toString(),
     limit: limit.toString(),
   });
-  if (search) params.append('search', search);
-  if (category) params.append('category', category);
-  if (tag) params.append('tag', tag);
-  if (genre) params.append('genre', genre);
-  if (type) params.append('type', type);
-  if (latest) params.append('latest', latest.toString());
+  if (search) params.append("search", search);
+  if (category) params.append("category", category);
+  if (tag) params.append("tag", tag);
+  if (genre) params.append("genre", genre);
+  if (type) params.append("type", type);
+  if (latest) params.append("latest", latest.toString());
 
   const { data, error, mutate } = useSWR(
     `/contents/videos?${params.toString()}`,
@@ -49,13 +49,23 @@ export function useVideo({
   };
 }
 
-export function useVideoInfinite() {
+export function useVideoInfinite(filter?: Partial<VideoFilter>) {
   const getKey = (pageIndex: number, previousPageData: any) => {
     if (previousPageData && !previousPageData.data) return null;
 
-    if (pageIndex === 0) return `/contents/videos?page=1&limit=12`;
+    const params = new URLSearchParams({
+      page: (pageIndex + 1).toString(),
+      limit: "12",
+    });
 
-    return `/contents/videos?page=${pageIndex + 1}&limit=12`;
+    if (filter?.search) params.append("search", filter.search);
+    if (filter?.category) params.append("category", filter.category);
+    if (filter?.tag) params.append("tag", filter.tag);
+    if (filter?.genre) params.append("genre", filter.genre);
+    if (filter?.type) params.append("type", filter.type);
+    if (filter?.latest) params.append("latest", filter.latest.toString());
+
+    return `/contents/videos?${params.toString()}`;
   };
 
   const { data, error, size, setSize, isLoading, mutate } = useSWRInfinite(
@@ -65,7 +75,7 @@ export function useVideoInfinite() {
 
   const videos = data ? [].concat(...data.map((page) => page.data)) : [];
   const isLoadingMore =
-    isLoading || (size > 0 && data && typeof data[size - 1] === 'undefined');
+    isLoading || (size > 0 && data && typeof data[size - 1] === "undefined");
   const isEmpty = data?.[0]?.data?.length === 0;
   const isReachingEnd =
     isEmpty ||
@@ -100,13 +110,13 @@ export function useVideoByStaff({
     page: page.toString(),
     limit: limit.toString(),
   });
-  if (search) params.append('search', search);
-  if (category) params.append('category', category);
-  if (tag) params.append('tag', tag);
-  if (genre) params.append('genre', genre);
-  if (type) params.append('type', type);
-  if (latest) params.append('latest', latest.toString());
-  if (status) params.append('status', status);
+  if (search) params.append("search", search);
+  if (category) params.append("category", category);
+  if (tag) params.append("tag", tag);
+  if (genre) params.append("genre", genre);
+  if (type) params.append("type", type);
+  if (latest) params.append("latest", latest.toString());
+  if (status) params.append("status", status);
 
   const { data, error, mutate } = useSWR(
     `/contents/videos/staff?${params.toString()}`,
@@ -122,28 +132,18 @@ export function useVideoByStaff({
   };
 }
 
-export function useVideoByStudent({
-  page,
-  limit,
-  search,
-  category,
-  tag,
-  genre,
-  type,
-  latest,
-  status,
-}: VideoFilter) {
+export function useVideoByStudent(filter?: Partial<VideoFilter>) {
   const params = new URLSearchParams({
-    page: page.toString(),
-    limit: limit.toString(),
+    page: filter?.page?.toString() || "1",
+    limit: filter?.limit?.toString() || "12",
   });
-  if (search) params.append('search', search);
-  if (category) params.append('category', category);
-  if (tag) params.append('tag', tag);
-  if (genre) params.append('genre', genre);
-  if (type) params.append('type', type);
-  if (latest) params.append('latest', latest.toString());
-  if (status) params.append('status', status);
+  if (filter?.search) params.append("search", filter.search);
+  if (filter?.category) params.append("category", filter.category);
+  if (filter?.tag) params.append("tag", filter.tag);
+  if (filter?.genre) params.append("genre", filter.genre);
+  if (filter?.type) params.append("type", filter.type);
+  if (filter?.latest) params.append("latest", filter.latest.toString());
+  if (filter?.status) params.append("status", filter.status);
   const { data, error, mutate } = useSWR(
     `/contents/videos/student?${params.toString()}`,
     fetcher
@@ -163,6 +163,34 @@ export function useVideoBySlug(slug: string) {
 
   return {
     video: data?.data,
+    isLoading: !error && !data,
+    isError: error,
+    mutate,
+  };
+}
+
+export function useVideoSummaryByStaff() {
+  const { data, error, mutate } = useSWR(
+    `/contents/videos/summary-staff`,
+    fetcher
+  );
+
+  return {
+    summary: data?.data,
+    isLoading: !error && !data,
+    isError: error,
+    mutate,
+  };
+}
+
+export function useVideoSummaryByStudent() {
+  const { data, error, mutate } = useSWR(
+    `/contents/videos/summary-student`,
+    fetcher
+  );
+
+  return {
+    summary: data?.data,
     isLoading: !error && !data,
     isError: error,
     mutate,

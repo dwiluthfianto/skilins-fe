@@ -1,18 +1,19 @@
-'use client';
-import { Input } from '@/components/ui/input';
-import { ContentLayout } from '@/components/user-panel/content-layout';
-import { useTag } from '@/hooks/use-tag';
-import React from 'react';
-import { useInView } from 'react-intersection-observer';
-import { useSearchParams, useRouter } from 'next/navigation';
-import Image from 'next/image';
-import { Badge } from '@/components/ui/badge';
-import { Loading } from '@/components/loading';
-import { Error } from '@/components/error';
+"use client";
+import { Input } from "@/components/ui/input";
+import { ContentLayout } from "@/components/user-panel/content-layout";
+import { useTag } from "@/hooks/use-tag";
+import React from "react";
+import { useInView } from "react-intersection-observer";
+import { useSearchParams, useRouter } from "next/navigation";
+import Image from "next/image";
+import { Badge } from "@/components/ui/badge";
+import { Loading } from "@/components/loading";
+import { Error } from "@/components/error";
+import Link from "next/link";
 export default function TagsPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const initialQuery = searchParams.get('q') || '';
+  const initialQuery = searchParams.get("q") || "";
   const [searchQuery, setSearchQuery] = React.useState(initialQuery);
   const [activeQuery, setActiveQuery] = React.useState(initialQuery);
   const { ref, inView } = useInView();
@@ -27,13 +28,13 @@ export default function TagsPage() {
   }, [inView, isLoadingMore, isReachingEnd]);
 
   const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       setActiveQuery(searchQuery);
       const params = new URLSearchParams(searchParams);
       if (searchQuery) {
-        params.set('q', searchQuery);
+        params.set("q", searchQuery);
       } else {
-        params.delete('q');
+        params.delete("q");
       }
       router.replace(`/tags?${params.toString()}`, { scroll: false });
     }
@@ -69,8 +70,9 @@ export default function TagsPage() {
         </div>
         <div className='z-30 grid gap-6 md:grid-cols-3 lg:grid-cols-4'>
           {tags?.map((tag: any) => (
-            <div
+            <Link
               key={tag.uuid}
+              href={`/tags/${tag.name.toLowerCase()}`}
               className='flex flex-col gap-10 rounded-lg border bg-background p-8'
             >
               <div>
@@ -84,7 +86,7 @@ export default function TagsPage() {
                       priority={false}
                     />
                   ) : (
-                    ''
+                    ""
                   )}
                 </div>
                 <h3 className='mb-1 mt-2 font-medium'>#{tag.name}</h3>
@@ -92,7 +94,7 @@ export default function TagsPage() {
                   {tag.description}
                 </p>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 
