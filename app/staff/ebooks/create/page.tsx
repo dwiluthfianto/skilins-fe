@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Tag, TagInput } from 'emblor';
-import { Button } from '@/components/ui/button';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import axios from '@/utils/axios';
-import { toast } from '@/hooks/use-toast';
-import { AxiosError } from 'axios';
+import { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tag, TagInput } from "emblor";
+import { Button } from "@/components/ui/button";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "@/utils/axios";
+import { toast } from "@/hooks/use-toast";
+import { AxiosError } from "axios";
 import {
   Form,
   FormControl,
@@ -17,53 +17,53 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import ImageUploader from '@/components/imageUploader';
-import { useRouter } from 'next/navigation';
-import { CalendarIcon, Loader2 } from 'lucide-react';
-import { Separator } from '@/components/ui/separator';
-import { ContentLayout } from '@/components/staff-panel/content-layout';
-import { useTag } from '@/hooks/use-tag';
-import { AutoComplete } from '@/components/autocomplete';
-import { useCategorySearch } from '@/hooks/use-category';
-import { Input } from '@/components/ui/input';
-import { AutosizeTextarea } from '@/components/autosize-textarea';
+} from "@/components/ui/form";
+import ImageUploader from "@/components/imageUploader";
+import { useRouter } from "next/navigation";
+import { CalendarIcon, Loader2 } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { ContentLayout } from "@/components/staff-panel/content-layout";
+import { useTag } from "@/hooks/use-tag";
+import { AutoComplete } from "@/components/autocomplete";
+import { useCategorySearch } from "@/hooks/use-category";
+import { Input } from "@/components/ui/input";
+import { AutosizeTextarea } from "@/components/autosize-textarea";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
-import { format } from 'date-fns';
-import { CustomCalendar } from '@/components/ui/custom-calendar';
-import { cn } from '@/lib/utils';
-import { useGenre } from '@/hooks/use-genre';
-import MinimalTiptapOne from '@/components/minimal-tiptap/minimal-tiptap-one';
-import FileUploader from '@/components/file-uploader';
-import { handleAxiosError } from '@/utils/handle-axios-error';
+} from "@/components/ui/popover";
+import { format } from "date-fns";
+import { CustomCalendar } from "@/components/ui/custom-calendar";
+import { cn } from "@/lib/utils";
+import { useGenre } from "@/hooks/use-genre";
+import MinimalTiptapOne from "@/components/minimal-tiptap/minimal-tiptap-one";
+import FileUploader from "@/components/file-uploader";
+import { handleAxiosError } from "@/utils/handle-axios-error";
 import {
   MAX_IMAGE_SIZE,
   VALID_IMAGE_TYPES,
   MAX_DOCUMENT_SIZE,
   VALID_DOCUMENT_TYPES,
-} from '@/lib/file-validation';
+} from "@/lib/file-validation";
 import {
   GuidedFormLayout,
   useGuidedField,
-} from '@/components/form-guidance/guided-form-layout';
-import { EBOOK_TOOLTIPS } from '@/lib/tooltips';
+} from "@/components/form-guidance/guided-form-layout";
+import { EBOOK_TOOLTIPS } from "@/lib/tooltips";
 const ContentSchema = z.object({
   title: z
     .string()
-    .min(5, { message: 'Title must be longer than or equal to 5 characters' }),
+    .min(5, { message: "Title must be longer than or equal to 5 characters" }),
   thumbnail: z
     .instanceof(File)
     .refine((file) => file && VALID_IMAGE_TYPES.includes(file.type), {
-      message: 'Invalid image file type',
+      message: "Invalid image file type",
     })
     .refine((file) => file.size <= MAX_IMAGE_SIZE, {
-      message: 'File size must be less than 2MB',
+      message: "File size must be less than 2MB",
     }),
-  description: z.string().min(1, { message: 'Description is required.' }),
+  description: z.string().min(1, { message: "Description is required." }),
   tags: z
     .array(
       z.object({
@@ -72,20 +72,20 @@ const ContentSchema = z.object({
       })
     )
     .optional(),
-  category: z.string().min(1, { message: 'Category is required.' }),
-  author: z.string().min(1, { message: 'Author is required.' }),
+  category: z.string().min(1, { message: "Category is required." }),
+  author: z.string().min(1, { message: "Author is required." }),
   pages: z
     .number()
-    .min(1, { message: 'Pages must be greater than 0.' })
+    .min(1, { message: "Pages must be greater than 0." })
     .nonnegative(),
   publication: z.string().optional(),
   file: z
     .instanceof(File)
     .refine((file) => file && VALID_DOCUMENT_TYPES.includes(file.type), {
-      message: 'Invalid document file type',
+      message: "Invalid document file type",
     })
     .refine((file) => file.size <= MAX_DOCUMENT_SIZE, {
-      message: 'File size must be less than 2MB',
+      message: "File size must be less than 2MB",
     }),
   isbn: z.string().optional(),
   release_date: z.date(),
@@ -103,17 +103,17 @@ export default function CreateEbooks() {
   const form = useForm<z.infer<typeof ContentSchema>>({
     resolver: zodResolver(ContentSchema),
     defaultValues: {
-      title: '',
+      title: "",
       thumbnail: undefined,
-      description: '',
+      description: "",
       tags: [],
-      category: '',
+      category: "",
       pages: undefined,
       file: undefined,
-      author: '',
-      publication: '',
+      author: "",
+      publication: "",
       release_date: new Date(),
-      isbn: '',
+      isbn: "",
       genres: [],
     },
   });
@@ -127,44 +127,44 @@ export default function CreateEbooks() {
   const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
 
-  const { categories, isLoading } = useCategorySearch(form.watch('category'));
+  const { categories, isLoading } = useCategorySearch(form.watch("category"));
 
   async function onSubmit(data: z.infer<typeof ContentSchema>) {
     setLoading(true);
 
     const formData = new FormData();
-    if (data.thumbnail) formData.append('thumbnail', data.thumbnail);
-    formData.append('title', data.title);
-    formData.append('description', data.description);
-    formData.append('tags', JSON.stringify(data.tags));
-    formData.append('genres', JSON.stringify(data.genres));
-    formData.append('category_name', data.category);
-    formData.append('pages', String(data.pages));
-    if (file) formData.append('file', file);
-    formData.append('author', data.author);
-    formData.append('publication', data.publication || '');
-    formData.append('isbn', data.isbn || '');
-    formData.append('release_date', String(data.release_date));
+    if (data.thumbnail) formData.append("thumbnail", data.thumbnail);
+    formData.append("title", data.title);
+    formData.append("description", data.description);
+    formData.append("tags", JSON.stringify(data.tags));
+    formData.append("genres", JSON.stringify(data.genres));
+    formData.append("category_name", data.category);
+    formData.append("pages", String(data.pages));
+    if (file) formData.append("file", file);
+    formData.append("author", data.author);
+    formData.append("publication", data.publication || "");
+    formData.append("isbn", data.isbn || "");
+    formData.append("release_date", String(data.release_date));
 
     try {
       const { data: ebookData } = await axios.post(
-        '/contents/ebooks',
+        "/contents/ebooks",
         formData,
         {
           headers: {
-            'Content-Type': 'multipart/form-data',
+            "Content-Type": "multipart/form-data",
           },
         }
       );
 
       toast({
-        title: 'Success!',
+        title: "Success!",
         description: ebookData.message,
       });
 
-      router.push('/staff/ebooks');
+      router.push("/staff/ebooks");
     } catch (error) {
-      handleAxiosError(error, 'An error occurred while create ebook.');
+      handleAxiosError(error, "An error occurred while create ebook.");
     } finally {
       setLoading(false);
     }
@@ -185,7 +185,7 @@ export default function CreateEbooks() {
                     render={() => (
                       <ImageUploader
                         onChange={(file) =>
-                          file && form.setValue('thumbnail', file)
+                          file && form.setValue("thumbnail", file)
                         }
                         ratioImage={3 / 4}
                       />
@@ -199,7 +199,7 @@ export default function CreateEbooks() {
                         <FormControl>
                           <AutosizeTextarea
                             {...field}
-                            {...useGuidedField('title')}
+                            {...useGuidedField("title")}
                             placeholder='New ebook title here...'
                             className='outline-none w-full text-4xl p-0 border-none  shadow-none focus-visible:ring-0  font-bold placeholder:text-slate-700 h-full resize-none overflow-hidden '
                           />
@@ -212,7 +212,7 @@ export default function CreateEbooks() {
                     control={form.control}
                     name='author'
                     render={({ field }) => (
-                      <FormItem {...useGuidedField('author')}>
+                      <FormItem {...useGuidedField("author")}>
                         <FormControl>
                           <Input
                             {...field}
@@ -229,10 +229,10 @@ export default function CreateEbooks() {
                     control={form.control}
                     name='category'
                     render={({ field }) => (
-                      <FormItem {...useGuidedField('category')}>
+                      <FormItem {...useGuidedField("category")}>
                         <FormControl>
                           <AutoComplete
-                            selectedValue={form.watch('category')}
+                            selectedValue={form.watch("category")}
                             onSelectedValueChange={(value) =>
                               field.onChange(value)
                             }
@@ -253,32 +253,32 @@ export default function CreateEbooks() {
                     control={form.control}
                     name='tags'
                     render={({ field }) => (
-                      <FormItem {...useGuidedField('tags')}>
+                      <FormItem {...useGuidedField("tags")}>
                         <FormControl>
                           <TagInput
                             {...field}
                             tags={tags}
                             setTags={(newTags) => {
                               setTags(newTags);
-                              form.setValue('tags', newTags as [Tag, ...Tag[]]);
+                              form.setValue("tags", newTags as [Tag, ...Tag[]]);
                             }}
                             placeholder='Add up to 4 tags...'
                             styleClasses={{
                               input:
-                                'w-full h-fit outline-none border-none shadow-none  text-base p-0',
-                              inlineTagsContainer: 'border-none p-0',
+                                "w-full h-fit outline-none border-none shadow-none  text-base p-0",
+                              inlineTagsContainer: "border-none p-0",
                               autoComplete: {
-                                command: '[&>div]:border-none',
-                                popoverContent: 'p-4',
-                                commandList: 'list-none',
-                                commandGroup: 'font-bold',
+                                command: "[&>div]:border-none",
+                                popoverContent: "p-4",
+                                commandList: "list-none",
+                                commandGroup: "font-bold",
                               },
                             }}
                             activeTagIndex={activeTagIndex}
                             setActiveTagIndex={setActiveTagIndex}
                             enableAutocomplete={true}
                             autocompleteOptions={autocompleteTags}
-                            restrictTagsToAutocompleteOptions={true}
+                            restrictTagsToAutocompleteOptions={false}
                             maxTags={4}
                           />
                         </FormControl>
@@ -291,7 +291,7 @@ export default function CreateEbooks() {
                   control={form.control}
                   name='description'
                   render={({ field }) => (
-                    <FormItem {...useGuidedField('description')}>
+                    <FormItem {...useGuidedField("description")}>
                       <FormControl>
                         <MinimalTiptapOne
                           {...field}
@@ -312,7 +312,7 @@ export default function CreateEbooks() {
                     control={form.control}
                     name='tags'
                     render={({ field }) => (
-                      <FormItem {...useGuidedField('genres')}>
+                      <FormItem {...useGuidedField("genres")}>
                         <FormControl>
                           <TagInput
                             {...field}
@@ -320,27 +320,27 @@ export default function CreateEbooks() {
                             setTags={(newTags) => {
                               setGenres(newTags);
                               form.setValue(
-                                'genres',
+                                "genres",
                                 newTags as [Tag, ...Tag[]]
                               );
                             }}
                             placeholder='Add up to 4 genres...'
                             styleClasses={{
                               input:
-                                'w-full h-fit outline-none border-none shadow-none  text-base p-0',
-                              inlineTagsContainer: 'border-none p-0',
+                                "w-full h-fit outline-none border-none shadow-none  text-base p-0",
+                              inlineTagsContainer: "border-none p-0",
                               autoComplete: {
-                                command: '[&>div]:border-none',
-                                popoverContent: 'p-4',
-                                commandList: 'list-none',
-                                commandGroup: 'font-bold',
+                                command: "[&>div]:border-none",
+                                popoverContent: "p-4",
+                                commandList: "list-none",
+                                commandGroup: "font-bold",
                               },
                             }}
                             activeTagIndex={activeGenreIndex}
                             setActiveTagIndex={setActiveGenreIndex}
                             enableAutocomplete={true}
                             autocompleteOptions={autocompleteGenres}
-                            restrictTagsToAutocompleteOptions={true}
+                            restrictTagsToAutocompleteOptions={false}
                             maxTags={4}
                           />
                         </FormControl>
@@ -353,7 +353,7 @@ export default function CreateEbooks() {
                     control={form.control}
                     name='isbn'
                     render={({ field }) => (
-                      <FormItem {...useGuidedField('isbn')}>
+                      <FormItem {...useGuidedField("isbn")}>
                         <FormControl>
                           <Input
                             {...field}
@@ -371,7 +371,7 @@ export default function CreateEbooks() {
                     control={form.control}
                     name='publication'
                     render={({ field }) => (
-                      <FormItem {...useGuidedField('publication')}>
+                      <FormItem {...useGuidedField("publication")}>
                         <FormControl>
                           <Input
                             {...field}
@@ -388,7 +388,7 @@ export default function CreateEbooks() {
                     control={form.control}
                     name='release_date'
                     render={({ field }) => (
-                      <FormItem {...useGuidedField('release_date')}>
+                      <FormItem {...useGuidedField("release_date")}>
                         <FormLabel className='font-normal text-base text-muted-foreground'>
                           Release date
                         </FormLabel>
@@ -396,14 +396,14 @@ export default function CreateEbooks() {
                           <PopoverTrigger asChild>
                             <FormControl>
                               <Button
-                                variant={'outline'}
+                                variant={"outline"}
                                 className={cn(
-                                  'w-full pl-3 text-left font-normal',
-                                  !field.value && 'text-muted-foreground'
+                                  "w-full pl-3 text-left font-normal",
+                                  !field.value && "text-muted-foreground"
                                 )}
                               >
                                 {field.value ? (
-                                  format(field.value, 'PPP')
+                                  format(field.value, "PPP")
                                 ) : (
                                   <span>Pick a date</span>
                                 )}
@@ -440,13 +440,13 @@ export default function CreateEbooks() {
                           setFile(file);
                         }}
                         onPageCountChange={(pages) =>
-                          form.setValue('pages', pages ?? 0)
+                          form.setValue("pages", pages ?? 0)
                         }
                         accept='application/pdf'
                         label='Add an Ebook file'
-                        initialFileName={field.value ? field.value.name : ''}
+                        initialFileName={field.value ? field.value.name : ""}
                         initialFileUrl={
-                          field.value ? URL.createObjectURL(field.value) : ''
+                          field.value ? URL.createObjectURL(field.value) : ""
                         }
                       />
                     )}
@@ -456,7 +456,7 @@ export default function CreateEbooks() {
                     control={form.control}
                     name='pages'
                     render={({ field }) => (
-                      <FormItem {...useGuidedField('pages')}>
+                      <FormItem {...useGuidedField("pages")}>
                         <FormLabel className='font-normal text-base text-muted-foreground'>
                           Pages
                         </FormLabel>
@@ -481,7 +481,7 @@ export default function CreateEbooks() {
                   <Loader2 className='animate-spin' /> {`Publishing...`}
                 </>
               ) : (
-                'Publish'
+                "Publish"
               )}
             </Button>
           </form>

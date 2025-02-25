@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-'use client';
-import { FilePenLine, MoreHorizontal, Trash2 } from 'lucide-react';
+"use client";
+import { FilePenLine, MoreHorizontal, Trash2 } from "lucide-react";
 
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
-} from '@/components/ui/card';
+} from "@/components/ui/card";
 
 import {
   Breadcrumb,
@@ -16,26 +16,26 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
+} from "@/components/ui/breadcrumb";
 
-import { ContentLayout } from '@/components/staff-panel/content-layout';
-import Link from 'next/link';
-import { useMajor } from '@/hooks/use-major';
-import Image from 'next/image';
-import React from 'react';
-import MajorForm from '@/components/staff-panel/forms/major/major-form';
+import { ContentLayout } from "@/components/staff-panel/content-layout";
+import Link from "next/link";
+import { useMajor } from "@/hooks/use-major";
+import Image from "next/image";
+import React from "react";
+import MajorForm from "@/components/staff-panel/forms/major/major-form";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
-import DeleteDialog from '@/components/staff-panel/delete-dialog';
-import MajorEditForm from '@/components/staff-panel/forms/major/major-edit-form';
-import { Loading } from '@/components/loading';
-import { Error } from '@/components/error';
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import DeleteDialog from "@/components/staff-panel/delete-dialog";
+import MajorEditForm from "@/components/staff-panel/forms/major/major-edit-form";
+import { Loading } from "@/components/loading";
+import { Error } from "@/components/error";
 function Majors() {
   const [editUuid, setEditUuid] = React.useState<string | null>(null);
   const [deleteUuid, setDeleteUuid] = React.useState<string | null>(null);
@@ -88,6 +88,7 @@ function Majors() {
                         alt='avatar tags'
                         layout='fill'
                         objectFit='cover'
+                        sizes='(max-width: 40px) 100vw, 40px'
                         priority={false}
                       />
                     </div>
@@ -138,7 +139,8 @@ function Majors() {
                           src={`${m.image}?t=${new Date().getTime()}`}
                           layout='fill'
                           objectFit='cover'
-                          objectPosition='center'
+                          style={{ objectPosition: "center" }}
+                          sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
                           alt='Major image'
                         />
                       ) : null}

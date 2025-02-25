@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Tag, TagInput } from 'emblor';
-import { Button } from '@/components/ui/button';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import axios from '@/utils/axios';
-import { toast } from '@/hooks/use-toast';
-import { AxiosError } from 'axios';
+import { useEffect, useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tag, TagInput } from "emblor";
+import { Button } from "@/components/ui/button";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "@/utils/axios";
+import { toast } from "@/hooks/use-toast";
+import { AxiosError } from "axios";
 import {
   Form,
   FormControl,
@@ -17,38 +17,38 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import ImageUploader from '@/components/imageUploader';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { Loader2 } from 'lucide-react';
-import { Separator } from '@/components/ui/separator';
-import { useTag } from '@/hooks/use-tag';
-import { AutoComplete } from '@/components/autocomplete';
-import { useCategorySearch } from '@/hooks/use-category';
-import { Input } from '@/components/ui/input';
-import { AutosizeTextarea } from '@/components/autosize-textarea';
-import { useGenre } from '@/hooks/use-genre';
-import MinimalTiptapOne from '@/components/minimal-tiptap/minimal-tiptap-one';
-import FileUploader from '@/components/file-uploader';
-import { ContentLayout } from '@/components/user-panel/content-layout';
-import { useAudioBySlug } from '@/hooks/use-audio';
-import { handleAxiosError } from '@/utils/handle-axios-error';
-import { ContentUpdateSkeleton } from '@/components/skeletons/content-update-skeleton';
+} from "@/components/ui/form";
+import ImageUploader from "@/components/imageUploader";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Loader2 } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { useTag } from "@/hooks/use-tag";
+import { AutoComplete } from "@/components/autocomplete";
+import { useCategorySearch } from "@/hooks/use-category";
+import { Input } from "@/components/ui/input";
+import { AutosizeTextarea } from "@/components/autosize-textarea";
+import { useGenre } from "@/hooks/use-genre";
+import MinimalTiptapOne from "@/components/minimal-tiptap/minimal-tiptap-one";
+import FileUploader from "@/components/file-uploader";
+import { ContentLayout } from "@/components/user-panel/content-layout";
+import { useAudioBySlug } from "@/hooks/use-audio";
+import { handleAxiosError } from "@/utils/handle-axios-error";
+import { ContentUpdateSkeleton } from "@/components/skeletons/content-update-skeleton";
 import {
   GuidedFormLayout,
   useGuidedField,
-} from '@/components/form-guidance/guided-form-layout';
-import { AUDIO_PODCAST_TOOLTIPS } from '@/lib/tooltips';
+} from "@/components/form-guidance/guided-form-layout";
+import { AUDIO_PODCAST_TOOLTIPS } from "@/lib/tooltips";
 import {
   MAX_IMAGE_SIZE,
   VALID_IMAGE_TYPES,
   VALID_AUDIO_TYPES,
   MAX_AUDIO_SIZE,
-} from '@/lib/file-validation';
+} from "@/lib/file-validation";
 const ContentSchema = z.object({
   title: z
     .string()
-    .min(5, { message: 'Title must be longer than or equal to 5 characters' }),
+    .min(5, { message: "Title must be longer than or equal to 5 characters" }),
   thumbnail: z
     .instanceof(File)
     .optional()
@@ -57,18 +57,18 @@ const ContentSchema = z.object({
         if (!VALID_IMAGE_TYPES.includes(file.type)) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: 'Invalid image file type',
+            message: "Invalid image file type",
           });
         }
         if (file.size > MAX_IMAGE_SIZE) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: 'File size must be less than 2MB',
+            message: "File size must be less than 2MB",
           });
         }
       }
     }),
-  description: z.string().min(1, { message: 'Description is required.' }),
+  description: z.string().min(1, { message: "Description is required." }),
   tags: z
     .array(
       z.object({
@@ -77,10 +77,10 @@ const ContentSchema = z.object({
       })
     )
     .optional(),
-  category: z.string().min(1, { message: 'Category is required.' }),
+  category: z.string().min(1, { message: "Category is required." }),
   duration: z
     .number()
-    .min(1, { message: 'Duration must be greater than 0.' })
+    .min(1, { message: "Duration must be greater than 0." })
     .nonnegative(),
   file: z
     .instanceof(File)
@@ -90,13 +90,13 @@ const ContentSchema = z.object({
         if (!VALID_AUDIO_TYPES.includes(file.type)) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: 'Invalid audio file type',
+            message: "Invalid audio file type",
           });
         }
         if (file.size > MAX_AUDIO_SIZE) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: 'File size must be less than 15MB',
+            message: "File size must be less than 15MB",
           });
         }
       }
@@ -114,17 +114,17 @@ const ContentSchema = z.object({
 export default function AudioUpdate() {
   const searchParams = useSearchParams();
 
-  const slug = searchParams.get('slug') || '';
+  const slug = searchParams.get("slug") || "";
   const { audio, isLoading: audioLoading, mutate } = useAudioBySlug(slug);
 
   const form = useForm<z.infer<typeof ContentSchema>>({
     resolver: zodResolver(ContentSchema),
     defaultValues: {
-      title: audio?.title || '',
+      title: audio?.title || "",
       thumbnail: undefined,
-      description: audio?.description || '',
+      description: audio?.description || "",
       genres: audio?.genre || [],
-      category: audio?.category.name || '',
+      category: audio?.category.name || "",
       duration: audio?.audio_podcast.duration || 0,
       file: undefined,
       tags: audio?.tag || [],
@@ -159,20 +159,20 @@ export default function AudioUpdate() {
   const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
 
-  const { categories, isLoading } = useCategorySearch(form.watch('category'));
+  const { categories, isLoading } = useCategorySearch(form.watch("category"));
 
   async function onSubmit(data: z.infer<typeof ContentSchema>) {
     setLoading(true);
 
     const formData = new FormData();
-    if (data.thumbnail) formData.append('thumbnail', data.thumbnail);
-    formData.append('title', data.title);
-    formData.append('description', data.description);
-    formData.append('genres', JSON.stringify(data.genres));
-    formData.append('category_name', data.category);
-    formData.append('duration', String(data.duration));
-    if (file) formData.append('file', file);
-    formData.append('tags', JSON.stringify(data.tags));
+    if (data.thumbnail) formData.append("thumbnail", data.thumbnail);
+    formData.append("title", data.title);
+    formData.append("description", data.description);
+    formData.append("genres", JSON.stringify(data.genres));
+    formData.append("category_name", data.category);
+    formData.append("duration", String(data.duration));
+    if (file) formData.append("file", file);
+    formData.append("tags", JSON.stringify(data.tags));
 
     try {
       const { data: contentData } = await axios.patch(
@@ -180,19 +180,19 @@ export default function AudioUpdate() {
         formData,
         {
           headers: {
-            'Content-Type': 'multipart/form-data',
+            "Content-Type": "multipart/form-data",
           },
         }
       );
 
       toast({
-        title: 'Success!',
+        title: "Success!",
         description: contentData.message,
       });
 
       router.push(`/myworks/audio-podcasts`);
     } catch (error) {
-      handleAxiosError(error, 'An error occurred while update audio.');
+      handleAxiosError(error, "An error occurred while update audio.");
     } finally {
       setLoading(false);
     }
@@ -215,7 +215,7 @@ export default function AudioUpdate() {
                       render={() => (
                         <ImageUploader
                           onChange={(file) =>
-                            file && form.setValue('thumbnail', file)
+                            file && form.setValue("thumbnail", file)
                           }
                           ratioImage={1 / 1}
                           initialImage={audio?.thumbnail}
@@ -230,7 +230,7 @@ export default function AudioUpdate() {
                           <FormControl>
                             <AutosizeTextarea
                               {...field}
-                              {...useGuidedField('title')}
+                              {...useGuidedField("title")}
                               placeholder='New audio title here...'
                               className='outline-none w-full text-4xl p-0 border-none  shadow-none focus-visible:ring-0  font-bold placeholder:text-slate-700 h-full resize-none overflow-hidden '
                             />
@@ -244,10 +244,10 @@ export default function AudioUpdate() {
                       control={form.control}
                       name='category'
                       render={({ field }) => (
-                        <FormItem {...useGuidedField('category')}>
+                        <FormItem {...useGuidedField("category")}>
                           <FormControl>
                             <AutoComplete
-                              selectedValue={form.watch('category')}
+                              selectedValue={form.watch("category")}
                               onSelectedValueChange={(value) =>
                                 field.onChange(value)
                               }
@@ -268,7 +268,7 @@ export default function AudioUpdate() {
                       control={form.control}
                       name='tags'
                       render={({ field }) => (
-                        <FormItem {...useGuidedField('tags')}>
+                        <FormItem {...useGuidedField("tags")}>
                           <FormControl>
                             <TagInput
                               {...field}
@@ -276,27 +276,27 @@ export default function AudioUpdate() {
                               setTags={(newTags) => {
                                 setTags(newTags);
                                 form.setValue(
-                                  'tags',
+                                  "tags",
                                   newTags as [Tag, ...Tag[]]
                                 );
                               }}
                               placeholder='Add up to 4 tags...'
                               styleClasses={{
                                 input:
-                                  'w-full h-fit outline-none border-none shadow-none  text-base p-0',
-                                inlineTagsContainer: 'border-none p-0',
+                                  "w-full h-fit outline-none border-none shadow-none  text-base p-0",
+                                inlineTagsContainer: "border-none p-0",
                                 autoComplete: {
-                                  command: '[&>div]:border-none',
-                                  popoverContent: 'p-4',
-                                  commandList: 'list-none',
-                                  commandGroup: 'font-bold',
+                                  command: "[&>div]:border-none",
+                                  popoverContent: "p-4",
+                                  commandList: "list-none",
+                                  commandGroup: "font-bold",
                                 },
                               }}
                               activeTagIndex={activeTagIndex}
                               setActiveTagIndex={setActiveTagIndex}
                               enableAutocomplete={true}
                               autocompleteOptions={autocompleteTags}
-                              restrictTagsToAutocompleteOptions={true}
+                              restrictTagsToAutocompleteOptions={false}
                               maxTags={4}
                             />
                           </FormControl>
@@ -309,7 +309,7 @@ export default function AudioUpdate() {
                     control={form.control}
                     name='description'
                     render={({ field }) => (
-                      <FormItem {...useGuidedField('description')}>
+                      <FormItem {...useGuidedField("description")}>
                         <FormControl>
                           <MinimalTiptapOne
                             {...field}
@@ -330,7 +330,7 @@ export default function AudioUpdate() {
                       control={form.control}
                       name='tags'
                       render={({ field }) => (
-                        <FormItem {...useGuidedField('genres')}>
+                        <FormItem {...useGuidedField("genres")}>
                           <FormControl>
                             <TagInput
                               {...field}
@@ -338,27 +338,27 @@ export default function AudioUpdate() {
                               setTags={(newTags) => {
                                 setGenres(newTags);
                                 form.setValue(
-                                  'genres',
+                                  "genres",
                                   newTags as [Tag, ...Tag[]]
                                 );
                               }}
                               placeholder='Add up to 4 genres...'
                               styleClasses={{
                                 input:
-                                  'w-full h-fit outline-none border-none shadow-none  text-base p-0',
-                                inlineTagsContainer: 'border-none p-0',
+                                  "w-full h-fit outline-none border-none shadow-none  text-base p-0",
+                                inlineTagsContainer: "border-none p-0",
                                 autoComplete: {
-                                  command: '[&>div]:border-none',
-                                  popoverContent: 'p-4',
-                                  commandList: 'list-none',
-                                  commandGroup: 'font-bold',
+                                  command: "[&>div]:border-none",
+                                  popoverContent: "p-4",
+                                  commandList: "list-none",
+                                  commandGroup: "font-bold",
                                 },
                               }}
                               activeTagIndex={activeGenreIndex}
                               setActiveTagIndex={setActiveGenreIndex}
                               enableAutocomplete={true}
                               autocompleteOptions={autocompleteGenres}
-                              restrictTagsToAutocompleteOptions={true}
+                              restrictTagsToAutocompleteOptions={false}
                               maxTags={4}
                             />
                           </FormControl>
@@ -378,11 +378,11 @@ export default function AudioUpdate() {
                           }}
                           accept='audio/mp3'
                           onDurationChange={(duration) =>
-                            form.setValue('duration', duration ?? 0)
+                            form.setValue("duration", duration ?? 0)
                           }
                           label='Add an Audio file'
                           initialFileName={audio?.audio_podcast.file_attachment.file
-                            .split('/')
+                            .split("/")
                             .pop()}
                           initialFileUrl={
                             audio?.audio_podcast.file_attachment.file
@@ -395,7 +395,7 @@ export default function AudioUpdate() {
                       control={form.control}
                       name='duration'
                       render={({ field }) => (
-                        <FormItem {...useGuidedField('duration')}>
+                        <FormItem {...useGuidedField("duration")}>
                           <FormLabel className='font-normal text-base text-muted-foreground'>
                             Duration
                           </FormLabel>
@@ -404,7 +404,7 @@ export default function AudioUpdate() {
                               value={new Date(1000 * field.value)
                                 .toISOString()
                                 .substring(11, 19)
-                                .replace(/^[0:]+/, '')}
+                                .replace(/^[0:]+/, "")}
                               type='text'
                               readOnly
                               className='border-none outline-none shadow-none text-base p-0 focus-visible:ring-0 focus:border-none '
@@ -423,7 +423,7 @@ export default function AudioUpdate() {
                     <Loader2 className='animate-spin' /> {`Publishing...`}
                   </>
                 ) : (
-                  'Publish'
+                  "Publish"
                 )}
               </Button>
             </form>

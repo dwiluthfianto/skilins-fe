@@ -35,23 +35,23 @@ export default function VerifyEmail() {
 
   if (token) {
     return (
-      <section className="grid h-screen place-content-center bg-white px-4">
-        <div className="text-center space-y-4">
+      <section className='grid h-screen place-content-center bg-white px-4'>
+        <div className='text-center space-y-4'>
           {loading ? (
-            <p className="text-2xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+            <p className='text-2xl font-bold tracking-tight text-gray-900 sm:text-4xl'>
               Verifying...
             </p>
           ) : (
             <>
-              <h1 className="text-9xl font-black text-gray-200">
+              <h1 className='text-2xl md:text-9xl font-black text-gray-200'>
                 Verification Email
               </h1>
-              <p className="text-2xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+              <p className='text-4xl font-bold tracking-tight text-gray-900 sm:text-4xl'>
                 {verificationStatus === "Verification successful!"
                   ? "Successfully!"
                   : "Error!"}
               </p>
-              <p className="mt-4 text-gray-500">{verificationStatus}</p>
+              <p className='mt-4 text-gray-500'>{verificationStatus}</p>
             </>
           )}
 
@@ -63,12 +63,12 @@ export default function VerifyEmail() {
     );
   } else {
     return (
-      <section className="grid h-screen  place-content-center bg-white px-4">
-        <div className="text-center space-y-4">
-          <h1 className="text-9xl font-black text-gray-200">
+      <section className='grid h-screen  place-content-center bg-white px-4'>
+        <div className='text-center space-y-4'>
+          <h1 className='text-4xl md:text-9xl font-black text-gray-200'>
             Verification Email
           </h1>
-          <p className="text-2xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+          <p className='text-md md:text-2xl font-bold tracking-tight text-gray-900 sm:text-4xl'>
             Check your email to verify it.
           </p>
 

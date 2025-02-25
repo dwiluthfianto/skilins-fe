@@ -1,52 +1,52 @@
-'use client';
+"use client";
 
-import { MinimalTiptapEditor } from '@/components/minimal-tiptap';
-import { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Tag, TagInput } from 'emblor';
-import { Button } from '@/components/ui/button';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import axios from '@/utils/axios';
-import { toast } from '@/hooks/use-toast';
-import { AxiosError } from 'axios';
+import { MinimalTiptapEditor } from "@/components/minimal-tiptap";
+import { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tag, TagInput } from "emblor";
+import { Button } from "@/components/ui/button";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "@/utils/axios";
+import { toast } from "@/hooks/use-toast";
+import { AxiosError } from "axios";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from '@/components/ui/form';
-import ImageUploader from '@/components/imageUploader';
-import { useRouter } from 'next/navigation';
-import { Loader2 } from 'lucide-react';
-import { Separator } from '@/components/ui/separator';
-import { ContentLayout } from '@/components/staff-panel/content-layout';
-import { useTag } from '@/hooks/use-tag';
-import { AutoComplete } from '@/components/autocomplete';
-import { useCategorySearch } from '@/hooks/use-category';
-import { AutosizeTextarea } from '@/components/autosize-textarea';
-import { handleAxiosError } from '@/utils/handle-axios-error';
-import { MAX_IMAGE_SIZE, VALID_IMAGE_TYPES } from '@/lib/file-validation';
+} from "@/components/ui/form";
+import ImageUploader from "@/components/imageUploader";
+import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { ContentLayout } from "@/components/staff-panel/content-layout";
+import { useTag } from "@/hooks/use-tag";
+import { AutoComplete } from "@/components/autocomplete";
+import { useCategorySearch } from "@/hooks/use-category";
+import { AutosizeTextarea } from "@/components/autosize-textarea";
+import { handleAxiosError } from "@/utils/handle-axios-error";
+import { MAX_IMAGE_SIZE, VALID_IMAGE_TYPES } from "@/lib/file-validation";
 import {
   GuidedFormLayout,
   useGuidedField,
-} from '@/components/form-guidance/guided-form-layout';
-import { BLOG_TOOLTIPS } from '@/lib/tooltips';
+} from "@/components/form-guidance/guided-form-layout";
+import { BLOG_TOOLTIPS } from "@/lib/tooltips";
 const BlogSchema = z.object({
   title: z
     .string()
-    .min(5, { message: 'Title must be longer than or equal to 5 characters' }),
+    .min(5, { message: "Title must be longer than or equal to 5 characters" }),
   thumbnail: z
     .instanceof(File)
     .refine((file) => file && VALID_IMAGE_TYPES.includes(file.type), {
-      message: 'Invalid image file type',
+      message: "Invalid image file type",
     })
     .refine((file) => file.size <= MAX_IMAGE_SIZE, {
-      message: 'File size must be less than 2MB',
+      message: "File size must be less than 2MB",
     }),
-  description: z.string().min(1, { message: 'Description is required.' }),
+  description: z.string().min(1, { message: "Description is required." }),
   tags: z
     .array(
       z.object({
@@ -55,18 +55,18 @@ const BlogSchema = z.object({
       })
     )
     .optional(),
-  category: z.string().min(1, { message: 'Category is required.' }),
+  category: z.string().min(1, { message: "Category is required." }),
 });
 
 export default function CreateBlogs() {
   const form = useForm<z.infer<typeof BlogSchema>>({
     resolver: zodResolver(BlogSchema),
     defaultValues: {
-      title: '',
+      title: "",
       thumbnail: undefined,
-      description: '',
+      description: "",
       tags: [],
-      category: '',
+      category: "",
     },
   });
   const { autocompleteTags } = useTag();
@@ -75,33 +75,33 @@ export default function CreateBlogs() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const { categories, isLoading } = useCategorySearch(form.watch('category'));
+  const { categories, isLoading } = useCategorySearch(form.watch("category"));
 
   async function onSubmit(data: z.infer<typeof BlogSchema>) {
     setLoading(true);
 
     const formData = new FormData();
-    if (data.thumbnail) formData.append('thumbnail', data.thumbnail);
-    formData.append('title', data.title);
-    formData.append('description', data.description);
-    formData.append('tags', JSON.stringify(data.tags));
-    formData.append('category_name', data.category);
+    if (data.thumbnail) formData.append("thumbnail", data.thumbnail);
+    formData.append("title", data.title);
+    formData.append("description", data.description);
+    formData.append("tags", JSON.stringify(data.tags));
+    formData.append("category_name", data.category);
 
     try {
-      const { data: blogData } = await axios.post('/contents/blogs', formData, {
+      const { data: blogData } = await axios.post("/contents/blogs", formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       });
 
       toast({
-        title: 'Success!',
+        title: "Success!",
         description: blogData.message,
       });
 
-      router.push('/staff/blogs');
+      router.push("/staff/blogs");
     } catch (error) {
-      handleAxiosError(error, 'An error occurred while adding the blog.');
+      handleAxiosError(error, "An error occurred while adding the blog.");
     } finally {
       setLoading(false);
     }
@@ -122,7 +122,7 @@ export default function CreateBlogs() {
                     render={() => (
                       <ImageUploader
                         onChange={(file) =>
-                          file && form.setValue('thumbnail', file)
+                          file && form.setValue("thumbnail", file)
                         }
                         ratioImage={16 / 9}
                       />
@@ -136,7 +136,7 @@ export default function CreateBlogs() {
                         <FormControl>
                           <AutosizeTextarea
                             {...field}
-                            {...useGuidedField('title')}
+                            {...useGuidedField("title")}
                             placeholder='New blog title here...'
                             className='outline-none w-full text-4xl p-0 border-none  shadow-none focus-visible:ring-0  font-bold placeholder:text-slate-700 h-full resize-none overflow-hidden '
                           />
@@ -150,10 +150,10 @@ export default function CreateBlogs() {
                     control={form.control}
                     name='category'
                     render={({ field }) => (
-                      <FormItem {...useGuidedField('category')}>
+                      <FormItem {...useGuidedField("category")}>
                         <FormControl>
                           <AutoComplete
-                            selectedValue={form.watch('category')}
+                            selectedValue={form.watch("category")}
                             onSelectedValueChange={(value) =>
                               field.onChange(value)
                             }
@@ -174,32 +174,32 @@ export default function CreateBlogs() {
                     control={form.control}
                     name='tags'
                     render={({ field }) => (
-                      <FormItem {...useGuidedField('tags')}>
+                      <FormItem {...useGuidedField("tags")}>
                         <FormControl>
                           <TagInput
                             {...field}
                             tags={tags}
                             setTags={(newTags) => {
                               setTags(newTags);
-                              form.setValue('tags', newTags as [Tag, ...Tag[]]);
+                              form.setValue("tags", newTags as [Tag, ...Tag[]]);
                             }}
                             placeholder='Add up to 4 tags...'
                             styleClasses={{
                               input:
-                                'w-full h-fit outline-none border-none shadow-none  text-base p-0',
-                              inlineTagsContainer: 'border-none p-0',
+                                "w-full h-fit outline-none border-none shadow-none  text-base p-0",
+                              inlineTagsContainer: "border-none p-0",
                               autoComplete: {
-                                command: '[&>div]:border-none',
-                                popoverContent: 'p-4',
-                                commandList: 'list-none',
-                                commandGroup: 'font-bold',
+                                command: "[&>div]:border-none",
+                                popoverContent: "p-4",
+                                commandList: "list-none",
+                                commandGroup: "font-bold",
                               },
                             }}
                             activeTagIndex={activeTagIndex}
                             setActiveTagIndex={setActiveTagIndex}
                             enableAutocomplete={true}
                             autocompleteOptions={autocompleteTags}
-                            restrictTagsToAutocompleteOptions={true}
+                            restrictTagsToAutocompleteOptions={false}
                             maxTags={4}
                           />
                         </FormControl>
@@ -212,7 +212,7 @@ export default function CreateBlogs() {
                   control={form.control}
                   name='description'
                   render={({ field }) => (
-                    <FormItem {...useGuidedField('description')}>
+                    <FormItem {...useGuidedField("description")}>
                       <FormControl>
                         <MinimalTiptapEditor
                           {...field}
@@ -236,7 +236,7 @@ export default function CreateBlogs() {
                   <Loader2 className='animate-spin' /> {`Publishing...`}
                 </>
               ) : (
-                'Publish'
+                "Publish"
               )}
             </Button>
           </form>

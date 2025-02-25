@@ -19,9 +19,27 @@ import { useState } from "react";
 import { Loading } from "@/components/loading";
 import { Error } from "@/components/error";
 import { SummaryStats } from "@/components/summary-stats";
+import { useRouter } from "next/navigation";
+import { toast } from "@/hooks/use-toast";
 export default function JudgeDashboard() {
   const [scored, setScored] = useState(true);
-  const { judge } = useJudgeUser();
+  const {
+    judge,
+    isLoading: isJudgeLoading,
+    isError: isJudgeError,
+  } = useJudgeUser();
+
+  const router = useRouter();
+
+  if (!judge && !judge?.judge?.competition?.uuid) {
+    toast({
+      title: "Unauthorized",
+      description:
+        "You are not registered to any competition. please contact skilins staff.",
+      variant: "destructive",
+    });
+    router.push("/");
+  }
 
   const { data, summary, isLoading, isError } = useJudgeSubmission(
     scored,
@@ -55,8 +73,8 @@ export default function JudgeDashboard() {
     },
   ];
 
-  if (isLoading) return <Loading />;
-  if (isError) return <Error />;
+  if (isLoading || isJudgeLoading) return <Loading />;
+  if (isError || isJudgeError) return <Error />;
   return (
     <ContentLayout>
       <div className='md:container'>

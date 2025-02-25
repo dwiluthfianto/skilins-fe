@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { use, useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import axios from '@/utils/axios';
-import { toast } from '@/hooks/use-toast';
+import { use, useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "@/utils/axios";
+import { toast } from "@/hooks/use-toast";
 import {
   Form,
   FormControl,
@@ -15,53 +15,53 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import ImageUploader from '@/components/imageUploader';
-import { useRouter } from 'next/navigation';
-import { CalendarIcon, CircleAlert, Loader2 } from 'lucide-react';
-import { Separator } from '@/components/ui/separator';
-import { ContentLayout } from '@/components/staff-panel/content-layout';
+} from "@/components/ui/form";
+import ImageUploader from "@/components/imageUploader";
+import { useRouter } from "next/navigation";
+import { CalendarIcon, CircleAlert, Loader2 } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { ContentLayout } from "@/components/staff-panel/content-layout";
 
-import { AutosizeTextarea } from '@/components/autosize-textarea';
+import { AutosizeTextarea } from "@/components/autosize-textarea";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
-import { format } from 'date-fns';
-import { CustomCalendar } from '@/components/ui/custom-calendar';
-import { cn } from '@/lib/utils';
-import MinimalTiptapOne from '@/components/minimal-tiptap/minimal-tiptap-one';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
-import { Tag, TagInput } from 'emblor';
-import { useJudge } from '@/hooks/use-judge';
-import { Input } from '@/components/ui/input';
-import { handleAxiosError } from '@/utils/handle-axios-error';
-import { MAX_IMAGE_SIZE, VALID_IMAGE_TYPES } from '@/lib/file-validation';
+} from "@/components/ui/popover";
+import { format } from "date-fns";
+import { CustomCalendar } from "@/components/ui/custom-calendar";
+import { cn } from "@/lib/utils";
+import MinimalTiptapOne from "@/components/minimal-tiptap/minimal-tiptap-one";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Tag, TagInput } from "emblor";
+import { useJudge } from "@/hooks/use-judge";
+import { Input } from "@/components/ui/input";
+import { handleAxiosError } from "@/utils/handle-axios-error";
+import { MAX_IMAGE_SIZE, VALID_IMAGE_TYPES } from "@/lib/file-validation";
 import {
   GuidedFormLayout,
   useGuidedField,
-} from '@/components/form-guidance/guided-form-layout';
-import { COMPETITION_TOOLTIPS } from '@/lib/tooltips';
+} from "@/components/form-guidance/guided-form-layout";
+import { COMPETITION_TOOLTIPS } from "@/lib/tooltips";
 const ContentSchema = z.object({
   title: z
     .string()
-    .min(5, { message: 'Title must be longer than or equal to 5 characters' }),
+    .min(5, { message: "Title must be longer than or equal to 5 characters" }),
   thumbnail: z
     .instanceof(File)
     .refine((file) => file && VALID_IMAGE_TYPES.includes(file.type), {
-      message: 'Invalid image file type',
+      message: "Invalid image file type",
     })
     .refine((file) => file.size <= MAX_IMAGE_SIZE, {
-      message: 'File size must be less than 2MB',
+      message: "File size must be less than 2MB",
     }),
-  description: z.string().min(1, { message: 'Description is required.' }),
-  guide: z.string().min(1, { message: 'Guide is required.' }),
-  winner_count: z.number().min(1, { message: 'Winner count is required.' }),
+  description: z.string().min(1, { message: "Description is required." }),
+  guide: z.string().min(1, { message: "Guide is required." }),
+  winner_count: z.number().min(1, { message: "Winner count is required." }),
   type_competition: z
     .string()
-    .min(1, { message: 'Type of Competition is required.' }),
+    .min(1, { message: "Type of Competition is required." }),
   start_date: z.date(),
   end_date: z.date(),
   submission_deadline: z.date(),
@@ -75,10 +75,10 @@ const ContentSchema = z.object({
     z.object({
       parameterName: z
         .string()
-        .min(1, { message: 'Parameter name is required.' }),
+        .min(1, { message: "Parameter name is required." }),
       weight: z
         .string()
-        .regex(/^\d+$/, { message: 'Weight must be a number.' }),
+        .regex(/^\d+$/, { message: "Weight must be a number." }),
     })
   ),
 });
@@ -92,26 +92,26 @@ export default function CreateCompetition() {
   const form = useForm<z.infer<typeof ContentSchema>>({
     resolver: zodResolver(ContentSchema),
     defaultValues: {
-      title: '',
+      title: "",
       thumbnail: undefined,
-      type_competition: 'audio',
-      description: '',
-      guide: '',
+      type_competition: "audio",
+      description: "",
+      guide: "",
       winner_count: undefined,
       start_date: new Date(),
       end_date: new Date(),
       submission_deadline: new Date(),
       judges: [],
-      parameters: [{ parameterName: '', weight: '' }],
+      parameters: [{ parameterName: "", weight: "" }],
     },
   });
   const [judges, setJudges] = useState<Tag[]>([]);
   const [activeJudgeIndex, setActiveJudgeIndex] = useState<number | null>(null);
   const { autocompleteJudges } = useJudge({});
-  const parameters = form.watch('parameters');
+  const parameters = form.watch("parameters");
   const addParameter = () => {
-    const newParameter = { parameterName: '', weight: '' };
-    form.setValue('parameters', [...parameters, newParameter]);
+    const newParameter = { parameterName: "", weight: "" };
+    form.setValue("parameters", [...parameters, newParameter]);
   };
 
   const updateParameter = (
@@ -119,18 +119,18 @@ export default function CreateCompetition() {
     field: keyof Parameter,
     value: string
   ) => {
-    if (field === 'weight' && isNaN(Number(value))) {
-      console.error('Weight harus berupa angka.');
+    if (field === "weight" && isNaN(Number(value))) {
+      console.error("Weight harus berupa angka.");
       return;
     }
     const updatedParameters = [...parameters];
     updatedParameters[index][field] = value;
-    form.setValue('parameters', updatedParameters);
+    form.setValue("parameters", updatedParameters);
   };
 
   const removeParameter = (index: number) => {
     const updatedParameters = parameters.filter((_, i) => i !== index);
-    form.setValue('parameters', updatedParameters);
+    form.setValue("parameters", updatedParameters);
   };
 
   const [loading, setLoading] = useState(false);
@@ -140,37 +140,37 @@ export default function CreateCompetition() {
     setLoading(true);
 
     const formData = new FormData();
-    if (data.thumbnail) formData.append('thumbnail', data.thumbnail);
-    formData.append('title', data.title);
-    formData.append('description', data.description);
-    formData.append('guide', data.guide);
-    formData.append('start_date', String(data.start_date));
-    formData.append('end_date', String(data.end_date));
-    formData.append('winner_count', String(data.winner_count));
-    formData.append('type', data.type_competition);
-    formData.append('submission_deadline', String(data.submission_deadline));
-    formData.append('judge_uuids', JSON.stringify(data.judges));
-    formData.append('parameters', JSON.stringify(data.parameters));
+    if (data.thumbnail) formData.append("thumbnail", data.thumbnail);
+    formData.append("title", data.title);
+    formData.append("description", data.description);
+    formData.append("guide", data.guide);
+    formData.append("start_date", String(data.start_date));
+    formData.append("end_date", String(data.end_date));
+    formData.append("winner_count", String(data.winner_count));
+    formData.append("type", data.type_competition);
+    formData.append("submission_deadline", String(data.submission_deadline));
+    formData.append("judge_uuids", JSON.stringify(data.judges));
+    formData.append("parameters", JSON.stringify(data.parameters));
 
     try {
       const { data: contentData } = await axios.post(
-        '/competitions',
+        "/competitions",
         formData,
         {
           headers: {
-            'Content-Type': 'multipart/form-data',
+            "Content-Type": "multipart/form-data",
           },
         }
       );
 
       toast({
-        title: 'Success!',
+        title: "Success!",
         description: contentData.message,
       });
 
-      router.push('/staff/competitions/list');
+      router.push("/staff/competitions/list");
     } catch (error) {
-      handleAxiosError(error, 'An error occurred while create competition.');
+      handleAxiosError(error, "An error occurred while create competition.");
     } finally {
       setLoading(false);
     }
@@ -191,7 +191,7 @@ export default function CreateCompetition() {
                     render={() => (
                       <ImageUploader
                         onChange={(file) =>
-                          file && form.setValue('thumbnail', file)
+                          file && form.setValue("thumbnail", file)
                         }
                         ratioImage={16 / 9}
                       />
@@ -205,7 +205,7 @@ export default function CreateCompetition() {
                         <FormControl>
                           <AutosizeTextarea
                             {...field}
-                            {...useGuidedField('title')}
+                            {...useGuidedField("title")}
                             maxLength={45}
                             placeholder='New competition title here...'
                             className='outline-none w-full text-4xl p-0 border-none  shadow-none focus-visible:ring-0  font-bold placeholder:text-slate-700 h-full resize-none overflow-hidden '
@@ -219,7 +219,7 @@ export default function CreateCompetition() {
                     control={form.control}
                     name='type_competition'
                     render={({ field }) => (
-                      <FormItem {...useGuidedField('type_competition')}>
+                      <FormItem {...useGuidedField("type_competition")}>
                         <FormControl>
                           <RadioGroup
                             onValueChange={field.onChange}
@@ -273,7 +273,7 @@ export default function CreateCompetition() {
                     control={form.control}
                     name='description'
                     render={({ field }) => (
-                      <FormItem {...useGuidedField('description')}>
+                      <FormItem {...useGuidedField("description")}>
                         <FormControl>
                           <AutosizeTextarea
                             {...field}
@@ -292,7 +292,7 @@ export default function CreateCompetition() {
                     control={form.control}
                     name='start_date'
                     render={({ field }) => (
-                      <FormItem {...useGuidedField('start_date')}>
+                      <FormItem {...useGuidedField("start_date")}>
                         <FormLabel className='font-normal text-base text-muted-foreground'>
                           Start date
                         </FormLabel>
@@ -300,14 +300,14 @@ export default function CreateCompetition() {
                           <PopoverTrigger asChild>
                             <FormControl>
                               <Button
-                                variant={'outline'}
+                                variant={"outline"}
                                 className={cn(
-                                  'w-full pl-3 text-left font-normal',
-                                  !field.value && 'text-muted-foreground'
+                                  "w-full pl-3 text-left font-normal",
+                                  !field.value && "text-muted-foreground"
                                 )}
                               >
                                 {field.value ? (
-                                  format(field.value, 'PPP')
+                                  format(field.value, "PPP")
                                 ) : (
                                   <span>Pick a date</span>
                                 )}
@@ -337,7 +337,7 @@ export default function CreateCompetition() {
                     control={form.control}
                     name='end_date'
                     render={({ field }) => (
-                      <FormItem {...useGuidedField('end_date')}>
+                      <FormItem {...useGuidedField("end_date")}>
                         <FormLabel className='font-normal text-base text-muted-foreground'>
                           End date
                         </FormLabel>
@@ -345,14 +345,14 @@ export default function CreateCompetition() {
                           <PopoverTrigger asChild>
                             <FormControl>
                               <Button
-                                variant={'outline'}
+                                variant={"outline"}
                                 className={cn(
-                                  'w-full pl-3 text-left font-normal',
-                                  !field.value && 'text-muted-foreground'
+                                  "w-full pl-3 text-left font-normal",
+                                  !field.value && "text-muted-foreground"
                                 )}
                               >
                                 {field.value ? (
-                                  format(field.value, 'PPP')
+                                  format(field.value, "PPP")
                                 ) : (
                                   <span>Pick a date</span>
                                 )}
@@ -368,7 +368,7 @@ export default function CreateCompetition() {
                               selected={field.value}
                               onSelect={field.onChange}
                               disabled={(date) =>
-                                date < form.getValues('start_date')
+                                date < form.getValues("start_date")
                               }
                               // numberOfMonths={2} //Add this line, if you want, can be 2 or more
                               className='rounded-md border'
@@ -384,7 +384,7 @@ export default function CreateCompetition() {
                   control={form.control}
                   name='guide'
                   render={({ field }) => (
-                    <FormItem {...useGuidedField('guide')}>
+                    <FormItem {...useGuidedField("guide")}>
                       <FormControl>
                         <MinimalTiptapOne
                           {...field}
@@ -406,7 +406,7 @@ export default function CreateCompetition() {
                     control={form.control}
                     name='submission_deadline'
                     render={({ field }) => (
-                      <FormItem {...useGuidedField('submission_deadline')}>
+                      <FormItem {...useGuidedField("submission_deadline")}>
                         <FormLabel className='font-normal text-base text-muted-foreground'>
                           Submission Deadline
                         </FormLabel>
@@ -414,14 +414,14 @@ export default function CreateCompetition() {
                           <PopoverTrigger asChild>
                             <FormControl>
                               <Button
-                                variant={'outline'}
+                                variant={"outline"}
                                 className={cn(
-                                  'w-full pl-3 text-left font-normal',
-                                  !field.value && 'text-muted-foreground'
+                                  "w-full pl-3 text-left font-normal",
+                                  !field.value && "text-muted-foreground"
                                 )}
                               >
                                 {field.value ? (
-                                  format(field.value, 'PPP')
+                                  format(field.value, "PPP")
                                 ) : (
                                   <span>Pick a date</span>
                                 )}
@@ -437,8 +437,8 @@ export default function CreateCompetition() {
                               selected={field.value}
                               onSelect={field.onChange}
                               disabled={(date) =>
-                                date < form.getValues('start_date') ||
-                                date > form.getValues('end_date')
+                                date < form.getValues("start_date") ||
+                                date > form.getValues("end_date")
                               }
                               // numberOfMonths={2} //Add this line, if you want, can be 2 or more
                               className='rounded-md border'
@@ -454,7 +454,7 @@ export default function CreateCompetition() {
                     control={form.control}
                     name='judges'
                     render={({ field }) => (
-                      <FormItem {...useGuidedField('judges')}>
+                      <FormItem {...useGuidedField("judges")}>
                         <FormControl>
                           <TagInput
                             {...field}
@@ -462,27 +462,27 @@ export default function CreateCompetition() {
                             setTags={(newTags) => {
                               setJudges(newTags);
                               form.setValue(
-                                'judges',
+                                "judges",
                                 newTags as [Tag, ...Tag[]]
                               );
                             }}
                             placeholder='Add up to 4 judges...'
                             styleClasses={{
                               input:
-                                'w-full h-fit outline-none border-none shadow-none  text-base p-0',
-                              inlineTagsContainer: 'border-none p-0',
+                                "w-full h-fit outline-none border-none shadow-none  text-base p-0",
+                              inlineTagsContainer: "border-none p-0",
                               autoComplete: {
-                                command: '[&>div]:border-none',
-                                popoverContent: 'p-4',
-                                commandList: 'list-none',
-                                commandGroup: 'font-bold',
+                                command: "[&>div]:border-none",
+                                popoverContent: "p-4",
+                                commandList: "list-none",
+                                commandGroup: "font-bold",
                               },
                             }}
                             activeTagIndex={activeJudgeIndex}
                             setActiveTagIndex={setActiveJudgeIndex}
                             enableAutocomplete={true}
                             autocompleteOptions={autocompleteJudges}
-                            restrictTagsToAutocompleteOptions={true}
+                            restrictTagsToAutocompleteOptions={false}
                             minTags={3}
                             maxTags={6}
                           />
@@ -496,7 +496,7 @@ export default function CreateCompetition() {
                     control={form.control}
                     name='parameters'
                     render={() => (
-                      <FormItem {...useGuidedField('parameters')}>
+                      <FormItem {...useGuidedField("parameters")}>
                         <FormLabel className='font-normal text-base text-muted-foreground'>
                           Score Parameter
                         </FormLabel>
@@ -513,7 +513,7 @@ export default function CreateCompetition() {
                                 onChange={(e) =>
                                   updateParameter(
                                     index,
-                                    'parameterName',
+                                    "parameterName",
                                     e.target.value
                                   )
                                 }
@@ -527,7 +527,7 @@ export default function CreateCompetition() {
                                 onChange={(e) =>
                                   updateParameter(
                                     index,
-                                    'weight',
+                                    "weight",
                                     e.target.value
                                   )
                                 }
@@ -537,7 +537,7 @@ export default function CreateCompetition() {
                               type='button'
                               onClick={() => removeParameter(index)}
                               disabled={parameters.length === 1}
-                              variant={'destructive'}
+                              variant={"destructive"}
                             >
                               Remove
                             </Button>
@@ -556,7 +556,7 @@ export default function CreateCompetition() {
                     control={form.control}
                     name='winner_count'
                     render={({ field }) => (
-                      <FormItem {...useGuidedField('winner_count')}>
+                      <FormItem {...useGuidedField("winner_count")}>
                         <FormLabel className='font-normal text-base text-muted-foreground'>
                           Total Winners
                         </FormLabel>
@@ -584,7 +584,7 @@ export default function CreateCompetition() {
                   <Loader2 className='animate-spin' /> {`Publishing...`}
                 </>
               ) : (
-                'Publish'
+                "Publish"
               )}
             </Button>
           </form>
