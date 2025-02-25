@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-'use client';
+"use client";
 
-import { ColumnDef } from '@tanstack/react-table';
+import { ColumnDef } from "@tanstack/react-table";
 
-import { MoreHorizontal, PencilRuler, Trash2 } from 'lucide-react';
+import { MoreHorizontal, PencilRuler, Trash2 } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -11,16 +11,16 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 
-import { ArrowUpDown } from 'lucide-react';
-import * as React from 'react';
-import { Button } from '@/components/ui/button';
-import DeleteDialog from '@/components/staff-panel/delete-dialog';
-import Link from 'next/link';
-import Image from 'next/image';
-import { AspectRatio } from '@/components/ui/aspect-ratio';
-import JudgeEditForm from '@/components/staff-panel/forms/judge/judge-edit-form';
+import { ArrowUpDown } from "lucide-react";
+import * as React from "react";
+import { Button } from "@/components/ui/button";
+import DeleteDialog from "@/components/staff-panel/delete-dialog";
+import Link from "next/link";
+import Image from "next/image";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import JudgeEditForm from "@/components/staff-panel/forms/judge/judge-edit-form";
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type Judges = {
@@ -38,7 +38,7 @@ export type Judges = {
 
 export const columns: ColumnDef<Judges>[] = [
   {
-    accessorKey: 'No',
+    accessorKey: "No",
     header: () => {
       return <p>No</p>;
     },
@@ -47,7 +47,7 @@ export const columns: ColumnDef<Judges>[] = [
     },
   },
   {
-    accessorKey: 'profile',
+    accessorKey: "profile",
     header: () => <div className='text-right'>Image</div>,
     cell: ({ row }) => (
       <AspectRatio ratio={1 / 1} className='h-full relative'>
@@ -55,7 +55,7 @@ export const columns: ColumnDef<Judges>[] = [
           src={
             row.original.profile
               ? `${row.original.profile}?t=${new Date().getTime()}`
-              : '/images/avatar.png'
+              : "/images/avatar.png"
           }
           alt='Image'
           layout='fill'
@@ -66,12 +66,12 @@ export const columns: ColumnDef<Judges>[] = [
     ),
   },
   {
-    accessorKey: 'full_name',
+    accessorKey: "full_name",
     header: ({ column }) => {
       return (
         <Button
           variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Name
           <ArrowUpDown className='ml-2 h-4 w-4' />
@@ -87,12 +87,12 @@ export const columns: ColumnDef<Judges>[] = [
     },
   },
   {
-    accessorKey: 'email',
+    accessorKey: "email",
     header: ({ column }) => {
       return (
         <Button
           variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Email
           <ArrowUpDown className='ml-2 h-4 w-4' />
@@ -102,12 +102,12 @@ export const columns: ColumnDef<Judges>[] = [
   },
 
   {
-    accessorKey: 'role',
+    accessorKey: "role",
     header: ({ column }) => {
       return (
         <Button
           variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Role
           <ArrowUpDown className='ml-2 h-4 w-4' />
@@ -119,12 +119,12 @@ export const columns: ColumnDef<Judges>[] = [
     },
   },
   {
-    accessorKey: 'linkedin',
+    accessorKey: "linkedin",
     header: ({ column }) => {
       return (
         <Button
           variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Linkedin
           <ArrowUpDown className='ml-2 h-4 w-4' />
@@ -136,12 +136,12 @@ export const columns: ColumnDef<Judges>[] = [
     },
   },
   {
-    accessorKey: 'instagram',
+    accessorKey: "instagram",
     header: ({ column }) => {
       return (
         <Button
           variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Instagram
           <ArrowUpDown className='ml-2 h-4 w-4' />
@@ -153,12 +153,12 @@ export const columns: ColumnDef<Judges>[] = [
     },
   },
   {
-    accessorKey: 'competition',
+    accessorKey: "competition",
     header: ({ column }) => {
       return (
         <Button
           variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Competition
           <ArrowUpDown className='ml-2 h-4 w-4' />
@@ -166,11 +166,11 @@ export const columns: ColumnDef<Judges>[] = [
       );
     },
     cell: ({ row }) => {
-      return <div>{row.original.judge.competition.title}</div>;
+      return <div>{row.original.judge?.competition?.title || "-"}</div>;
     },
   },
   {
-    id: 'actions',
+    id: "actions",
     cell: ({ row }) => {
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);

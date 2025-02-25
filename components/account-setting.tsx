@@ -1,20 +1,20 @@
-'use client';
-import Link from 'next/link';
-import { Card, CardContent } from './ui/card';
-import { useUser } from '@/hooks/use-user';
-import { Input } from './ui/input';
-import { useEffect, useState } from 'react';
-import { Eye, EyeOff, Pencil, TriangleAlert } from 'lucide-react';
-import { Button } from './ui/button';
-import { AspectRatio } from './ui/aspect-ratio';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { GetFirstLetterStr } from '@/utils/get-first-letter-str';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { toast } from '@/hooks/use-toast';
-import { AxiosError } from 'axios';
-import axios from '@/utils/axios';
+"use client";
+import Link from "next/link";
+import { Card, CardContent } from "./ui/card";
+import { useUser } from "@/hooks/use-user";
+import { Input } from "./ui/input";
+import { useEffect, useState } from "react";
+import { Eye, EyeOff, PencilRuler, TriangleAlert } from "lucide-react";
+import { Button } from "./ui/button";
+import { AspectRatio } from "./ui/aspect-ratio";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { GetFirstLetterStr } from "@/utils/get-first-letter-str";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "@/hooks/use-toast";
+import { AxiosError } from "axios";
+import axios from "@/utils/axios";
 import {
   Form,
   FormControl,
@@ -22,8 +22,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from './ui/form';
-import { useRouter } from 'next/navigation';
+} from "./ui/form";
+import { useRouter } from "next/navigation";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -33,18 +33,18 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from './ui/alert-dialog';
-import Cookies from 'js-cookie';
-import Compressor from 'compressorjs';
-import { Label } from './ui/label';
-import { handleAxiosError } from '@/utils/handle-axios-error';
-import { Loading } from './loading';
+} from "./ui/alert-dialog";
+import Cookies from "js-cookie";
+import Compressor from "compressorjs";
+import { Label } from "./ui/label";
+import { handleAxiosError } from "@/utils/handle-axios-error";
+import { Loading } from "./loading";
 const PasswordSchema = z.object({
   currentPassword: z.string().min(1, {
-    message: 'current password must be filled',
+    message: "current password must be filled",
   }),
   newPassword: z.string().min(1, {
-    message: 'new password must be filled',
+    message: "new password must be filled",
   }),
 });
 
@@ -56,8 +56,8 @@ export default function AccountSetting() {
   const form = useForm<z.infer<typeof PasswordSchema>>({
     resolver: zodResolver(PasswordSchema),
     defaultValues: {
-      currentPassword: '',
-      newPassword: '',
+      currentPassword: "",
+      newPassword: "",
     },
   });
   const formProfile = useForm<z.infer<typeof ProfileSchema>>({
@@ -101,7 +101,7 @@ export default function AccountSetting() {
           reader.readAsDataURL(compressedFile);
         },
         error(err) {
-          console.error('Compression failed:', err.message);
+          console.error("Compression failed:", err.message);
         },
       });
     }
@@ -109,7 +109,7 @@ export default function AccountSetting() {
 
   async function onSubmitProfile(imageFile: File) {
     const formData = new FormData();
-    formData.append('profile', imageFile);
+    formData.append("profile", imageFile);
 
     try {
       const { data: userData } = await axios.post(
@@ -117,19 +117,19 @@ export default function AccountSetting() {
         formData,
         {
           headers: {
-            'Content-Type': 'multipart/form-data',
+            "Content-Type": "multipart/form-data",
           },
         }
       );
       toast({
-        title: 'Success!',
+        title: "Success!",
         description: <h2>{userData.message}</h2>,
       });
 
       router.refresh();
       mutate(); // Pastikan mutate di sini agar perubahan segera tampil
     } catch (error) {
-      handleAxiosError(error, 'An error occurred while change profile.');
+      handleAxiosError(error, "An error occurred while change profile.");
     }
   }
 
@@ -141,44 +141,44 @@ export default function AccountSetting() {
     };
     try {
       const { data: userData } = await axios.post(
-        '/auth/change-password',
+        "/auth/change-password",
         payload
       );
       toast({
-        title: 'Password changed successfully!',
+        title: "Password changed successfully!",
         description: <p>{JSON.stringify(userData.message, null, 2)}</p>,
       });
 
       form.reset({
-        currentPassword: '',
-        newPassword: '',
+        currentPassword: "",
+        newPassword: "",
       });
 
       mutate();
     } catch (error) {
-      handleAxiosError(error, 'An error occurred while change password.');
+      handleAxiosError(error, "An error occurred while change password.");
     }
   }
   async function onDelete() {
     try {
       const { data: userData } = await axios.post(`/users/remove-account`);
       toast({
-        title: 'Delete account successfully!',
+        title: "Delete account successfully!",
         description: <p>{JSON.stringify(userData.message, null, 2)}</p>,
       });
 
-      Cookies.remove('accessToken');
-      Cookies.remove('userRole');
-      router.push('/');
+      Cookies.remove("accessToken");
+      Cookies.remove("userRole");
+      router.push("/");
       mutate(null, false);
     } catch (error) {
-      handleAxiosError(error, 'An error occurred while delete account.');
+      handleAxiosError(error, "An error occurred while delete account.");
     }
   }
 
   useEffect(() => {
     if (!isLoading && !user) {
-      router.push('/');
+      router.push("/");
     }
   }, [user, isLoading, router]);
 
@@ -212,7 +212,7 @@ export default function AccountSetting() {
                   </Avatar>
                 </AspectRatio>
                 <span className='absolute bottom-0 end-0 flex p-1 rounded-md transform translate-y-1 translate-x-1 bg-white border dark:bg-neutral-900 dark:ring-neutral-900 items-center '>
-                  <Pencil width={18} className='mr-2' /> Edit
+                  <PencilRuler width={18} className='mr-2' /> Edit
                 </span>
                 <Form {...formProfile}>
                   <form>
@@ -265,7 +265,7 @@ export default function AccountSetting() {
                         <FormControl>
                           <Input
                             {...field}
-                            type={see ? 'text' : 'password'}
+                            type={see ? "text" : "password"}
                             id='current-password'
                             className='w-full flex-shrink'
                           />
@@ -287,7 +287,7 @@ export default function AccountSetting() {
                         <FormControl>
                           <Input
                             {...field}
-                            type={see ? 'text' : 'password'}
+                            type={see ? "text" : "password"}
                             id='new-password'
                             className='w-full flex-shrink'
                           />
@@ -352,7 +352,7 @@ export default function AccountSetting() {
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <Button variant={'destructive'} onClick={() => onDelete()}>
+                  <Button variant={"destructive"} onClick={() => onDelete()}>
                     Continue
                   </Button>
                 </AlertDialogFooter>

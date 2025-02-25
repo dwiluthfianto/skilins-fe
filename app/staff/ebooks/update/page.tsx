@@ -442,7 +442,7 @@ export default function UpdateEbooks() {
                     control={form.control}
                     name='release_date'
                     render={({ field }) => (
-                      <FormItem {...useGuidedField("release_date")}>
+                      <FormItem>
                         <FormLabel className='font-normal text-base text-muted-foreground'>
                           Release date
                         </FormLabel>

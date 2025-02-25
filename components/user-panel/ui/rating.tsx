@@ -17,7 +17,7 @@ export default function RatingComponent(props: { contentUuid: any }) {
 
       try {
         const response = await axios.get(`/ratings/${contentUuid}/check`);
-        setUserRating(response.data.rating_value ?? 0);
+        setUserRating(response.data.data.rating_value ?? 0);
       } catch (error) {
         console.error("Failed to fetch user rating:", error);
       }
@@ -43,8 +43,8 @@ export default function RatingComponent(props: { contentUuid: any }) {
   };
 
   return (
-    <div className="flex gap-4 ">
-      <div className="flex flex-col gap-4">
+    <div className='flex gap-4 '>
+      <div className='flex flex-col gap-4'>
         <p>Your Rating:</p>
         {userRating !== null ? (
           <>
@@ -52,9 +52,9 @@ export default function RatingComponent(props: { contentUuid: any }) {
               rating={userRating}
               totalStars={5}
               size={32}
-              variant="yellow"
+              variant='yellow'
               onRatingChange={handleRate}
-              className="hover:cursor-pointer"
+              className='hover:cursor-pointer'
             />
           </>
         ) : (
@@ -64,7 +64,7 @@ export default function RatingComponent(props: { contentUuid: any }) {
                 rating={0}
                 totalStars={5}
                 size={32}
-                variant="yellow"
+                variant='yellow'
                 disabled
               />
             </Link>

@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-'use client';
+"use client";
 
-import { ColumnDef } from '@tanstack/react-table';
+import { ColumnDef } from "@tanstack/react-table";
 
-import { FileSearch, MoreHorizontal, Trash2 } from 'lucide-react';
+import { FileSearch, MoreHorizontal, Trash2 } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -11,17 +11,17 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 
-import { ArrowUpDown } from 'lucide-react';
-import Image from 'next/image';
-import * as React from 'react';
-import { Button } from '@/components/ui/button';
-import DeleteDialog from '@/components/staff-panel/delete-dialog';
-import { format } from 'date-fns';
-import { AspectRatio } from '@/components/ui/aspect-ratio';
-import Link from 'next/link';
-import { Pencil } from 'lucide-react';
+import { ArrowUpDown } from "lucide-react";
+import Image from "next/image";
+import * as React from "react";
+import { Button } from "@/components/ui/button";
+import DeleteDialog from "@/components/staff-panel/delete-dialog";
+import { format } from "date-fns";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import Link from "next/link";
+import { PencilRuler } from "lucide-react";
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type Blogs = {
@@ -37,7 +37,7 @@ export type Blogs = {
 
 export const columns: ColumnDef<Blogs>[] = [
   {
-    accessorKey: 'No',
+    accessorKey: "No",
     header: () => {
       return <p>No</p>;
     },
@@ -46,7 +46,7 @@ export const columns: ColumnDef<Blogs>[] = [
     },
   },
   {
-    accessorKey: 'thumbnail',
+    accessorKey: "thumbnail",
     header: () => <div className='text-right'>Image</div>,
     cell: ({ row }) => (
       <AspectRatio ratio={4 / 3} className='h-full relative'>
@@ -61,12 +61,12 @@ export const columns: ColumnDef<Blogs>[] = [
     ),
   },
   {
-    accessorKey: 'title',
+    accessorKey: "title",
     header: ({ column }) => {
       return (
         <Button
           variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Title
           <ArrowUpDown className='ml-2 h-4 w-4' />
@@ -80,12 +80,12 @@ export const columns: ColumnDef<Blogs>[] = [
     },
   },
   {
-    accessorKey: 'creator',
+    accessorKey: "creator",
     header: ({ column }) => {
       return (
         <Button
           variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Creator
           <ArrowUpDown className='ml-2 h-4 w-4' />
@@ -97,12 +97,12 @@ export const columns: ColumnDef<Blogs>[] = [
     },
   },
   {
-    accessorKey: 'updated_at',
+    accessorKey: "updated_at",
     header: ({ column }) => {
       return (
         <Button
           variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Release Date
           <ArrowUpDown className='ml-2 h-4 w-4' />
@@ -110,11 +110,11 @@ export const columns: ColumnDef<Blogs>[] = [
       );
     },
     cell: ({ row }) => {
-      return format(row.original.updated_at, 'dd MMM yyyy');
+      return format(row.original.updated_at, "dd MMM yyyy");
     },
   },
   {
-    id: 'actions',
+    id: "actions",
     cell: ({ row }) => {
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
@@ -131,12 +131,14 @@ export const columns: ColumnDef<Blogs>[] = [
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <Link href={`blogs/update?slug=${row.original.slug}`}>
                 <DropdownMenuItem className='cursor-pointer'>
-                  <Pencil className='mr-2' width={16} /> Edit
+                  <PencilRuler className='mr-2' width={16} /> Edit
                 </DropdownMenuItem>
               </Link>
-              <DropdownMenuItem className='cursor-pointer'>
-                <FileSearch className='mr-2' width={16} /> Detail
-              </DropdownMenuItem>
+              <Link href={`blogs/${row.original.slug}`}>
+                <DropdownMenuItem className='cursor-pointer'>
+                  <FileSearch className='mr-2' width={16} /> Detail
+                </DropdownMenuItem>
+              </Link>
               <DropdownMenuItem
                 className='cursor-pointer'
                 onClick={() => setIsDeleteDialogOpen(true)}

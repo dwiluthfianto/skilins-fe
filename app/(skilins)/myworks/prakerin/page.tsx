@@ -1,35 +1,35 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-'use client';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { ContentLayout } from '@/components/user-panel/content-layout';
-import withRole from '@/utils/with-role';
+"use client";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { ContentLayout } from "@/components/user-panel/content-layout";
+import withRole from "@/utils/with-role";
 import {
   CircleOff,
   Loader,
   MoreHorizontal,
-  Pencil,
+  PencilRuler,
   Plus,
   Signature,
   SquareLibrary,
   Trash2,
-} from 'lucide-react';
-import Link from 'next/link';
-import { useState } from 'react';
+} from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import DeleteDialog from '@/components/staff-panel/delete-dialog';
-import { Card, CardContent } from '@/components/ui/card';
-import { AspectRatio } from '@/components/ui/aspect-ratio';
-import Image from 'next/image';
-import { Loading } from '@/components/loading';
-import { Error } from '@/components/error';
-import { useReportByStudent } from '@/hooks/use-report';
+} from "@/components/ui/dropdown-menu";
+import DeleteDialog from "@/components/staff-panel/delete-dialog";
+import { Card, CardContent } from "@/components/ui/card";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import Image from "next/image";
+import { Loading } from "@/components/loading";
+import { Error } from "@/components/error";
+import { useReportByStudent } from "@/hooks/use-report";
 function PrakerinStudent() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const { prakerin, isLoading, isError } = useReportByStudent();
@@ -59,18 +59,18 @@ function PrakerinStudent() {
         >
           <CardContent className='pt-6 flex flex-col justify-center items-center'>
             <div className='w-80 h-fit relative'>
-              {prakerin.status === 'pending' ? (
+              {prakerin.status === "pending" ? (
                 <Badge
                   className='bg-yellow-600 p-2 text-white transition-transform transform hover:scale-105'
-                  variant={'outline'}
+                  variant={"outline"}
                 >
                   <Loader width={18} className='mr-2 animate-spin' />
                   {prakerin.status}
                 </Badge>
-              ) : prakerin.status === 'approved' ? (
+              ) : prakerin.status === "approved" ? (
                 <Badge
                   className='bg-green-600 text-white p-2 transition-transform transform hover:scale-105'
-                  variant={'outline'}
+                  variant={"outline"}
                 >
                   <Signature width={18} className='mr-2' />
                   {prakerin.status}
@@ -78,7 +78,7 @@ function PrakerinStudent() {
               ) : (
                 <Badge
                   className='bg-red-600 text-white p-2 transition-transform transform hover:scale-105'
-                  variant={'destructive'}
+                  variant={"destructive"}
                 >
                   <CircleOff width={18} className='mr-2' />
                   {prakerin.status}
@@ -98,7 +98,7 @@ function PrakerinStudent() {
                   <DropdownMenuLabel>Actions</DropdownMenuLabel>
                   <Link href={`prakerin/update?slug=${prakerin.slug}`}>
                     <DropdownMenuItem className='cursor-pointer'>
-                      <Pencil className='mr-2' width={16} /> Edit
+                      <PencilRuler className='mr-2' width={16} /> Edit
                     </DropdownMenuItem>
                   </Link>
                   <DropdownMenuItem
@@ -138,7 +138,7 @@ function PrakerinStudent() {
                 <SquareLibrary className='w-32 h-32 md:w-52 md:h-52 text-muted-foreground' />
               </div>
               <p className='text-center font-semibold text-xl text-muted-foreground'>{`Hi, You haven't written any prakerin report yet.`}</p>
-              <Link href={'prakerin/create'} className='mt-4'>
+              <Link href={"prakerin/create"} className='mt-4'>
                 <Button>
                   <Plus width={18} /> Add Prakerin Report
                 </Button>
@@ -151,4 +151,4 @@ function PrakerinStudent() {
   );
 }
 
-export default withRole(PrakerinStudent, ['student'], '/auth/user/login');
+export default withRole(PrakerinStudent, ["student"], "/auth/user/login");

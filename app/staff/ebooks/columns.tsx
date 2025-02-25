@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-'use client';
+"use client";
 
-import { ColumnDef } from '@tanstack/react-table';
+import { ColumnDef } from "@tanstack/react-table";
 
-import { FileSearch, FileText, MoreHorizontal, Trash2 } from 'lucide-react';
+import { FileSearch, FileText, MoreHorizontal, Trash2 } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -11,17 +11,17 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 
-import { ArrowUpDown } from 'lucide-react';
-import Image from 'next/image';
-import * as React from 'react';
-import { Button } from '@/components/ui/button';
-import DeleteDialog from '@/components/staff-panel/delete-dialog';
-import { format } from 'date-fns';
-import { AspectRatio } from '@/components/ui/aspect-ratio';
-import Link from 'next/link';
-import { Pencil } from 'lucide-react';
+import { ArrowUpDown } from "lucide-react";
+import Image from "next/image";
+import * as React from "react";
+import { Button } from "@/components/ui/button";
+import DeleteDialog from "@/components/staff-panel/delete-dialog";
+import { format } from "date-fns";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import Link from "next/link";
+import { PencilRuler } from "lucide-react";
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type eBooks = {
@@ -45,7 +45,7 @@ export type eBooks = {
 
 export const columns: ColumnDef<eBooks>[] = [
   {
-    accessorKey: 'No',
+    accessorKey: "No",
     header: () => {
       return <p>No</p>;
     },
@@ -54,7 +54,7 @@ export const columns: ColumnDef<eBooks>[] = [
     },
   },
   {
-    accessorKey: 'thumbnail',
+    accessorKey: "thumbnail",
     header: () => <div className='text-right'>Image</div>,
     cell: ({ row }) => (
       <AspectRatio ratio={3 / 4} className='h-full relative'>
@@ -69,12 +69,12 @@ export const columns: ColumnDef<eBooks>[] = [
     ),
   },
   {
-    accessorKey: 'title',
+    accessorKey: "title",
     header: ({ column }) => {
       return (
         <Button
           variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Title
           <ArrowUpDown className='ml-2 h-4 w-4' />
@@ -89,12 +89,12 @@ export const columns: ColumnDef<eBooks>[] = [
   },
 
   {
-    accessorKey: 'category',
+    accessorKey: "category",
     header: ({ column }) => {
       return (
         <Button
           variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Category
           <ArrowUpDown className='ml-2 h-4 w-4' />
@@ -106,12 +106,12 @@ export const columns: ColumnDef<eBooks>[] = [
     },
   },
   {
-    accessorKey: 'author',
+    accessorKey: "author",
     header: ({ column }) => {
       return (
         <Button
           variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Author
           <ArrowUpDown className='ml-2 h-4 w-4' />
@@ -123,12 +123,12 @@ export const columns: ColumnDef<eBooks>[] = [
     },
   },
   {
-    accessorKey: 'isbn',
+    accessorKey: "isbn",
     header: ({ column }) => {
       return (
         <Button
           variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           ISBN
           <ArrowUpDown className='ml-2 h-4 w-4' />
@@ -140,12 +140,12 @@ export const columns: ColumnDef<eBooks>[] = [
     },
   },
   {
-    accessorKey: 'pages',
+    accessorKey: "pages",
     header: ({ column }) => {
       return (
         <Button
           variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Pages
           <ArrowUpDown className='ml-2 h-4 w-4' />
@@ -157,12 +157,12 @@ export const columns: ColumnDef<eBooks>[] = [
     },
   },
   {
-    accessorKey: 'publication',
+    accessorKey: "publication",
     header: ({ column }) => {
       return (
         <Button
           variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Publication
           <ArrowUpDown className='ml-2 h-4 w-4' />
@@ -174,12 +174,12 @@ export const columns: ColumnDef<eBooks>[] = [
     },
   },
   {
-    accessorKey: 'file',
+    accessorKey: "file",
     header: ({ column }) => {
       return (
         <Button
           variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           File
           <ArrowUpDown className='ml-2 h-4 w-4' />
@@ -201,12 +201,12 @@ export const columns: ColumnDef<eBooks>[] = [
     },
   },
   {
-    accessorKey: 'release_date',
+    accessorKey: "release_date",
     header: ({ column }) => {
       return (
         <Button
           variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Release Date
           <ArrowUpDown className='ml-2 h-4 w-4' />
@@ -214,12 +214,12 @@ export const columns: ColumnDef<eBooks>[] = [
       );
     },
     cell: ({ row }) => {
-      return format(row.original.ebook.release_date, 'dd MMM yyyy');
+      return format(row.original.ebook.release_date, "dd MMM yyyy");
     },
   },
 
   {
-    id: 'actions',
+    id: "actions",
     cell: ({ row }) => {
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
@@ -236,12 +236,14 @@ export const columns: ColumnDef<eBooks>[] = [
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <Link href={`ebooks/update?slug=${row.original.slug}`}>
                 <DropdownMenuItem className='cursor-pointer'>
-                  <Pencil className='mr-2' width={16} /> Edit
+                  <PencilRuler className='mr-2' width={16} /> Edit
                 </DropdownMenuItem>
               </Link>
-              <DropdownMenuItem className='cursor-pointer'>
-                <FileSearch className='mr-2' width={16} /> Detail
-              </DropdownMenuItem>
+              <Link href={`ebooks/${row.original.slug}`}>
+                <DropdownMenuItem className='cursor-pointer'>
+                  <FileSearch className='mr-2' width={16} /> Detail
+                </DropdownMenuItem>
+              </Link>
               <DropdownMenuItem
                 className='cursor-pointer'
                 onClick={() => setIsDeleteDialogOpen(true)}

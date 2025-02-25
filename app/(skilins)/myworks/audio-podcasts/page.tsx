@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ContentLayout } from "@/components/user-panel/content-layout";
 import { useAudioByStudent, useAudioSummaryByStudent } from "@/hooks/use-audio";
 import withRole from "@/utils/with-role";
-import { AudioLines, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { AudioLines, MoreHorizontal, PencilRuler, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import {
@@ -114,7 +114,7 @@ function AudioStudent() {
                   <DropdownMenuLabel>Actions</DropdownMenuLabel>
                   <Link href={`audio-podcasts/update?slug=${item.slug}`}>
                     <DropdownMenuItem className='cursor-pointer'>
-                      <Pencil className='mr-2' width={16} /> Edit
+                      <PencilRuler className='mr-2' width={16} /> Edit
                     </DropdownMenuItem>
                   </Link>
                   <DropdownMenuItem
