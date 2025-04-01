@@ -29,6 +29,7 @@ import DeleteDialog from "@/components/staff-panel/delete-dialog";
 import ApproveDialog from "@/components/staff-panel/approve-dialog";
 import RejectDialog from "@/components/staff-panel/reject-dialog";
 import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type Audio = {
@@ -43,6 +44,7 @@ export type Audio = {
     creator: { name: string };
   };
   status: string;
+  slug: string;
 };
 
 export const columns: ColumnDef<Audio>[] = [
@@ -233,9 +235,13 @@ export const columns: ColumnDef<Audio>[] = [
                 <CircleOff className='mr-2' width={16} /> Reject
               </DropdownMenuItem>
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem className='cursor-pointer'>
-                <FileSearch className='mr-2' width={16} /> Detail
-              </DropdownMenuItem>
+              <Link
+                href={`/staff/student-works/audio-podcasts/${row.original.slug}`}
+              >
+                <DropdownMenuItem className='cursor-pointer'>
+                  <FileSearch className='mr-2' width={16} /> Detail
+                </DropdownMenuItem>
+              </Link>
               <DropdownMenuItem
                 className='cursor-pointer'
                 onClick={() => setIsDeleteDialogOpen(true)}

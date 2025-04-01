@@ -31,6 +31,7 @@ import { ModeToggle } from "../mode-toggle";
 import { useUser } from "@/hooks/use-user";
 import { logout } from "@/utils/auth-service";
 import { GetFirstLetterStr } from "@/utils/get-first-letter-str";
+import { handleAxiosError } from "@/utils/handle-axios-error";
 
 interface MenuProps {
   isOpen: boolean | undefined;
@@ -47,7 +48,7 @@ export function Menu({ isOpen }: MenuProps) {
       mutate(null, false);
       router.push("/auth/staff/login");
     } catch (error) {
-      console.error("Logout failed", error);
+      handleAxiosError(error, "Logout failed");
     }
   };
 
@@ -55,41 +56,41 @@ export function Menu({ isOpen }: MenuProps) {
   const menuList = getMenuList(pathname);
 
   return (
-    <ScrollArea className="[&>div>div[style]]:!block">
-      <nav className="mt-6 h-full w-full">
-        <ul className="flex flex-col min-h-[calc(100vh-48px-36px-16px-32px)] lg:min-h-[calc(100vh-32px-40px-32px)] items-start space-y-1 px-2">
+    <ScrollArea className='[&>div>div[style]]:!block'>
+      <nav className='mt-6 h-full w-full'>
+        <ul className='flex flex-col min-h-[calc(100vh-48px-36px-16px-32px)] lg:min-h-[calc(100vh-32px-40px-32px)] items-start space-y-1 px-2'>
           {menuList.map(({ groupLabel, menus }, index) => (
             <li className={cn("w-full", groupLabel ? "pt-5" : "")} key={index}>
               {(isOpen && groupLabel) || isOpen === undefined ? (
-                <p className="text-sm font-medium text-muted-foreground px-4 pb-2 max-w-[248px] truncate">
+                <p className='text-sm font-medium text-muted-foreground px-4 pb-2 max-w-[248px] truncate'>
                   {groupLabel}
                 </p>
               ) : !isOpen && isOpen !== undefined && groupLabel ? (
                 <TooltipProvider>
                   <Tooltip delayDuration={100}>
-                    <TooltipTrigger className="w-full">
-                      <div className="w-full flex justify-center items-center">
-                        <Ellipsis className="h-5 w-5" />
+                    <TooltipTrigger className='w-full'>
+                      <div className='w-full flex justify-center items-center'>
+                        <Ellipsis className='h-5 w-5' />
                       </div>
                     </TooltipTrigger>
-                    <TooltipContent side="right">
+                    <TooltipContent side='right'>
                       <p>{groupLabel}</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               ) : (
-                <p className="pb-2"></p>
+                <p className='pb-2'></p>
               )}
               {menus.map(
                 ({ href, label, icon: Icon, active, submenus }, index) =>
                   submenus.length === 0 ? (
-                    <div className="w-full" key={index}>
+                    <div className='w-full' key={index}>
                       <TooltipProvider disableHoverableContent>
                         <Tooltip delayDuration={100}>
                           <TooltipTrigger asChild>
                             <Button
                               variant={active ? "secondary" : "ghost"}
-                              className="w-full justify-start h-10 mb-1"
+                              className='w-full justify-start h-10 mb-1'
                               asChild
                             >
                               <Link href={href}>
@@ -112,7 +113,7 @@ export function Menu({ isOpen }: MenuProps) {
                             </Button>
                           </TooltipTrigger>
                           {isOpen === false && (
-                            <TooltipContent side="right">
+                            <TooltipContent side='right'>
                               {label}
                             </TooltipContent>
                           )}
@@ -120,7 +121,7 @@ export function Menu({ isOpen }: MenuProps) {
                       </TooltipProvider>
                     </div>
                   ) : (
-                    <div className="w-full" key={index}>
+                    <div className='w-full' key={index}>
                       <CollapseMenuButton
                         icon={Icon}
                         label={label}
@@ -136,11 +137,11 @@ export function Menu({ isOpen }: MenuProps) {
           {isLoading ? (
             ""
           ) : (
-            <li className="w-full grow flex items-end">
+            <li className='w-full grow flex items-end'>
               <DropdownMenu>
-                <DropdownMenuTrigger className="outline-none w-full ">
-                  <div className="grid grid-cols-8 items-center">
-                    <div className="flex items-center col-span-7">
+                <DropdownMenuTrigger className='outline-none w-full '>
+                  <div className='grid grid-cols-8 items-center'>
+                    <div className='flex items-center col-span-7'>
                       <span className={cn(isOpen === false ? "" : "mr-4")}>
                         <Avatar>
                           <AvatarImage
@@ -150,7 +151,7 @@ export function Menu({ isOpen }: MenuProps) {
                                 ? `${user.data.profile}`
                                 : undefined
                             }
-                            className="object-cover object-center"
+                            className='object-cover object-center'
                           />
                           <AvatarFallback>
                             {GetFirstLetterStr(user?.data?.full_name)}
@@ -165,10 +166,10 @@ export function Menu({ isOpen }: MenuProps) {
                             : "overflow-hidden text-start opacity-100"
                         )}
                       >
-                        <p className="font-bold truncate">
+                        <p className='font-bold truncate'>
                           {user?.data?.full_name}
                         </p>
-                        <p className="text-sm truncate ">{user?.data?.email}</p>
+                        <p className='text-sm truncate '>{user?.data?.email}</p>
                       </div>
                     </div>
                     <div
@@ -183,13 +184,13 @@ export function Menu({ isOpen }: MenuProps) {
                     </div>
                   </div>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56" align="end" side="right">
-                  <DropdownMenuLabel className="font-normal grid grid-cols-6 items-center justify-between">
-                    <div className="flex flex-col space-y-1 col-span-5">
-                      <p className="text-sm font-medium leading-none truncate">
+                <DropdownMenuContent className='w-56' align='end' side='right'>
+                  <DropdownMenuLabel className='font-normal grid grid-cols-6 items-center justify-between'>
+                    <div className='flex flex-col space-y-1 col-span-5'>
+                      <p className='text-sm font-medium leading-none truncate'>
                         {user?.data?.full_name}
                       </p>
-                      <p className="text-xs leading-none text-muted-foreground truncate">
+                      <p className='text-xs leading-none text-muted-foreground truncate'>
                         {user?.data?.email}
                       </p>
                     </div>
@@ -197,21 +198,21 @@ export function Menu({ isOpen }: MenuProps) {
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuGroup>
-                    <DropdownMenuItem className="hover:cursor-pointer" asChild>
-                      <Link href="/staff/account" className="flex items-center">
-                        <User className="w-4 h-4 mr-3 text-muted-foreground" />
+                    <DropdownMenuItem className='hover:cursor-pointer' asChild>
+                      <Link href='/staff/account' className='flex items-center'>
+                        <User className='w-4 h-4 mr-3 text-muted-foreground' />
                         Account
                       </Link>
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
-                    className="hover:cursor-pointer"
+                    className='hover:cursor-pointer'
                     onClick={() => {
                       handleLogout();
                     }}
                   >
-                    <LogOut className="w-4 h-4 mr-3 text-muted-foreground" />
+                    <LogOut className='w-4 h-4 mr-3 text-muted-foreground' />
                     Sign out
                   </DropdownMenuItem>
                 </DropdownMenuContent>

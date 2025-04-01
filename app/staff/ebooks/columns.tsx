@@ -239,7 +239,7 @@ export const columns: ColumnDef<eBooks>[] = [
                   <PencilRuler className='mr-2' width={16} /> Edit
                 </DropdownMenuItem>
               </Link>
-              <Link href={`ebooks/${row.original.slug}`}>
+              <Link href={`/ebooks/${row.original.slug}`}>
                 <DropdownMenuItem className='cursor-pointer'>
                   <FileSearch className='mr-2' width={16} /> Detail
                 </DropdownMenuItem>

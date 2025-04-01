@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-'use client';
+"use client";
 
-import { ColumnDef } from '@tanstack/react-table';
+import { ColumnDef } from "@tanstack/react-table";
 
 import {
   CircleOff,
@@ -9,7 +9,7 @@ import {
   MoreHorizontal,
   Signature,
   Trash2,
-} from 'lucide-react';
+} from "lucide-react";
 
 import {
   DropdownMenu,
@@ -17,22 +17,24 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 
-import { ArrowUpDown } from 'lucide-react';
-import Image from 'next/image';
-import * as React from 'react';
-import { Button } from '@/components/ui/button';
-import DeleteDialog from '@/components/staff-panel/delete-dialog';
-import RejectDialog from '@/components/staff-panel/reject-dialog';
-import ApprovedDialog from '@/components/staff-panel/approve-dialog';
-import { Badge } from '@/components/ui/badge';
-import { AspectRatio } from '@/components/ui/aspect-ratio';
+import { ArrowUpDown } from "lucide-react";
+import Image from "next/image";
+import * as React from "react";
+import { Button } from "@/components/ui/button";
+import DeleteDialog from "@/components/staff-panel/delete-dialog";
+import RejectDialog from "@/components/staff-panel/reject-dialog";
+import ApprovedDialog from "@/components/staff-panel/approve-dialog";
+import { Badge } from "@/components/ui/badge";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import Link from "next/link";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type Stories = {
   uuid: string;
+  slug: string;
   title: string;
   thumbnail: string;
   description: string;
@@ -45,7 +47,7 @@ export type Stories = {
 
 export const columns: ColumnDef<Stories>[] = [
   {
-    accessorKey: 'No',
+    accessorKey: "No",
     header: () => {
       return <p>No</p>;
     },
@@ -54,7 +56,7 @@ export const columns: ColumnDef<Stories>[] = [
     },
   },
   {
-    accessorKey: 'thumbnail',
+    accessorKey: "thumbnail",
     header: () => <div className='text-right'>Image</div>,
     cell: ({ row }) => (
       <AspectRatio ratio={3 / 4} className='h-full relative'>
@@ -69,12 +71,12 @@ export const columns: ColumnDef<Stories>[] = [
     ),
   },
   {
-    accessorKey: 'title',
+    accessorKey: "title",
     header: ({ column }) => {
       return (
         <Button
           variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Title
           <ArrowUpDown className='ml-2 h-4 w-4' />
@@ -89,12 +91,12 @@ export const columns: ColumnDef<Stories>[] = [
   },
 
   {
-    accessorKey: 'category',
+    accessorKey: "category",
     header: ({ column }) => {
       return (
         <Button
           variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Category
           <ArrowUpDown className='ml-2 h-4 w-4' />
@@ -106,12 +108,12 @@ export const columns: ColumnDef<Stories>[] = [
     },
   },
   {
-    accessorKey: 'creator',
+    accessorKey: "creator",
     header: ({ column }) => {
       return (
         <Button
           variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Creator
           <ArrowUpDown className='ml-2 h-4 w-4' />
@@ -123,12 +125,12 @@ export const columns: ColumnDef<Stories>[] = [
     },
   },
   {
-    accessorKey: 'status',
+    accessorKey: "status",
     header: ({ column }) => {
       return (
         <Button
           variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Status
           <ArrowUpDown className='ml-2 h-4 w-4' />
@@ -136,23 +138,23 @@ export const columns: ColumnDef<Stories>[] = [
       );
     },
     cell: ({ row }) => {
-      return row.original.status === 'pending' ? (
-        <Badge className='bg-yellow-500 text-white' variant={'outline'}>
+      return row.original.status === "pending" ? (
+        <Badge className='bg-yellow-500 text-white' variant={"outline"}>
           {row.original.status}
         </Badge>
-      ) : row.original.status === 'approved' ? (
-        <Badge className='bg-green-500 text-white' variant={'outline'}>
+      ) : row.original.status === "approved" ? (
+        <Badge className='bg-green-500 text-white' variant={"outline"}>
           {row.original.status}
         </Badge>
       ) : (
-        <Badge className='bg-red-500 text-white' variant={'outline'}>
+        <Badge className='bg-red-500 text-white' variant={"outline"}>
           {row.original.status}
         </Badge>
       );
     },
   },
   {
-    id: 'actions',
+    id: "actions",
     cell: ({ row }) => {
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const [approveOpen, setApproveOpen] = React.useState(false);
@@ -184,9 +186,11 @@ export const columns: ColumnDef<Stories>[] = [
                 <CircleOff className='mr-2' width={16} /> Reject
               </DropdownMenuItem>
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem className='cursor-pointer'>
-                <FileSearch className='mr-2' width={16} /> Detail
-              </DropdownMenuItem>
+              <Link href={`stories/${row.original.slug}`}>
+                <DropdownMenuItem className='cursor-pointer'>
+                  <FileSearch className='mr-2' width={16} /> Detail
+                </DropdownMenuItem>
+              </Link>
               <DropdownMenuItem
                 className='cursor-pointer'
                 onClick={() => setIsDeleteDialogOpen(true)}

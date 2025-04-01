@@ -94,7 +94,7 @@ export default function CreateCompetition() {
     defaultValues: {
       title: competition?.title || "",
       thumbnail: undefined,
-      type_competition: competition?.type || "audio",
+      type_competition: competition?.type || "",
       description: competition?.description || "",
       guide: competition?.guide || "",
       winner_count: competition?.winner_count || undefined,

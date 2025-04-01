@@ -3,18 +3,9 @@
 import ContentCard from "@/components/content-card";
 import { ContentLayout } from "@/components/judge-panel/content-layout";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useJudgeSubmission, useJudgeUser } from "@/hooks/use-judge";
 import { format } from "date-fns";
-import {
-  AlertTriangle,
-  Badge,
-  BadgeCheck,
-  BadgePercent,
-  CalendarClock,
-  CheckCircle,
-  List,
-} from "lucide-react";
+import { AlertTriangle, CalendarClock, CheckCircle, List } from "lucide-react";
 import { useState } from "react";
 import { Loading } from "@/components/loading";
 import { Error } from "@/components/error";
@@ -29,23 +20,14 @@ export default function JudgeDashboard() {
     isError: isJudgeError,
   } = useJudgeUser();
 
-  const router = useRouter();
-
-  if (!judge && !judge?.judge?.competition?.uuid) {
-    toast({
-      title: "Unauthorized",
-      description:
-        "You are not registered to any competition. please contact skilins staff.",
-      variant: "destructive",
-    });
-    router.push("/");
-  }
-
   const { data, summary, isLoading, isError } = useJudgeSubmission(
     scored,
     judge && judge.judge.competition.uuid
   );
 
+  const deadline = summary?.deadline.end_date
+    ? format(summary?.deadline.end_date, "dd MMMM yyyy")
+    : "No deadline";
   const summaryItems = [
     {
       label: "Scored",
@@ -67,7 +49,7 @@ export default function JudgeDashboard() {
     },
     {
       label: "Deadline",
-      value: summary?.deadline.end_date || "No deadline",
+      value: deadline as any,
       variant: "info" as const,
       icon: CalendarClock,
     },
