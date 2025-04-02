@@ -1,14 +1,13 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import axios from '@/utils/axios';
-import { toast } from '@/hooks/use-toast';
-import { AxiosError } from 'axios';
+import { useEffect, useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "@/utils/axios";
+import { toast } from "@/hooks/use-toast";
 import {
   Form,
   FormControl,
@@ -16,22 +15,22 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { useParams, useRouter } from 'next/navigation';
-import { Loader2 } from 'lucide-react';
-import { AutosizeTextarea } from '@/components/autosize-textarea';
-import MinimalTiptapOne from '@/components/minimal-tiptap/minimal-tiptap-one';
-import { ContentLayout } from '@/components/user-panel/content-layout';
-import { useStoryEpisode } from '@/hooks/use-story';
-import { Input } from '@/components/ui/input';
-import { handleAxiosError } from '@/utils/handle-axios-error';
-import { ContentUpdateSkeleton } from '@/components/skeletons/content-update-skeleton';
+} from "@/components/ui/form";
+import { useParams, useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
+import { AutosizeTextarea } from "@/components/autosize-textarea";
+import MinimalTiptapOne from "@/components/minimal-tiptap/minimal-tiptap-one";
+import { ContentLayout } from "@/components/user-panel/content-layout";
+import { useStoryEpisode } from "@/hooks/use-story";
+import { Input } from "@/components/ui/input";
+import { handleAxiosError } from "@/utils/handle-axios-error";
+import { ContentUpdateSkeleton } from "@/components/skeletons/content-update-skeleton";
 const ContentSchema = z.object({
   title: z
     .string()
-    .min(5, { message: 'Title must be longer than or equal to 5 characters' }),
-  content: z.string().min(1, { message: 'Content must be filled' }),
-  order: z.coerce.number().min(1, { message: 'Order must be filled' }),
+    .min(5, { message: "Title must be longer than or equal to 5 characters" }),
+  content: z.string().min(1, { message: "Content must be filled" }),
+  order: z.coerce.number().min(1, { message: "Order must be filled" }),
 });
 
 export default function StoryCreate() {
@@ -41,8 +40,8 @@ export default function StoryCreate() {
   const form = useForm<z.infer<typeof ContentSchema>>({
     resolver: zodResolver(ContentSchema),
     defaultValues: {
-      title: story?.title || '',
-      content: story?.content || '',
+      title: story?.title || "",
+      content: story?.content || "",
       order: story?.order || 1,
     },
   });
@@ -69,14 +68,14 @@ export default function StoryCreate() {
       );
 
       toast({
-        title: 'Success!',
+        title: "Success!",
         description: contentData.message,
       });
 
       router.back();
     } catch (error) {
       console.log(error);
-      handleAxiosError(error, 'An error occurred while update story.');
+      handleAxiosError(error, "An error occurred while update story.");
     } finally {
       setLoading(false);
     }
@@ -98,7 +97,7 @@ export default function StoryCreate() {
                     render={({ field }) => (
                       <FormItem className='flex items-center justify-center '>
                         <FormLabel className='text-xl text-muted-foreground'>
-                          Part:{' '}
+                          Part:{" "}
                         </FormLabel>
                         <FormControl>
                           <Input
@@ -154,7 +153,7 @@ export default function StoryCreate() {
 
             <Button
               className='mt-6 mr-4'
-              variant={'ghost'}
+              variant={"ghost"}
               onClick={(e) => {
                 e.preventDefault();
                 router.back();
@@ -169,7 +168,7 @@ export default function StoryCreate() {
                   <Loader2 className='animate-spin' /> {`Saving...`}
                 </>
               ) : (
-                'Save'
+                "Save"
               )}
             </Button>
           </form>

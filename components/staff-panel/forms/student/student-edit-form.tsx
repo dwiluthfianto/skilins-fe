@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import {
   Sheet,
   SheetContent,
@@ -5,10 +7,9 @@ import {
   SheetFooter,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+} from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Form,
   FormControl,
@@ -16,51 +17,49 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useToast } from '@/hooks/use-toast';
-import { CalendarIcon, Loader2 } from 'lucide-react';
-import { useState, useEffect } from 'react';
-import axios from '@/utils/axios';
-import { handleAxiosError } from '@/utils/handle-axios-error';
-import { cn } from '@/lib/utils';
+} from "@/components/ui/form";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useToast } from "@/hooks/use-toast";
+import { CalendarIcon, Loader2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import axios from "@/utils/axios";
+import { handleAxiosError } from "@/utils/handle-axios-error";
+import { cn } from "@/lib/utils";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
-import { format } from 'date-fns';
-import { CustomCalendar } from '@/components/ui/custom-calendar';
+} from "@/components/ui/popover";
+import { format } from "date-fns";
+import { CustomCalendar } from "@/components/ui/custom-calendar";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { useMajor } from '@/hooks/use-major';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-
-const allowedDomains = ['@gmail.com', '@skilins.com'];
+} from "@/components/ui/select";
+import { useMajor } from "@/hooks/use-major";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 const StudentSchema = z.object({
   nis: z.coerce.number().min(1, {
-    message: 'This field has to be filled.',
+    message: "This field has to be filled.",
   }),
   name: z.string().min(4, {
-    message: 'Full name must be at least 4 characters.',
+    message: "Full name must be at least 4 characters.",
   }),
   major: z.string().min(1, {
-    message: 'Major has to be filled.',
+    message: "Major has to be filled.",
   }),
   birthplace: z.string().min(1, {
-    message: 'Birthplace has to be filled.',
+    message: "Birthplace has to be filled.",
   }),
   birthdate: z.coerce.date(),
-  sex: z.enum(['male', 'female'], {
-    required_error: 'You need to select a sex.',
+  sex: z.enum(["male", "female"], {
+    required_error: "You need to select a sex.",
   }),
 });
 
@@ -76,11 +75,11 @@ export default function StudentEditForm({
     resolver: zodResolver(StudentSchema),
     defaultValues: {
       nis: values?.nis || 0,
-      name: values?.name || '',
-      major: values?.major?.name || '',
-      birthplace: values?.birthplace || '',
+      name: values?.name || "",
+      major: values?.major?.name || "",
+      birthplace: values?.birthplace || "",
       birthdate: values?.birthdate || new Date(),
-      sex: values?.sex || 'male',
+      sex: values?.sex || "male",
     },
   });
 
@@ -115,11 +114,11 @@ export default function StudentEditForm({
       );
 
       toast({
-        title: 'Success!',
+        title: "Success!",
         description: studentData.message,
       });
     } catch (error) {
-      handleAxiosError(error, 'An error occurred while update the student.');
+      handleAxiosError(error, "An error occurred while update the student.");
     } finally {
       setLoading(false);
       setIsEditDialogOpen(false);
@@ -161,7 +160,7 @@ export default function StudentEditForm({
               render={({ field }) => (
                 <FormItem className='grid gap-2'>
                   <FormLabel>
-                    NIS <span className='text-red-500'>*</span>{' '}
+                    NIS <span className='text-red-500'>*</span>{" "}
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -255,14 +254,14 @@ export default function StudentEditForm({
                     <PopoverTrigger asChild>
                       <FormControl>
                         <Button
-                          variant={'outline'}
+                          variant={"outline"}
                           className={cn(
-                            'w-full pl-3 text-left font-normal',
-                            !field.value && 'text-muted-foreground'
+                            "w-full pl-3 text-left font-normal",
+                            !field.value && "text-muted-foreground"
                           )}
                         >
                           {field.value ? (
-                            format(field.value, 'PPP')
+                            format(field.value, "PPP")
                           ) : (
                             <span>Pick a date</span>
                           )}
@@ -295,7 +294,7 @@ export default function StudentEditForm({
                     <Loader2 className='animate-spin' /> {`Updating...`}
                   </>
                 ) : (
-                  'Update student'
+                  "Update student"
                 )}
               </Button>
             </SheetFooter>

@@ -1,24 +1,24 @@
-'use client';
+"use client";
 
-import { ColumnDef } from '@tanstack/react-table';
+import { ColumnDef } from "@tanstack/react-table";
 
-import { MoreHorizontal, ShieldCheck, Trash2, PencilRuler } from 'lucide-react';
+import { MoreHorizontal, ShieldCheck, Trash2, PencilRuler } from "lucide-react";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 
-import { ArrowUpDown } from 'lucide-react';
-import { format } from 'date-fns';
-import DeleteDialog from '@/components/staff-panel/delete-dialog';
-import React from 'react';
-import VerifyStudentDialog from '@/components/verify-student-dialog';
-import StudentEditForm from '@/components/staff-panel/forms/student/student-edit-form';
+import { ArrowUpDown } from "lucide-react";
+import { format } from "date-fns";
+import DeleteDialog from "@/components/staff-panel/delete-dialog";
+import React from "react";
+import VerifyStudentDialog from "@/components/verify-student-dialog";
+import StudentEditForm from "@/components/staff-panel/forms/student/student-edit-form";
 
 export type Student = {
   uuid: string;
@@ -26,14 +26,14 @@ export type Student = {
   name: string;
   birthplace: string;
   birthdate: Date;
-  sex: 'male' | 'female';
+  sex: "male" | "female";
   major: { name: string };
   status: boolean;
 };
 
 export const columns: ColumnDef<Student>[] = [
   {
-    accessorKey: 'No',
+    accessorKey: "No",
     header: () => {
       return <p>No</p>;
     },
@@ -42,12 +42,12 @@ export const columns: ColumnDef<Student>[] = [
     },
   },
   {
-    accessorKey: 'nis',
+    accessorKey: "nis",
     header: ({ column }) => {
       return (
         <Button
           variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           NIS
           <ArrowUpDown className='ml-2 h-4 w-4' />
@@ -56,12 +56,12 @@ export const columns: ColumnDef<Student>[] = [
     },
   },
   {
-    accessorKey: 'name',
+    accessorKey: "name",
     header: ({ column }) => {
       return (
         <Button
           variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Full Name
           <ArrowUpDown className='ml-2 h-4 w-4' />
@@ -70,12 +70,12 @@ export const columns: ColumnDef<Student>[] = [
     },
   },
   {
-    accessorKey: 'birthplace',
+    accessorKey: "birthplace",
     header: ({ column }) => {
       return (
         <Button
           variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Birthplace
           <ArrowUpDown className='ml-2 h-4 w-4' />
@@ -84,12 +84,12 @@ export const columns: ColumnDef<Student>[] = [
     },
   },
   {
-    accessorKey: 'birthdate',
+    accessorKey: "birthdate",
     header: ({ column }) => {
       return (
         <Button
           variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Birthdate
           <ArrowUpDown className='ml-2 h-4 w-4' />
@@ -97,16 +97,16 @@ export const columns: ColumnDef<Student>[] = [
       );
     },
     cell: ({ row }) => {
-      return format(new Date(row.original.birthdate), 'dd/MM/yyyy');
+      return format(new Date(row.original.birthdate), "dd/MM/yyyy");
     },
   },
   {
-    accessorKey: 'sex',
+    accessorKey: "sex",
     header: ({ column }) => {
       return (
         <Button
           variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Sex
           <ArrowUpDown className='ml-2 h-4 w-4' />
@@ -118,12 +118,12 @@ export const columns: ColumnDef<Student>[] = [
     },
   },
   {
-    accessorKey: 'major',
+    accessorKey: "major",
     header: ({ column }) => {
       return (
         <Button
           variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Major
           <ArrowUpDown className='ml-2 h-4 w-4' />
@@ -135,12 +135,12 @@ export const columns: ColumnDef<Student>[] = [
     },
   },
   {
-    accessorKey: 'status',
+    accessorKey: "status",
     header: ({ column }) => {
       return (
         <Button
           variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Status
           <ArrowUpDown className='ml-2 h-4 w-4' />
@@ -160,13 +160,14 @@ export const columns: ColumnDef<Student>[] = [
     },
   },
   {
-    id: 'actions',
+    id: "actions",
     cell: ({ row }) => {
       const student = row.original;
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
+      // eslint-disable-next-line react-hooks/rules-of-hooks
       const [isVerifyDialogOpen, setIsVerifyDialogOpen] = React.useState(false);
       return (
         <div>
@@ -180,7 +181,7 @@ export const columns: ColumnDef<Student>[] = [
             <DropdownMenuContent align='end'>
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               {row.original.status ? (
-                ''
+                ""
               ) : (
                 <DropdownMenuItem
                   className='cursor-pointer'

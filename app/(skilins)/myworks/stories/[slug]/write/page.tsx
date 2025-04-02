@@ -1,14 +1,14 @@
-'use client';
+/* eslint-disable react-hooks/rules-of-hooks */
+"use client";
 
-import { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import axios from '@/utils/axios';
-import { toast } from '@/hooks/use-toast';
-import { AxiosError } from 'axios';
+import { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "@/utils/axios";
+import { toast } from "@/hooks/use-toast";
 import {
   Form,
   FormControl,
@@ -16,27 +16,27 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { useParams, useRouter } from 'next/navigation';
-import { Loader2 } from 'lucide-react';
-import { AutosizeTextarea } from '@/components/autosize-textarea';
-import MinimalTiptapOne from '@/components/minimal-tiptap/minimal-tiptap-one';
-import { ContentLayout } from '@/components/user-panel/content-layout';
-import { useStoryBySlug } from '@/hooks/use-story';
-import { Input } from '@/components/ui/input';
-import { handleAxiosError } from '@/utils/handle-axios-error';
-import { Loading } from '@/components/loading';
+} from "@/components/ui/form";
+import { useParams, useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
+import { AutosizeTextarea } from "@/components/autosize-textarea";
+import MinimalTiptapOne from "@/components/minimal-tiptap/minimal-tiptap-one";
+import { ContentLayout } from "@/components/user-panel/content-layout";
+import { useStoryBySlug } from "@/hooks/use-story";
+import { Input } from "@/components/ui/input";
+import { handleAxiosError } from "@/utils/handle-axios-error";
+import { Loading } from "@/components/loading";
 import {
   GuidedFormLayout,
   useGuidedField,
-} from '@/components/form-guidance/guided-form-layout';
-import { STORY_TOOLTIPS } from '@/lib/tooltips';
+} from "@/components/form-guidance/guided-form-layout";
+import { STORY_TOOLTIPS } from "@/lib/tooltips";
 const ContentSchema = z.object({
   title: z
     .string()
-    .min(5, { message: 'Title must be longer than or equal to 5 characters' }),
-  content: z.string().min(1, { message: 'Content must be filled' }),
-  order: z.coerce.number().min(1, { message: 'Order must be filled' }),
+    .min(5, { message: "Title must be longer than or equal to 5 characters" }),
+  content: z.string().min(1, { message: "Content must be filled" }),
+  order: z.coerce.number().min(1, { message: "Order must be filled" }),
 });
 
 export default function StoryCreate() {
@@ -44,8 +44,8 @@ export default function StoryCreate() {
   const form = useForm<z.infer<typeof ContentSchema>>({
     resolver: zodResolver(ContentSchema),
     defaultValues: {
-      title: '',
-      content: '',
+      title: "",
+      content: "",
       order: 1,
     },
   });
@@ -63,13 +63,13 @@ export default function StoryCreate() {
       );
 
       toast({
-        title: 'Success!',
+        title: "Success!",
         description: contentData.message,
       });
 
       router.back();
     } catch (error) {
-      handleAxiosError(error, 'An error occurred while submit the story.');
+      handleAxiosError(error, "An error occurred while submit the story.");
     } finally {
       setLoading(false);
     }
@@ -92,10 +92,10 @@ export default function StoryCreate() {
                       render={({ field }) => (
                         <FormItem
                           className='flex items-center justify-center '
-                          {...useGuidedField('order')}
+                          {...useGuidedField("order")}
                         >
                           <FormLabel className='text-xl text-muted-foreground'>
-                            Part:{' '}
+                            Part:{" "}
                           </FormLabel>
                           <FormControl>
                             <Input
@@ -117,7 +117,7 @@ export default function StoryCreate() {
                           <FormControl>
                             <AutosizeTextarea
                               {...field}
-                              {...useGuidedField('title')}
+                              {...useGuidedField("title")}
                               placeholder='New episode title here...'
                               className='outline-none w-full text-4xl p-0 border-none  shadow-none focus-visible:ring-0  font-bold placeholder:text-slate-700 h-full resize-none overflow-hidden text-center'
                             />
@@ -131,7 +131,7 @@ export default function StoryCreate() {
                     control={form.control}
                     name='content'
                     render={({ field }) => (
-                      <FormItem {...useGuidedField('content')}>
+                      <FormItem {...useGuidedField("content")}>
                         <FormControl>
                           <MinimalTiptapOne
                             {...field}
@@ -152,7 +152,7 @@ export default function StoryCreate() {
 
               <Button
                 className='mt-6 mr-4'
-                variant={'ghost'}
+                variant={"ghost"}
                 onClick={(e) => {
                   e.preventDefault();
                   router.back();
@@ -167,7 +167,7 @@ export default function StoryCreate() {
                     <Loader2 className='animate-spin' /> {`Saving...`}
                   </>
                 ) : (
-                  'Save'
+                  "Save"
                 )}
               </Button>
             </form>

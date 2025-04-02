@@ -13,7 +13,6 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "@/hooks/use-toast";
-import { AxiosError } from "axios";
 import axios from "@/utils/axios";
 import {
   Form,

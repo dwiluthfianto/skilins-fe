@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-'use client';
+"use client";
 
-import { ColumnDef } from '@tanstack/react-table';
+import { ColumnDef } from "@tanstack/react-table";
 
-import { FileSearch, MoreHorizontal, PencilRuler, Trash2 } from 'lucide-react';
+import { FileSearch, MoreHorizontal, PencilRuler, Trash2 } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -11,16 +11,16 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 
-import { ArrowUpDown } from 'lucide-react';
-import * as React from 'react';
-import { Button } from '@/components/ui/button';
-import DeleteDialog from '@/components/staff-panel/delete-dialog';
-import Link from 'next/link';
-import { format } from 'date-fns';
-import Image from 'next/image';
-import { AspectRatio } from '@/components/ui/aspect-ratio';
+import { ArrowUpDown } from "lucide-react";
+import * as React from "react";
+import { Button } from "@/components/ui/button";
+import DeleteDialog from "@/components/staff-panel/delete-dialog";
+import Link from "next/link";
+import { format } from "date-fns";
+import Image from "next/image";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type Competitions = {
@@ -36,7 +36,7 @@ export type Competitions = {
 
 export const columns: ColumnDef<Competitions>[] = [
   {
-    accessorKey: 'No',
+    accessorKey: "No",
     header: () => {
       return <p>No</p>;
     },
@@ -45,7 +45,7 @@ export const columns: ColumnDef<Competitions>[] = [
     },
   },
   {
-    accessorKey: 'thumbnail',
+    accessorKey: "thumbnail",
     header: () => <div className='text-right'>Image</div>,
     cell: ({ row }) => (
       <AspectRatio ratio={4 / 3} className='h-full relative'>
@@ -60,12 +60,12 @@ export const columns: ColumnDef<Competitions>[] = [
     ),
   },
   {
-    accessorKey: 'title',
+    accessorKey: "title",
     header: ({ column }) => {
       return (
         <Button
           variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Title of Competition
           <ArrowUpDown className='ml-2 h-4 w-4' />
@@ -79,12 +79,12 @@ export const columns: ColumnDef<Competitions>[] = [
     },
   },
   {
-    accessorKey: 'type',
+    accessorKey: "type",
     header: ({ column }) => {
       return (
         <Button
           variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Type
           <ArrowUpDown className='ml-2 h-4 w-4' />
@@ -94,12 +94,12 @@ export const columns: ColumnDef<Competitions>[] = [
   },
 
   {
-    accessorKey: 'start_date',
+    accessorKey: "start_date",
     header: ({ column }) => {
       return (
         <Button
           variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Start Date
           <ArrowUpDown className='ml-2 h-4 w-4' />
@@ -107,16 +107,16 @@ export const columns: ColumnDef<Competitions>[] = [
       );
     },
     cell: ({ row }) => {
-      return format(row.original.start_date, 'dd MMM yyyy');
+      return format(row.original.start_date, "dd MMM yyyy");
     },
   },
   {
-    accessorKey: 'end_date',
+    accessorKey: "end_date",
     header: ({ column }) => {
       return (
         <Button
           variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           End Date
           <ArrowUpDown className='ml-2 h-4 w-4' />
@@ -124,16 +124,16 @@ export const columns: ColumnDef<Competitions>[] = [
       );
     },
     cell: ({ row }) => {
-      return format(row.original.end_date, 'dd MMM yyyy');
+      return format(row.original.end_date, "dd MMM yyyy");
     },
   },
   {
-    accessorKey: 'submission_deadline',
+    accessorKey: "submission_deadline",
     header: ({ column }) => {
       return (
         <Button
           variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Submission Deadline
           <ArrowUpDown className='ml-2 h-4 w-4' />
@@ -141,12 +141,12 @@ export const columns: ColumnDef<Competitions>[] = [
       );
     },
     cell: ({ row }) => {
-      return format(row.original.submission_deadline, 'dd MMM yyyy');
+      return format(row.original.submission_deadline, "dd MMM yyyy");
     },
   },
 
   {
-    id: 'actions',
+    id: "actions",
     cell: ({ row }) => {
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);

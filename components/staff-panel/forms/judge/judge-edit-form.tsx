@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Sheet,
   SheetContent,
@@ -5,10 +6,9 @@ import {
   SheetFooter,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+} from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Form,
   FormControl,
@@ -16,21 +16,19 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useToast } from '@/hooks/use-toast';
-import { Eye, EyeOff, Loader2, SquareUserRound } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import axios from '@/utils/axios';
-import { handleAxiosError } from '@/utils/handle-axios-error';
-
-const allowedDomains = ['@gmail.com', '@skilins.com'];
+} from "@/components/ui/form";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useToast } from "@/hooks/use-toast";
+import { Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import axios from "@/utils/axios";
+import { handleAxiosError } from "@/utils/handle-axios-error";
 
 const JudgeSchema = z.object({
-  fullName: z.string().min(1, 'Full name must be fill.'),
-  role: z.string().min(1, 'Role judge must be fill.'),
+  fullName: z.string().min(1, "Full name must be fill."),
+  role: z.string().min(1, "Role judge must be fill."),
   linkedin: z.string().optional(),
   instagram: z.string().optional(),
 });
@@ -45,10 +43,10 @@ export default function JudgeEditForm({
   const form = useForm<z.infer<typeof JudgeSchema>>({
     resolver: zodResolver(JudgeSchema),
     defaultValues: {
-      fullName: values?.full_name || '',
-      role: values?.judge?.role || '',
-      linkedin: values?.judge?.linkedin || '',
-      instagram: values?.judge?.instagram || '',
+      fullName: values?.full_name || "",
+      role: values?.judge?.role || "",
+      linkedin: values?.judge?.linkedin || "",
+      instagram: values?.judge?.instagram || "",
     },
   });
 
@@ -79,11 +77,11 @@ export default function JudgeEditForm({
       );
 
       toast({
-        title: 'Success!',
+        title: "Success!",
         description: judgeData.message,
       });
     } catch (error) {
-      handleAxiosError(error, 'An error occurred while add the judge.');
+      handleAxiosError(error, "An error occurred while add the judge.");
     } finally {
       setLoading(false);
       setIsEditDialogOpen(false);
@@ -177,7 +175,7 @@ export default function JudgeEditForm({
                     <Loader2 className='animate-spin' /> {`Updating...`}
                   </>
                 ) : (
-                  'Update judge'
+                  "Update judge"
                 )}
               </Button>
             </SheetFooter>

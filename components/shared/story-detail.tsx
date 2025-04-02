@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ContentLayout } from "@/components/user-panel/content-layout";
 import Image from "next/image";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { format } from "date-fns";

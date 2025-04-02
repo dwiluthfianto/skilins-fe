@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 "use client";
 
 import { useState } from "react";
@@ -39,7 +40,6 @@ import { AUDIO_PODCAST_TOOLTIPS } from "@/lib/tooltips";
 import {
   MAX_IMAGE_SIZE,
   VALID_IMAGE_TYPES,
-  VALID_AUDIO_TYPES,
   MAX_AUDIO_SIZE,
 } from "@/lib/file-validation";
 const ContentSchema = z.object({

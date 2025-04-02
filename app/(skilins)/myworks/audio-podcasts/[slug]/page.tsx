@@ -1,22 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ContentLayout } from "@/components/user-panel/content-layout";
 import axios from "@/utils/axios";
-import Image from "next/image";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { format } from "date-fns";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { AudioPlayer } from "@/components/user-panel/ui/audio-player";
-import { Card, CardContent } from "@/components/ui/card";
-import MinimalTiptapPreview from "@/components/minimal-tiptap/minimal-tiptap-preview";
 import { CircleOff, Loader, Signature } from "lucide-react";
 import { AudioDetail } from "@/components/shared/audio-detail";
 import FeedbackComponent from "@/components/skilins/features/feedback";

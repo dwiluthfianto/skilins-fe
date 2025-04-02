@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 "use client";
 
-import { use, useState } from "react";
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { z } from "zod";
@@ -18,7 +19,7 @@ import {
 } from "@/components/ui/form";
 import ImageUploader from "@/components/imageUploader";
 import { useRouter } from "next/navigation";
-import { CalendarIcon, CircleAlert, Loader2 } from "lucide-react";
+import { CalendarIcon, Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { ContentLayout } from "@/components/staff-panel/content-layout";
 

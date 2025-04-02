@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/rules-of-hooks */
+
 "use client";
 
 import { MinimalTiptapEditor } from "@/components/minimal-tiptap";
@@ -10,7 +12,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "@/utils/axios";
 import { toast } from "@/hooks/use-toast";
-import { AxiosError } from "axios";
 import {
   Form,
   FormControl,

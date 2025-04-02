@@ -1,14 +1,15 @@
-'use client';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
 
-import { useState, useEffect } from 'react';
-import { ContentLayout } from '@/components/user-panel/content-layout';
-import { AudioCarousel } from '@/components/user-panel/ui/audio-carousel';
-import { BlogCarousel } from '@/components/user-panel/ui/blog-carousel';
-import { EbookCarousel } from '@/components/user-panel/ui/ebook-carousel';
-import { StoryCarousel } from '@/components/user-panel/ui/stories-carousel';
-import { VideoCarousel } from '@/components/user-panel/ui/video-carousel';
-import axios from '@/utils/axios';
-import { useSearchParams } from 'next/navigation';
+import { useState, useEffect } from "react";
+import { ContentLayout } from "@/components/user-panel/content-layout";
+import { AudioCarousel } from "@/components/user-panel/ui/audio-carousel";
+import { BlogCarousel } from "@/components/user-panel/ui/blog-carousel";
+import { EbookCarousel } from "@/components/user-panel/ui/ebook-carousel";
+import { StoryCarousel } from "@/components/user-panel/ui/stories-carousel";
+import { VideoCarousel } from "@/components/user-panel/ui/video-carousel";
+import axios from "@/utils/axios";
+import { useSearchParams } from "next/navigation";
 
 interface SearchResults {
   contents: any[];
@@ -26,18 +27,20 @@ export default function SearchPage() {
 
     setIsLoading(true);
     try {
-      const response = await axios.get(`/contents/search?query=${encodeURIComponent(searchQuery)}`);
+      const response = await axios.get(
+        `/contents/search?query=${encodeURIComponent(searchQuery)}`
+      );
       const data = response.data;
       setSearchResults(data);
     } catch (error) {
-      console.error('Error searching:', error);
+      console.error("Error searching:", error);
     } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    const currentQuery = searchParams.get('q');
+    const currentQuery = searchParams.get("q");
     if (currentQuery) {
       fetchSearchResults(currentQuery);
     }
@@ -45,22 +48,21 @@ export default function SearchPage() {
 
   // Memisahkan konten berdasarkan tipe
   const filterContentsByType = (type: string) => {
-    return searchResults.contents.filter(content => content.type === type);
+    return searchResults.contents.filter((content) => content.type === type);
   };
 
-  const ebooks = filterContentsByType('ebook');
-  const stories = filterContentsByType('story');
-  const audios = filterContentsByType('audio');
-  const videos = filterContentsByType('video');
-  const blogs = filterContentsByType('blog');
+  const ebooks = filterContentsByType("ebook");
+  const stories = filterContentsByType("story");
+  const audios = filterContentsByType("audio");
+  const videos = filterContentsByType("video");
+  const blogs = filterContentsByType("blog");
 
   return (
-    <ContentLayout title="Search">
-
+    <ContentLayout title='Search'>
       {/* Loading State */}
       {isLoading && (
-        <div className="text-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
+        <div className='text-center py-8'>
+          <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto'></div>
         </div>
       )}
 
@@ -76,11 +78,13 @@ export default function SearchPage() {
       )}
 
       {/* No Results Message */}
-      {!isLoading && searchParams.get('q') && searchResults.contents.length === 0 && (
-        <div className="text-center py-8 text-gray-500">
-          Tidak ada hasil yang ditemukan untuk "{searchParams.get('q')}"
-        </div>
-      )}
+      {!isLoading &&
+        searchParams.get("q") &&
+        searchResults.contents.length === 0 && (
+          <div className='text-center py-8 text-gray-500'>
+            Tidak ada hasil yang ditemukan untuk {searchParams.get("q")}
+          </div>
+        )}
     </ContentLayout>
   );
 }

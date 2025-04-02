@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   ColumnDef,
@@ -10,9 +10,9 @@ import {
   ColumnFiltersState,
   getFilteredRowModel,
   VisibilityState,
-} from '@tanstack/react-table';
+} from "@tanstack/react-table";
 
-import * as React from 'react';
+import * as React from "react";
 
 import {
   Table,
@@ -21,20 +21,12 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table";
 
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { ChevronDownIcon } from 'lucide-react';
-import JudgeForm from '@/components/staff-panel/forms/judge/judge-form';
-import { useJudge } from '@/hooks/use-judge';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import JudgeForm from "@/components/staff-panel/forms/judge/judge-form";
+import { useJudge } from "@/hooks/use-judge";
 import {
   Select,
   SelectContent,
@@ -42,10 +34,10 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import useDebounce from '@/lib/debounce';
-import { Loading } from '@/components/loading';
-import { Error } from '@/components/error';
+} from "@/components/ui/select";
+import useDebounce from "@/lib/debounce";
+import { Loading } from "@/components/loading";
+import { Error } from "@/components/error";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
 }
@@ -62,8 +54,8 @@ export function DataTable<TData, TValue>({
 
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const [search, setSearch] = React.useState('');
-  const [limit, setLimit] = React.useState('10');
+  const [search, setSearch] = React.useState("");
+  const [limit, setLimit] = React.useState("10");
   const [pagination, setPagination] = React.useState({
     pageIndex: 0,
     pageSize: parseInt(limit, 10),
@@ -94,7 +86,7 @@ export function DataTable<TData, TValue>({
     initialState: {
       columnPinning: {
         left: [],
-        right: ['actions'],
+        right: ["actions"],
       },
     },
 
@@ -154,15 +146,15 @@ export function DataTable<TData, TValue>({
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
+                  data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}
                       className={
                         cell.column.getIsPinned()
-                          ? 'sticky right-0 z-50 bg-white dark:bg-black'
-                          : ''
+                          ? "sticky right-0 z-50 bg-white dark:bg-black"
+                          : ""
                       }
                     >
                       {flexRender(
@@ -191,7 +183,7 @@ export function DataTable<TData, TValue>({
           <p className='font-semibold text-sm'>Rows per page</p>
           <Select onValueChange={(value) => setLimit(value)} defaultValue='10'>
             <SelectTrigger className='w-fit'>
-              <SelectValue defaultValue={'10'} />
+              <SelectValue defaultValue={"10"} />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
@@ -231,7 +223,7 @@ export function DataTable<TData, TValue>({
                   return (
                     <Button
                       key={idx}
-                      variant={isCurrentPage ? 'default' : 'outline'}
+                      variant={isCurrentPage ? "default" : "outline"}
                       size='sm'
                       onClick={() =>
                         setPagination({ ...pagination, pageIndex: idx })

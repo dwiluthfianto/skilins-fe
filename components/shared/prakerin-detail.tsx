@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import Image from "next/image";
 import { format } from "date-fns";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
@@ -13,7 +14,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { AudioPlayer } from "@/components/user-panel/ui/audio-player";
 import { BookText } from "lucide-react";
 import Link from "next/link";
 interface PrakerinDetailProps {

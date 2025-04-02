@@ -2,10 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import Link from "next/link";
-import { useContentByCategory } from "@/hooks/use-content";
 import { useCategoryByName } from "@/hooks/use-category";
 import { useEbookInfinite } from "@/hooks/use-ebook";
 import { useAudioInfinite } from "@/hooks/use-audio";

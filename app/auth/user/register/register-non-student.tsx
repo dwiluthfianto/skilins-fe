@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { Button } from '@/components/ui/button';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -11,48 +11,47 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { register } from '@/utils/auth-service';
-import { useRouter } from 'next/navigation';
-import { useToast } from '@/hooks/use-toast';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { register } from "@/utils/auth-service";
+import { useRouter } from "next/navigation";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { UserRound, Eye, EyeOff } from 'lucide-react';
-import { handleAxiosError } from '@/utils/handle-axios-error';
-import { useState } from 'react';
+} from "@/components/ui/card";
+import { UserRound, Eye, EyeOff } from "lucide-react";
+import { handleAxiosError } from "@/utils/handle-axios-error";
+import { useState } from "react";
 
-const allowedDomains = ['@gmail.com', '@skilins.com'];
+const allowedDomains = ["@gmail.com", "@skilins.com"];
 
 const LoginSchema = z.object({
   email: z
     .string()
-    .email('This is not valid email')
-    .min(1, 'Email must be filled')
+    .email("This is not valid email")
+    .min(1, "Email must be filled")
     .refine(
       (email) => allowedDomains.some((domain) => email.endsWith(domain)),
       {
         message: `Email must use one of the following domains: ${allowedDomains.join(
-          ', '
+          ", "
         )}`,
       }
     ),
   password: z
     .string()
-    .min(8, 'Password must be at least 8 characters.')
-    .regex(/[A-Z]/, 'Passwords must have at least one uppercase letter')
-    .regex(/[a-z]/, 'Passwords must have at least one lowercase letter')
-    .regex(/[0-9]/, 'Password must have at least one number')
+    .min(8, "Password must be at least 8 characters.")
+    .regex(/[A-Z]/, "Passwords must have at least one uppercase letter")
+    .regex(/[a-z]/, "Passwords must have at least one lowercase letter")
+    .regex(/[0-9]/, "Password must have at least one number")
     .regex(
       /[@$!%*?&]/,
-      'Password must have at least 1 special symbol (@$!%*?&)'
+      "Password must have at least 1 special symbol (@$!%*?&)"
     ),
-  fullName: z.string().min(4, 'Full name must be at least 4 characters.'),
+  fullName: z.string().min(4, "Full name must be at least 4 characters."),
 });
 
 export default function RegisterNonStudent() {
@@ -60,15 +59,15 @@ export default function RegisterNonStudent() {
   const [see, setSee] = useState(false);
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
-    defaultValues: { email: '', password: '', fullName: '' },
+    defaultValues: { email: "", password: "", fullName: "" },
   });
 
   async function onSubmit(data: z.infer<typeof LoginSchema>) {
     try {
       await register(data);
-      router.push('/auth/verify-email');
+      router.push("/auth/verify-email");
     } catch (error) {
-      handleAxiosError(error, 'An error occurred while registering.');
+      handleAxiosError(error, "An error occurred while registering.");
     }
   }
 
@@ -125,7 +124,7 @@ export default function RegisterNonStudent() {
                   <FormControl>
                     <div className='relative'>
                       <Input
-                        type={see ? 'text' : 'password'}
+                        type={see ? "text" : "password"}
                         placeholder='Enter your password'
                         {...field}
                       />

@@ -1,15 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-'use client';
-import { Loading } from '@/components/loading';
-import { Badge } from '@/components/ui/badge';
-import { ContentLayout } from '@/components/user-panel/content-layout';
-import {
-  useCompetition,
-  useCompetitionInfinite,
-} from '@/hooks/use-competition';
-import Image from 'next/image';
-import React from 'react';
-import { useInView } from 'react-intersection-observer';
+"use client";
+import { Loading } from "@/components/loading";
+import { Badge } from "@/components/ui/badge";
+import { ContentLayout } from "@/components/user-panel/content-layout";
+import { useCompetitionInfinite } from "@/hooks/use-competition";
+import Image from "next/image";
+import React from "react";
+import { useInView } from "react-intersection-observer";
 
 export default function CompetitionPage() {
   const {
@@ -32,7 +29,7 @@ export default function CompetitionPage() {
   if (isError) return <h1>Error</h1>;
   return (
     <ContentLayout title=''>
-      {' '}
+      {" "}
       <section className='py-2'>
         <div className='flex flex-col gap-10 mb-8'>
           <div className='flex gap-4 flex-col items-start'>
@@ -64,7 +61,7 @@ export default function CompetitionPage() {
                           <Image
                             key={item.thumbnail}
                             src={item.thumbnail}
-                            alt={'test'}
+                            alt={"test"}
                             layout='fill'
                             objectFit='cover'
                             objectPosition='center'
@@ -76,9 +73,9 @@ export default function CompetitionPage() {
                   </div>
                   <div className=' mb-2  pt-4  md:mb-3 md:pt-4 lg:pt-4 '>
                     {new Date(item.end_date) > new Date() ? (
-                      <Badge variant={'default'}>Ongoing</Badge>
+                      <Badge variant={"default"}>Ongoing</Badge>
                     ) : (
-                      <Badge variant={'destructive'}>Completed</Badge>
+                      <Badge variant={"destructive"}>Completed</Badge>
                     )}
                     <p className='line-clamp-2 break-words text-base lg:text-md font-semibold'>
                       {item.title}

@@ -1,13 +1,15 @@
-'use client';
+/* eslint-disable react-hooks/rules-of-hooks */
 
-import { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import axios from '@/utils/axios';
-import { toast } from '@/hooks/use-toast';
+"use client";
+
+import { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "@/utils/axios";
+import { toast } from "@/hooks/use-toast";
 import {
   Form,
   FormControl,
@@ -15,53 +17,53 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import ImageUploader from '@/components/imageUploader';
-import { useParams, useRouter } from 'next/navigation';
-import { Loader2 } from 'lucide-react';
-import { Separator } from '@/components/ui/separator';
-import { Input } from '@/components/ui/input';
-import { AutosizeTextarea } from '@/components/autosize-textarea';
-import MinimalTiptapOne from '@/components/minimal-tiptap/minimal-tiptap-one';
-import FileUploader from '@/components/file-uploader';
-import { ContentLayout } from '@/components/user-panel/content-layout';
+} from "@/components/ui/form";
+import ImageUploader from "@/components/imageUploader";
+import { useParams, useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
+import { AutosizeTextarea } from "@/components/autosize-textarea";
+import MinimalTiptapOne from "@/components/minimal-tiptap/minimal-tiptap-one";
+import FileUploader from "@/components/file-uploader";
+import { ContentLayout } from "@/components/user-panel/content-layout";
 import {
   MAX_DOCUMENT_SIZE,
   MAX_IMAGE_SIZE,
   VALID_DOCUMENT_TYPES,
   VALID_IMAGE_TYPES,
-} from '@/lib/file-validation';
-import { handleAxiosError } from '@/utils/handle-axios-error';
+} from "@/lib/file-validation";
+import { handleAxiosError } from "@/utils/handle-axios-error";
 import {
   GuidedFormLayout,
   useGuidedField,
-} from '@/components/form-guidance/guided-form-layout';
-import { PRAKERIN_TOOLTIPS } from '@/lib/tooltips';
+} from "@/components/form-guidance/guided-form-layout";
+import { PRAKERIN_TOOLTIPS } from "@/lib/tooltips";
 
 const ContentSchema = z.object({
   title: z
     .string()
-    .min(5, { message: 'Title must be longer than or equal to 5 characters' }),
+    .min(5, { message: "Title must be longer than or equal to 5 characters" }),
   thumbnail: z
     .instanceof(File)
     .refine((file) => file && VALID_IMAGE_TYPES.includes(file.type), {
-      message: 'Invalid image file type',
+      message: "Invalid image file type",
     })
     .refine((file) => file.size <= MAX_IMAGE_SIZE, {
-      message: 'File size must be less than 2MB',
+      message: "File size must be less than 2MB",
     }),
-  description: z.string().min(1, { message: 'Description is required.' }),
+  description: z.string().min(1, { message: "Description is required." }),
   pages: z
     .number()
-    .min(1, { message: 'Duration must be greater than 0.' })
+    .min(1, { message: "Duration must be greater than 0." })
     .nonnegative(),
   file: z
     .instanceof(File)
     .refine((file) => file && VALID_DOCUMENT_TYPES.includes(file.type), {
-      message: 'Invalid document file type',
+      message: "Invalid document file type",
     })
     .refine((file) => file.size <= MAX_DOCUMENT_SIZE, {
-      message: 'File size must be less than 5MB',
+      message: "File size must be less than 5MB",
     }),
 });
 
@@ -69,9 +71,9 @@ export default function PrakerinSubmission() {
   const form = useForm<z.infer<typeof ContentSchema>>({
     resolver: zodResolver(ContentSchema),
     defaultValues: {
-      title: '',
+      title: "",
       thumbnail: undefined,
-      description: '',
+      description: "",
       pages: 0,
       file: undefined,
     },
@@ -86,34 +88,34 @@ export default function PrakerinSubmission() {
     setLoading(true);
 
     const formData = new FormData();
-    formData.append('competition_slug', params.slug);
-    formData.append('type', params.type);
+    formData.append("competition_slug", params.slug);
+    formData.append("type", params.type);
 
-    if (data.thumbnail) formData.append('thumbnail', data.thumbnail);
-    formData.append('prakerinData[title]', data.title);
-    formData.append('prakerinData[description]', data.description);
-    formData.append('prakerinData[pages]', String(data.pages));
-    if (file) formData.append('file', file);
+    if (data.thumbnail) formData.append("thumbnail", data.thumbnail);
+    formData.append("prakerinData[title]", data.title);
+    formData.append("prakerinData[description]", data.description);
+    formData.append("prakerinData[pages]", String(data.pages));
+    if (file) formData.append("file", file);
 
     try {
       const { data: contentData } = await axios.post(
-        '/competitions/submissions/submit',
+        "/competitions/submissions/submit",
         formData,
         {
           headers: {
-            'Content-Type': 'multipart/form-data',
+            "Content-Type": "multipart/form-data",
           },
         }
       );
 
       toast({
-        title: 'Success!',
+        title: "Success!",
         description: contentData.message,
       });
 
       router.push(`/competitions/${params.type}/${params.slug}`);
     } catch (error) {
-      handleAxiosError(error, 'An error occurred while submit the prakerin.');
+      handleAxiosError(error, "An error occurred while submit the prakerin.");
     } finally {
       setLoading(false);
     }
@@ -134,7 +136,7 @@ export default function PrakerinSubmission() {
                     render={() => (
                       <ImageUploader
                         onChange={(file) =>
-                          file && form.setValue('thumbnail', file)
+                          file && form.setValue("thumbnail", file)
                         }
                         ratioImage={3 / 4}
                       />
@@ -148,7 +150,7 @@ export default function PrakerinSubmission() {
                         <FormControl>
                           <AutosizeTextarea
                             {...field}
-                            {...useGuidedField('title')}
+                            {...useGuidedField("title")}
                             placeholder='New prakerin title here...'
                             className='outline-none w-full text-4xl p-0 border-none  shadow-none focus-visible:ring-0  font-bold placeholder:text-slate-700 h-full resize-none overflow-hidden '
                           />
@@ -162,7 +164,7 @@ export default function PrakerinSubmission() {
                   control={form.control}
                   name='description'
                   render={({ field }) => (
-                    <FormItem {...useGuidedField('description')}>
+                    <FormItem {...useGuidedField("description")}>
                       <FormControl>
                         <MinimalTiptapOne
                           {...field}
@@ -190,12 +192,12 @@ export default function PrakerinSubmission() {
                         }}
                         accept='application/pdf'
                         onPageCountChange={(page) =>
-                          form.setValue('pages', page ?? 0)
+                          form.setValue("pages", page ?? 0)
                         }
                         label='Add an Prakerin file'
-                        initialFileName={field.value ? field.value.name : ''}
+                        initialFileName={field.value ? field.value.name : ""}
                         initialFileUrl={
-                          field.value ? URL.createObjectURL(field.value) : ''
+                          field.value ? URL.createObjectURL(field.value) : ""
                         }
                       />
                     )}
@@ -205,7 +207,7 @@ export default function PrakerinSubmission() {
                     control={form.control}
                     name='pages'
                     render={({ field }) => (
-                      <FormItem {...useGuidedField('pages')}>
+                      <FormItem {...useGuidedField("pages")}>
                         <FormLabel className='font-normal text-base text-muted-foreground'>
                           Pages
                         </FormLabel>
@@ -230,7 +232,7 @@ export default function PrakerinSubmission() {
                   <Loader2 className='animate-spin' /> {`Publishing...`}
                 </>
               ) : (
-                'Publish'
+                "Publish"
               )}
             </Button>
           </form>

@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ContentLayout } from "@/components/user-panel/content-layout";
 import axios from "@/utils/axios";
-import { AudioPlayer } from "@/components/user-panel/ui/audio-player";
 import { Metadata } from "next";
 import FeedbackComponent from "@/components/skilins/features/feedback";
 import { AudioDetail } from "@/components/shared/audio-detail";

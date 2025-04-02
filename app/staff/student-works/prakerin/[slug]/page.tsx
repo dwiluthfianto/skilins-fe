@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { AudioDetail } from "@/components/shared/audio-detail";
 import { BackButton } from "@/components/shared/back-button";
 import { PrakerinDetail } from "@/components/shared/prakerin-detail";
 import { ActionButtons } from "@/components/staff-panel/action-buttons";

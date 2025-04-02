@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-'use client';
+"use client";
 
-import { Badge } from '@/components/ui/badge';
-import { useReport } from '@/hooks/use-report';
-import Image from 'next/image';
-import { LoadingContent } from './skeletons/skeleton-card';
-import { useInView } from 'react-intersection-observer';
-import { useReportInfinite } from '@/hooks/use-report';
-import React from 'react';
+import { Badge } from "@/components/ui/badge";
+import Image from "next/image";
+import { LoadingContent } from "./skeletons/skeleton-card";
+import { useInView } from "react-intersection-observer";
+import { useReportInfinite } from "@/hooks/use-report";
+import React from "react";
 
 export function Reports() {
   const {

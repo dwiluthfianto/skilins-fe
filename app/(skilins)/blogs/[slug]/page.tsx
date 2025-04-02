@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ContentLayout } from '@/components/user-panel/content-layout';
-import axios from '../../../../utils/axios';
-import Image from 'next/image';
-import { Metadata } from 'next';
-import MinimalTiptapPreview from '@/components/minimal-tiptap/minimal-tiptap-preview';
-import { format } from 'date-fns';
+import { ContentLayout } from "@/components/user-panel/content-layout";
+import axios from "../../../../utils/axios";
+import Image from "next/image";
+import { Metadata } from "next";
+import MinimalTiptapPreview from "@/components/minimal-tiptap/minimal-tiptap-preview";
+import { format } from "date-fns";
 
 export async function generateMetadata({
   params,
@@ -56,7 +56,7 @@ export default async function EbookDetail({ params }: any) {
           <div className='flex items-center mt-4 text-gray-500 text-sm'>
             <span className='font-semibold'>By {res.creator}</span>
             <span className='mx-2'>•</span>
-            <span>{format(res.created_at, 'PPP')}</span>
+            <span>{format(res.created_at, "PPP")}</span>
           </div>
         </div>
         <div className='mt-6 text-gray-700'>
@@ -66,8 +66,8 @@ export default async function EbookDetail({ params }: any) {
           {res.latest_blogs.length > 0 ? (
             <>
               <h3 className='font-semibold'>LATEST BLOGS</h3>
-              {res.latest_blogs.map((item: any) => (
-                <div className='flex items-center mt-2'>
+              {res.latest_blogs.map((item: any, index: number) => (
+                <div className='flex items-center mt-2' key={index}>
                   <Image
                     src={item.thumbnail} // Ganti dengan gambar yang sesuai
                     alt='Latest News'
@@ -89,7 +89,7 @@ export default async function EbookDetail({ params }: any) {
               ))}
             </>
           ) : (
-            ''
+            ""
           )}
         </div>
       </div>

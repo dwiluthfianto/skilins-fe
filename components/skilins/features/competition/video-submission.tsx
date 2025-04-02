@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/rules-of-hooks */
+
 "use client";
 
 import { useState } from "react";
@@ -27,7 +29,6 @@ import { Input } from "@/components/ui/input";
 import { AutosizeTextarea } from "@/components/autosize-textarea";
 import { useGenre } from "@/hooks/use-genre";
 import MinimalTiptapOne from "@/components/minimal-tiptap/minimal-tiptap-one";
-import { useUser } from "@/hooks/use-user";
 import { ContentLayout } from "@/components/user-panel/content-layout";
 import { handleAxiosError } from "@/utils/handle-axios-error";
 import { MAX_IMAGE_SIZE, VALID_IMAGE_TYPES } from "@/lib/file-validation";

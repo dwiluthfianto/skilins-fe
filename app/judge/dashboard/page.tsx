@@ -10,8 +10,6 @@ import { useState } from "react";
 import { Loading } from "@/components/loading";
 import { Error } from "@/components/error";
 import { SummaryStats } from "@/components/summary-stats";
-import { useRouter } from "next/navigation";
-import { toast } from "@/hooks/use-toast";
 export default function JudgeDashboard() {
   const [scored, setScored] = useState(true);
   const {

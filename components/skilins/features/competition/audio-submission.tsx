@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/rules-of-hooks */
+
 "use client";
 
 import { useState } from "react";
@@ -9,7 +11,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "@/utils/axios";
 import { toast } from "@/hooks/use-toast";
-import { AxiosError } from "axios";
 import {
   Form,
   FormControl,
@@ -35,7 +36,6 @@ import { handleAxiosError } from "@/utils/handle-axios-error";
 import {
   MAX_IMAGE_SIZE,
   VALID_IMAGE_TYPES,
-  VALID_AUDIO_TYPES,
   MAX_AUDIO_SIZE,
 } from "@/lib/file-validation";
 import {

@@ -1,17 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-'use client';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
-import { useEffect, useState } from 'react';
+"use client";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import { useEffect, useState } from "react";
 
-import { Button } from '@/components/ui/button';
-import type { CarouselApi } from '@/components/ui/carousel';
+import { Button } from "@/components/ui/button";
+import type { CarouselApi } from "@/components/ui/carousel";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
-} from '@/components/ui/carousel';
-import Image from 'next/image';
-import ContentCard from '@/components/content-card';
+} from "@/components/ui/carousel";
+import ContentCard from "@/components/content-card";
 
 export function BlogCarousel({ data }: any) {
   const blogs = data || [];
@@ -27,9 +26,9 @@ export function BlogCarousel({ data }: any) {
       setCanScrollNext(carouselApi.canScrollNext());
     };
     updateSelection();
-    carouselApi.on('select', updateSelection);
+    carouselApi.on("select", updateSelection);
     return () => {
-      carouselApi.off('select', updateSelection);
+      carouselApi.off("select", updateSelection);
     };
   }, [carouselApi]);
 
@@ -45,7 +44,7 @@ export function BlogCarousel({ data }: any) {
               href='#'
               className='group flex items-center text-xs font-medium md:text-base lg:text-lg'
             >
-              See all{' '}
+              See all{" "}
               <ArrowRight className='ml-2 size-4 transition-transform group-hover:translate-x-1' />
             </a>
           </div>
@@ -80,7 +79,7 @@ export function BlogCarousel({ data }: any) {
           setApi={setCarouselApi}
           opts={{
             breakpoints: {
-              '(max-width: 768px)': {
+              "(max-width: 768px)": {
                 dragFree: true,
               },
             },

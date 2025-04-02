@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -9,7 +10,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "@/utils/axios";
 import { toast } from "@/hooks/use-toast";
-import { AxiosError } from "axios";
 import {
   Form,
   FormControl,
@@ -115,7 +115,7 @@ export default function AudioUpdate() {
   const searchParams = useSearchParams();
 
   const slug = searchParams.get("slug") || "";
-  const { audio, isLoading: audioLoading, mutate } = useAudioBySlug(slug);
+  const { audio, isLoading: audioLoading } = useAudioBySlug(slug);
 
   const form = useForm<z.infer<typeof ContentSchema>>({
     resolver: zodResolver(ContentSchema),

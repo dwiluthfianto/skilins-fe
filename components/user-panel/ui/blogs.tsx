@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-'use client';
+"use client";
 
-import { Badge } from '@/components/ui/badge';
-import Image from 'next/image';
-import { LoadingContent } from './skeletons/skeleton-card';
-import { useBlog, useBlogInfinite } from '@/hooks/use-blog';
-import { ArrowRight } from 'lucide-react';
-import { useInView } from 'react-intersection-observer';
-import React from 'react';
+import { Badge } from "@/components/ui/badge";
+import Image from "next/image";
+import { LoadingContent } from "./skeletons/skeleton-card";
+import { useBlogInfinite } from "@/hooks/use-blog";
+import { ArrowRight } from "lucide-react";
+import { useInView } from "react-intersection-observer";
+import React from "react";
 
 export function Blogs() {
   const { blogs, isLoading, isError, isLoadingMore, isReachingEnd, loadMore } =
@@ -68,7 +68,7 @@ export function Blogs() {
                   {item.title}
                 </div>
                 <div className='flex items-center text-sm'>
-                  Read more{' '}
+                  Read more{" "}
                   <ArrowRight className='ml-2 size-5 transition-transform group-hover:translate-x-1' />
                 </div>
               </a>

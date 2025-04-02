@@ -1,5 +1,6 @@
-'use client';
-import { Button } from '@/components/ui/button';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -8,7 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -16,21 +17,21 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import axios from '@/utils/axios';
-import { FC, useEffect, useState } from 'react';
-import { Loader2 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { toast } from '@/hooks/use-toast';
-import { CommentRatings } from '../ratings';
-import { AutosizeTextarea } from '../autosize-textarea';
-import { useEvaluationParameter, useJudgeUser } from '@/hooks/use-judge';
-import { ScrollArea } from '../ui/scroll-area';
-import { handleAxiosError } from '@/utils/handle-axios-error';
-import { Loading } from '../loading';
+} from "@/components/ui/form";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "@/utils/axios";
+import { FC, useEffect, useState } from "react";
+import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { toast } from "@/hooks/use-toast";
+import { CommentRatings } from "../ratings";
+import { AutosizeTextarea } from "../autosize-textarea";
+import { useEvaluationParameter, useJudgeUser } from "@/hooks/use-judge";
+import { ScrollArea } from "../ui/scroll-area";
+import { handleAxiosError } from "@/utils/handle-axios-error";
+import { Loading } from "../loading";
 
 const FeedbackSchema = z.object({
   parameter_scores: z.array(
@@ -74,7 +75,7 @@ const FeedbackJudge: FC<FeedbackJudgeProps> = ({
 
         return {
           parameter_uuid: param.uuid,
-          notes: existingScore?.notes || '',
+          notes: existingScore?.notes || "",
           score: existingScore?.score || 0,
         };
       });
@@ -96,13 +97,13 @@ const FeedbackJudge: FC<FeedbackJudgeProps> = ({
           parameter_scores: data.parameter_scores,
         }
       );
-      router.push('/judge/dashboard');
+      router.push("/judge/dashboard");
       toast({
-        title: 'Success!',
+        title: "Success!",
         description: judgeData.message,
       });
     } catch (error) {
-      handleAxiosError(error, 'An error occurred while judge submission.');
+      handleAxiosError(error, "An error occurred while judge submission.");
     } finally {
       setLoading(false);
     }
@@ -173,7 +174,7 @@ const FeedbackJudge: FC<FeedbackJudgeProps> = ({
                     <Loader2 className='animate-spin' /> {`Judging...`}
                   </>
                 ) : (
-                  'Judge'
+                  "Judge"
                 )}
               </Button>
             </DialogFooter>

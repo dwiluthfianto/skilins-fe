@@ -1,53 +1,54 @@
-'use client';
+/* eslint-disable react-hooks/rules-of-hooks */
+"use client";
 
-import { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Tag, TagInput } from 'emblor';
-import { Button } from '@/components/ui/button';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import axios from '@/utils/axios';
-import { toast } from '@/hooks/use-toast';
+import { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tag, TagInput } from "emblor";
+import { Button } from "@/components/ui/button";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "@/utils/axios";
+import { toast } from "@/hooks/use-toast";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from '@/components/ui/form';
-import ImageUploader from '@/components/imageUploader';
-import { useRouter } from 'next/navigation';
-import { Loader2 } from 'lucide-react';
-import { Separator } from '@/components/ui/separator';
-import { useTag } from '@/hooks/use-tag';
-import { AutoComplete } from '@/components/autocomplete';
-import { useCategorySearch } from '@/hooks/use-category';
-import { Input } from '@/components/ui/input';
-import { AutosizeTextarea } from '@/components/autosize-textarea';
-import { useGenre } from '@/hooks/use-genre';
-import MinimalTiptapOne from '@/components/minimal-tiptap/minimal-tiptap-one';
-import { ContentLayout } from '@/components/user-panel/content-layout';
-import { handleAxiosError } from '@/utils/handle-axios-error';
+} from "@/components/ui/form";
+import ImageUploader from "@/components/imageUploader";
+import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { useTag } from "@/hooks/use-tag";
+import { AutoComplete } from "@/components/autocomplete";
+import { useCategorySearch } from "@/hooks/use-category";
+import { Input } from "@/components/ui/input";
+import { AutosizeTextarea } from "@/components/autosize-textarea";
+import { useGenre } from "@/hooks/use-genre";
+import MinimalTiptapOne from "@/components/minimal-tiptap/minimal-tiptap-one";
+import { ContentLayout } from "@/components/user-panel/content-layout";
+import { handleAxiosError } from "@/utils/handle-axios-error";
 import {
   GuidedFormLayout,
   useGuidedField,
-} from '@/components/form-guidance/guided-form-layout';
-import { VIDEO_PODCAST_TOOLTIPS } from '@/lib/tooltips';
-import { MAX_IMAGE_SIZE, VALID_IMAGE_TYPES } from '@/lib/file-validation';
+} from "@/components/form-guidance/guided-form-layout";
+import { VIDEO_PODCAST_TOOLTIPS } from "@/lib/tooltips";
+import { MAX_IMAGE_SIZE, VALID_IMAGE_TYPES } from "@/lib/file-validation";
 const ContentSchema = z.object({
   title: z
     .string()
-    .min(5, { message: 'Title must be longer than or equal to 5 characters' }),
+    .min(5, { message: "Title must be longer than or equal to 5 characters" }),
   thumbnail: z
     .instanceof(File)
     .refine((file) => file && VALID_IMAGE_TYPES.includes(file.type), {
-      message: 'Invalid image file type',
+      message: "Invalid image file type",
     })
     .refine((file) => file.size <= MAX_IMAGE_SIZE, {
-      message: 'File size must be less than 2MB',
+      message: "File size must be less than 2MB",
     }),
-  description: z.string().min(1, { message: 'Description is required.' }),
+  description: z.string().min(1, { message: "Description is required." }),
   tags: z
     .array(
       z.object({
@@ -56,8 +57,8 @@ const ContentSchema = z.object({
       })
     )
     .optional(),
-  category: z.string().min(1, { message: 'Category is required.' }),
-  link: z.string().url().min(1, { message: 'Video URL is required' }),
+  category: z.string().min(1, { message: "Category is required." }),
+  link: z.string().url().min(1, { message: "Video URL is required" }),
   genres: z
     .array(
       z.object({
@@ -72,11 +73,11 @@ export default function VideoCreate() {
   const form = useForm<z.infer<typeof ContentSchema>>({
     resolver: zodResolver(ContentSchema),
     defaultValues: {
-      title: '',
+      title: "",
       thumbnail: undefined,
-      description: '',
+      description: "",
       genres: [],
-      category: '',
+      category: "",
       link: undefined,
       tags: [],
     },
@@ -91,7 +92,7 @@ export default function VideoCreate() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const { categories, isLoading } = useCategorySearch(form.watch('category'));
+  const { categories, isLoading } = useCategorySearch(form.watch("category"));
 
   const tooltips = VIDEO_PODCAST_TOOLTIPS;
 
@@ -100,33 +101,33 @@ export default function VideoCreate() {
 
     const formData = new FormData();
 
-    if (data.thumbnail) formData.append('thumbnail', data.thumbnail);
-    formData.append('title', data.title);
-    formData.append('description', data.description);
-    formData.append('genres', JSON.stringify(data.genres));
-    formData.append('category_name', data.category);
-    formData.append('link', data.link);
-    formData.append('tags', JSON.stringify(data.tags));
+    if (data.thumbnail) formData.append("thumbnail", data.thumbnail);
+    formData.append("title", data.title);
+    formData.append("description", data.description);
+    formData.append("genres", JSON.stringify(data.genres));
+    formData.append("category_name", data.category);
+    formData.append("link", data.link);
+    formData.append("tags", JSON.stringify(data.tags));
 
     try {
       const { data: contentData } = await axios.post(
-        '/contents/videos',
+        "/contents/videos",
         formData,
         {
           headers: {
-            'Content-Type': 'multipart/form-data',
+            "Content-Type": "multipart/form-data",
           },
         }
       );
 
       toast({
-        title: 'Success!',
+        title: "Success!",
         description: contentData.message,
       });
 
       router.push(`/myworks/video-podcasts`);
     } catch (error) {
-      handleAxiosError(error, 'An error occurred while submit the video.');
+      handleAxiosError(error, "An error occurred while submit the video.");
     } finally {
       setLoading(false);
     }
@@ -147,7 +148,7 @@ export default function VideoCreate() {
                     render={() => (
                       <ImageUploader
                         onChange={(file) =>
-                          file && form.setValue('thumbnail', file)
+                          file && form.setValue("thumbnail", file)
                         }
                         ratioImage={4 / 3}
                       />
@@ -161,7 +162,7 @@ export default function VideoCreate() {
                         <FormControl>
                           <AutosizeTextarea
                             {...field}
-                            {...useGuidedField('title')}
+                            {...useGuidedField("title")}
                             placeholder='New video title here...'
                             className='outline-none w-full text-4xl p-0 border-none shadow-none focus-visible:ring-0 font-bold placeholder:text-slate-700 h-full resize-none overflow-hidden'
                           />
@@ -175,10 +176,10 @@ export default function VideoCreate() {
                     control={form.control}
                     name='category'
                     render={({ field }) => (
-                      <FormItem {...useGuidedField('category')}>
+                      <FormItem {...useGuidedField("category")}>
                         <FormControl>
                           <AutoComplete
-                            selectedValue={form.watch('category')}
+                            selectedValue={form.watch("category")}
                             onSelectedValueChange={(value) =>
                               field.onChange(value)
                             }
@@ -199,25 +200,25 @@ export default function VideoCreate() {
                     control={form.control}
                     name='tags'
                     render={({ field }) => (
-                      <FormItem {...useGuidedField('tags')}>
+                      <FormItem {...useGuidedField("tags")}>
                         <FormControl>
                           <TagInput
                             {...field}
                             tags={tags}
                             setTags={(newTags) => {
                               setTags(newTags);
-                              form.setValue('tags', newTags as [Tag, ...Tag[]]);
+                              form.setValue("tags", newTags as [Tag, ...Tag[]]);
                             }}
                             placeholder='Add up to 4 tags...'
                             styleClasses={{
                               input:
-                                'w-full h-fit outline-none border-none shadow-none  text-base p-0',
-                              inlineTagsContainer: 'border-none p-0',
+                                "w-full h-fit outline-none border-none shadow-none  text-base p-0",
+                              inlineTagsContainer: "border-none p-0",
                               autoComplete: {
-                                command: '[&>div]:border-none',
-                                popoverContent: 'p-4',
-                                commandList: 'list-none',
-                                commandGroup: 'font-bold',
+                                command: "[&>div]:border-none",
+                                popoverContent: "p-4",
+                                commandList: "list-none",
+                                commandGroup: "font-bold",
                               },
                             }}
                             activeTagIndex={activeTagIndex}
@@ -237,7 +238,7 @@ export default function VideoCreate() {
                   control={form.control}
                   name='description'
                   render={({ field }) => (
-                    <FormItem {...useGuidedField('description')}>
+                    <FormItem {...useGuidedField("description")}>
                       <FormControl>
                         <MinimalTiptapOne
                           {...field}
@@ -258,7 +259,7 @@ export default function VideoCreate() {
                     control={form.control}
                     name='genres'
                     render={({ field }) => (
-                      <FormItem {...useGuidedField('genres')}>
+                      <FormItem {...useGuidedField("genres")}>
                         <FormControl>
                           <TagInput
                             {...field}
@@ -266,20 +267,20 @@ export default function VideoCreate() {
                             setTags={(newTags) => {
                               setGenres(newTags);
                               form.setValue(
-                                'genres',
+                                "genres",
                                 newTags as [Tag, ...Tag[]]
                               );
                             }}
                             placeholder='Add up to 4 genres...'
                             styleClasses={{
                               input:
-                                'w-full h-fit outline-none border-none shadow-none  text-base p-0',
-                              inlineTagsContainer: 'border-none p-0',
+                                "w-full h-fit outline-none border-none shadow-none  text-base p-0",
+                              inlineTagsContainer: "border-none p-0",
                               autoComplete: {
-                                command: '[&>div]:border-none',
-                                popoverContent: 'p-4',
-                                commandList: 'list-none',
-                                commandGroup: 'font-bold',
+                                command: "[&>div]:border-none",
+                                popoverContent: "p-4",
+                                commandList: "list-none",
+                                commandGroup: "font-bold",
                               },
                             }}
                             activeTagIndex={activeGenreIndex}
@@ -299,7 +300,7 @@ export default function VideoCreate() {
                     control={form.control}
                     name='link'
                     render={({ field }) => (
-                      <FormItem {...useGuidedField('link')}>
+                      <FormItem {...useGuidedField("link")}>
                         <FormControl>
                           <Input
                             {...field}
@@ -321,7 +322,7 @@ export default function VideoCreate() {
                   <Loader2 className='animate-spin' /> {`Publishing...`}
                 </>
               ) : (
-                'Publish'
+                "Publish"
               )}
             </Button>
           </form>

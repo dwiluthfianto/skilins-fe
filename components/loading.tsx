@@ -1,11 +1,9 @@
-import { Library } from 'lucide-react';
-
 interface LoadingProps {
   text?: string;
   showIcon?: boolean;
 }
 
-export function Loading({ text = 'Preparing your workspace' }: LoadingProps) {
+export function Loading({ text = "Preparing your workspace" }: LoadingProps) {
   return (
     <div className='h-screen flex flex-col items-center justify-center gap-4'>
       <div className='flex gap-1'>

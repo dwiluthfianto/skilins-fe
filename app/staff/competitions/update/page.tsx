@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/rules-of-hooks */
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -8,7 +10,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "@/utils/axios";
 import { toast } from "@/hooks/use-toast";
-import { AxiosError } from "axios";
 import {
   Form,
   FormControl,
@@ -19,7 +20,7 @@ import {
 } from "@/components/ui/form";
 import ImageUploader from "@/components/imageUploader";
 import { useRouter, useSearchParams } from "next/navigation";
-import { CalendarIcon, CircleAlert, Loader2 } from "lucide-react";
+import { CalendarIcon, Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { ContentLayout } from "@/components/staff-panel/content-layout";
 

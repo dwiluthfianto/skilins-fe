@@ -1,17 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-'use client';
-import ContentCard from '@/components/content-card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+"use client";
+import ContentCard from "@/components/content-card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Carousel,
   CarouselApi,
   CarouselContent,
   CarouselItem,
-} from '@/components/ui/carousel';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
-import Image from 'next/image';
-import { useEffect, useState } from 'react';
+} from "@/components/ui/carousel";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export function EbookCarousel({ data }: any) {
   const ebooks = data || [];
@@ -28,9 +27,9 @@ export function EbookCarousel({ data }: any) {
       setCanScrollNext(carouselApi.canScrollNext());
     };
     updateSelection();
-    carouselApi.on('select', updateSelection);
+    carouselApi.on("select", updateSelection);
     return () => {
-      carouselApi.off('select', updateSelection);
+      carouselApi.off("select", updateSelection);
     };
   }, [carouselApi]);
 
@@ -49,7 +48,7 @@ export function EbookCarousel({ data }: any) {
               href='/ebooks'
               className='group flex items-center text-xs font-medium md:text-base lg:text-lg'
             >
-              See all{' '}
+              See all{" "}
               <ArrowRight className='ml-2 size-4 transition-transform group-hover:translate-x-1' />
             </a>
           </div>
@@ -84,7 +83,7 @@ export function EbookCarousel({ data }: any) {
           setApi={setCarouselApi}
           opts={{
             breakpoints: {
-              '(max-width: 768px)': {
+              "(max-width: 768px)": {
                 dragFree: true,
               },
             },

@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { useRouter } from 'next/navigation';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { useRouter } from "next/navigation";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -13,52 +13,49 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { useToast } from '@/hooks/use-toast';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
-} from '@/components/ui/card';
-import { Library, UserRound } from 'lucide-react';
-import { CardTitle } from '@/components/ui/card';
-import { ToastAction } from '@/components/ui/toast';
-import { Toaster } from '@/components/ui/toaster';
-import { login } from '@/utils/auth-service';
-import { useUser } from '@/hooks/use-user';
-import { useEffect } from 'react';
-import Link from 'next/link';
-import { Loading } from '@/components/loading';
-import { handleAxiosError } from '@/utils/handle-axios-error';
-const allowedDomains = ['@gmail.com', '@skilins.com'];
+} from "@/components/ui/card";
+import { Library, UserRound } from "lucide-react";
+import { CardTitle } from "@/components/ui/card";
+import { Toaster } from "@/components/ui/toaster";
+import { login } from "@/utils/auth-service";
+import { useUser } from "@/hooks/use-user";
+import { useEffect } from "react";
+import Link from "next/link";
+import { Loading } from "@/components/loading";
+import { handleAxiosError } from "@/utils/handle-axios-error";
+const allowedDomains = ["@gmail.com", "@skilins.com"];
 
 const LoginSchema = z.object({
   email: z
     .string()
-    .email('This is not valid email')
-    .min(1, 'Email must be filled')
+    .email("This is not valid email")
+    .min(1, "Email must be filled")
     .refine(
       (email) => allowedDomains.some((domain) => email.endsWith(domain)),
       {
         message: `Email must use one of the following domains: ${allowedDomains.join(
-          ', '
+          ", "
         )}`,
       }
     ),
-  password: z.string().min(8, 'Password must be at least 8 characters.'),
+  password: z.string().min(8, "Password must be at least 8 characters."),
 });
 
 export default function Login() {
-  const { toast } = useToast();
   const router = useRouter();
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
     },
   });
 
@@ -69,19 +66,19 @@ export default function Login() {
       await login(data.email, data.password);
 
       mutate();
-      router.push('/staff/dashboard');
+      router.push("/staff/dashboard");
     } catch (error) {
-      handleAxiosError(error, 'An error occurred while logging in.');
+      handleAxiosError(error, "An error occurred while logging in.");
     }
   }
 
   useEffect(() => {
     if (!isLoading && user) {
       // Redirect sesuai dengan role user hanya ketika data user sudah di-fetch
-      if (user?.data?.role === 'staff') {
-        router.push('/staff/dashboard');
+      if (user?.data?.role === "staff") {
+        router.push("/staff/dashboard");
       } else {
-        router.push('/');
+        router.push("/");
       }
     }
   }, [user, isLoading, router]);
@@ -149,7 +146,7 @@ export default function Login() {
                     />
                     <Link
                       className='flex items-end w-full justify-end text-sm text-blue-400 hover:underline'
-                      href={'/auth/reset-password'}
+                      href={"/auth/reset-password"}
                     >
                       Forgot password ?
                     </Link>

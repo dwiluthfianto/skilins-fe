@@ -1,13 +1,12 @@
 // src/components/ImageUploader.tsx
-import { FC, useEffect, useRef, useState } from 'react';
-import { useImageUpload } from '@/hooks/useImageUpload';
-import { FormControl, FormItem, FormMessage } from '@/components/ui/form';
-import { Button } from '@/components/ui/button';
-import { AspectRatio } from '@/components/ui/aspect-ratio';
-import Image from 'next/image';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useGuidedField } from '@/components/form-guidance/guided-form-layout';
+import { FC, useEffect, useRef, useState } from "react";
+import { useImageUpload } from "@/hooks/useImageUpload";
+import { FormControl, FormItem, FormMessage } from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import Image from "next/image";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 interface ImageUploaderProps {
   onChange: (file: File | null) => void;

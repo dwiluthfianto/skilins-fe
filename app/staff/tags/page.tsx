@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-'use client';
-import Link from 'next/link';
-import { useInView } from 'react-intersection-observer';
+"use client";
+import Link from "next/link";
+import { useInView } from "react-intersection-observer";
 
-import { ContentLayout } from '@/components/staff-panel/content-layout';
+import { ContentLayout } from "@/components/staff-panel/content-layout";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -11,18 +11,17 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
+} from "@/components/ui/breadcrumb";
 
-import { Button } from '@/components/ui/button';
-import { useTag } from '@/hooks/use-tag';
-import React from 'react';
-import DeleteDialog from '@/components/staff-panel/delete-dialog';
-import TagForm from '@/components/staff-panel/forms/tag/tag-form';
-import Image from 'next/image';
-import TagEditForm from '@/components/staff-panel/forms/tag/tag-edit-form';
-import { Badge } from '@/components/ui/badge';
-import { Loading } from '@/components/loading';
-import { Error } from '@/components/error';
+import { Button } from "@/components/ui/button";
+import { useTag } from "@/hooks/use-tag";
+import React from "react";
+import DeleteDialog from "@/components/staff-panel/delete-dialog";
+import TagForm from "@/components/staff-panel/forms/tag/tag-form";
+import Image from "next/image";
+import TagEditForm from "@/components/staff-panel/forms/tag/tag-edit-form";
+import { Loading } from "@/components/loading";
+import { Error } from "@/components/error";
 export default function TagsPage() {
   const [editUuid, setEditUuid] = React.useState<string | null>(null);
   const [deleteUuid, setDeleteUuid] = React.useState<string | null>(null);
@@ -86,7 +85,7 @@ export default function TagsPage() {
                       priority={false}
                     />
                   ) : (
-                    ''
+                    ""
                   )}
                 </div>
                 <h3 className='mb-1 mt-2 font-medium'>#{tag.name}</h3>

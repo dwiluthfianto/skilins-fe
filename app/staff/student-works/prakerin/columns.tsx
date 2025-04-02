@@ -8,7 +8,6 @@ import {
   FileSearch,
   MoreHorizontal,
   Paperclip,
-  PencilRuler,
   Signature,
   Trash2,
 } from "lucide-react";

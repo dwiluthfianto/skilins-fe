@@ -17,7 +17,6 @@ import { ArrowUpDown } from "lucide-react";
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import DeleteDialog from "@/components/staff-panel/delete-dialog";
-import Link from "next/link";
 import Image from "next/image";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import JudgeEditForm from "@/components/staff-panel/forms/judge/judge-edit-form";

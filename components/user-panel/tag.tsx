@@ -7,7 +7,6 @@ import { useEbookInfinite } from "@/hooks/use-ebook";
 import { useAudioInfinite } from "@/hooks/use-audio";
 import { useVideoInfinite } from "@/hooks/use-video";
 import ContentCard from "@/components/content-card";
-import { useGenreByName } from "@/hooks/use-genre";
 import { useStoryInfinite } from "@/hooks/use-story";
 import { useTagByName } from "@/hooks/use-tag";
 

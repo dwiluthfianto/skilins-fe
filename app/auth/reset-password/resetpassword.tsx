@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { useSearchParams } from 'next/navigation';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { useSearchParams } from "next/navigation";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -14,77 +14,76 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { useToast } from '@/hooks/use-toast';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
 
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
-} from '@/components/ui/card';
-import { Library, UserRound } from 'lucide-react';
-import { CardTitle } from '@/components/ui/card';
-import { ToastAction } from '@/components/ui/toast';
-import { Toaster } from '@/components/ui/toaster';
-import { resetPassword } from '@/utils/auth-service';
-import Link from 'next/link';
-import { useState } from 'react';
-import axios from '@/utils/axios';
-import { AxiosError } from 'axios';
-import { handleAxiosError } from '@/utils/handle-axios-error';
-export const dynamic = 'force-dynamic';
+} from "@/components/ui/card";
+import { Library, UserRound } from "lucide-react";
+import { CardTitle } from "@/components/ui/card";
+import { ToastAction } from "@/components/ui/toast";
+import { Toaster } from "@/components/ui/toaster";
+import { resetPassword } from "@/utils/auth-service";
+import Link from "next/link";
+import { useState } from "react";
+import axios from "@/utils/axios";
+import { handleAxiosError } from "@/utils/handle-axios-error";
+export const dynamic = "force-dynamic";
 
 const ForgotSchema = z.object({
   email: z
     .string()
     .min(1, {
-      message: 'This field has to be filled.',
+      message: "This field has to be filled.",
     })
-    .email('This is not valid email'),
+    .email("This is not valid email"),
 });
 
 const ResetSchema = z.object({
   newPassword: z.string().min(6, {
-    message: 'Password must be at least 6 characters.',
+    message: "Password must be at least 6 characters.",
   }),
   confirmPassword: z.string().min(6, {
-    message: 'Password must be at least 6 characters.',
+    message: "Password must be at least 6 characters.",
   }),
 });
 
 export default function ResetPassword() {
   const searchParams = useSearchParams();
-  const token = searchParams.get('token');
+  const token = searchParams.get("token");
   const { toast } = useToast();
   const form = useForm<z.infer<typeof ForgotSchema>>({
     resolver: zodResolver(ForgotSchema),
     defaultValues: {
-      email: '',
+      email: "",
     },
   });
 
   const formReset = useForm<z.infer<typeof ResetSchema>>({
     resolver: zodResolver(ResetSchema),
     defaultValues: {
-      newPassword: '',
-      confirmPassword: '',
+      newPassword: "",
+      confirmPassword: "",
     },
   });
 
-  const [verificationStatus, setVerificationStatus] = useState('');
+  const [verificationStatus, setVerificationStatus] = useState("");
 
   async function onSubmit(data: z.infer<typeof ForgotSchema>) {
     try {
       await resetPassword(data.email);
 
       toast({
-        title: 'Link has been send to your email!',
-        variant: 'default',
+        title: "Link has been send to your email!",
+        variant: "default",
       });
     } catch (error) {
-      handleAxiosError(error, 'An error occurred while reset password.');
+      handleAxiosError(error, "An error occurred while reset password.");
     }
   }
 
@@ -96,7 +95,7 @@ export default function ResetPassword() {
           token: token,
         });
         toast({
-          title: 'Password has been changed',
+          title: "Password has been changed",
           action: (
             <ToastAction altText='Back to home'>
               <Link href='/'>Back to Home</Link>
@@ -104,11 +103,11 @@ export default function ResetPassword() {
           ),
         });
       } else {
-        setVerificationStatus('Password is not same!');
+        setVerificationStatus("Password is not same!");
       }
     } catch (error) {
-      handleAxiosError(error, 'An error occurred while reset password.');
-      setVerificationStatus('Reset password failed. Please try again.');
+      handleAxiosError(error, "An error occurred while reset password.");
+      setVerificationStatus("Reset password failed. Please try again.");
     }
   };
 
@@ -129,7 +128,7 @@ export default function ResetPassword() {
                   <UserRound className='size-10 rounded-full bg-accent p-2.5 text-muted-foreground' />
                   <CardTitle className='text-xl'>Change Password</CardTitle>
                   <CardDescription>
-                    Remember your password?{' '}
+                    Remember your password?{" "}
                     <Link
                       href='/auth/user/login'
                       className='text-blue-400 hover:underline'
@@ -213,7 +212,7 @@ export default function ResetPassword() {
                   <UserRound className='size-10 rounded-full bg-accent p-2.5 text-muted-foreground' />
                   <CardTitle className='text-xl'>Forgot Password?</CardTitle>
                   <CardDescription>
-                    Remember your password?{' '}
+                    Remember your password?{" "}
                     <Link
                       href='/auth/user/login'
                       className='text-blue-400 hover:underline'

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import {
   Dialog,
