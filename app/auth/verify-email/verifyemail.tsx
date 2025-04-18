@@ -48,11 +48,8 @@ export default function VerifyEmail() {
                 Verification Email
               </h1>
               <p className='text-4xl font-bold tracking-tight text-gray-900 sm:text-4xl'>
-                {verificationStatus === "Email verification successful"
-                  ? "Successfully!"
-                  : "Error!"}
+                {verificationStatus}
               </p>
-              <p className='mt-4 text-gray-500'>{verificationStatus}</p>
             </>
           )}
 
