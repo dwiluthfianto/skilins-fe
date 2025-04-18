@@ -1,10 +1,10 @@
 // components/RegisterStudent.tsx
-'use client';
+"use client";
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { Button } from '@/components/ui/button';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -13,28 +13,28 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { registerStudent } from '@/utils/auth-service';
-import { useRouter } from 'next/navigation';
-import { CustomCalendar } from '@/components/ui/custom-calendar';
-import { format } from 'date-fns';
-import { CalendarIcon, Loader2, UserRound, Eye, EyeOff } from 'lucide-react';
-import { Separator } from '@/components/ui/separator';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { registerStudent } from "@/utils/auth-service";
+import { useRouter } from "next/navigation";
+import { CustomCalendar } from "@/components/ui/custom-calendar";
+import { format } from "date-fns";
+import { CalendarIcon, Loader2, UserRound, Eye, EyeOff } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
-import { cn } from '@/lib/utils';
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+} from "@/components/ui/card";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 import {
   Select,
@@ -42,87 +42,114 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { useMajor } from '@/hooks/use-major';
-import { handleAxiosError } from '@/utils/handle-axios-error';
-import { useState } from 'react';
-import { Loading } from '@/components/loading';
-import { Error } from '@/components/error';
-const allowedDomains = ['@gmail.com', '@skilins.com'];
+} from "@/components/ui/select";
+import { useMajor } from "@/hooks/use-major";
+import { handleAxiosError } from "@/utils/handle-axios-error";
+import { useRef, useState } from "react";
+import { Loading } from "@/components/loading";
+import { Error } from "@/components/error";
+import ReCAPTCHA from "react-google-recaptcha";
+const allowedDomains = ["@gmail.com", "@skilins.com"];
 
 const StudentSchema = z.object({
   email: z
     .string()
-    .email('This is not valid email')
-    .min(1, 'Email must be filled')
+    .email("This is not valid email")
+    .min(1, "Email must be filled")
     .refine(
       (email) => allowedDomains.some((domain) => email.endsWith(domain)),
       {
         message: `Email must use one of the following domains: ${allowedDomains.join(
-          ', '
+          ", "
         )}`,
       }
     ),
   password: z
     .string()
-    .min(8, 'Password must be at least 8 characters.')
-    .regex(/[A-Z]/, 'Passwords must have at least one uppercase letter')
-    .regex(/[a-z]/, 'Passwords must have at least one lowercase letter')
-    .regex(/[0-9]/, 'Password must have at least one number')
+    .min(8, "Password must be at least 8 characters.")
+    .regex(/[A-Z]/, "Passwords must have at least one uppercase letter")
+    .regex(/[a-z]/, "Passwords must have at least one lowercase letter")
+    .regex(/[0-9]/, "Password must have at least one number")
     .regex(
       /[@$!%*?&]/,
-      'Password must have at least 1 special symbol (@$!%*?&)'
+      "Password must have at least 1 special symbol (@$!%*?&)"
     ),
-  fullName: z.string().min(4, 'Full name must be at least 4 characters.'),
+  fullName: z.string().min(4, "Full name must be at least 4 characters."),
   nis: z.coerce.number().min(1, {
-    message: 'This field has to be filled.',
+    message: "This field has to be filled.",
   }),
   name: z.string().min(4, {
-    message: 'Full name must be at least 4 characters.',
+    message: "Full name must be at least 4 characters.",
   }),
   major: z.string().min(1, {
-    message: 'Major has to be filled.',
+    message: "Major has to be filled.",
   }),
   birthplace: z.string().min(1, {
-    message: 'Birthplace has to be filled.',
+    message: "Birthplace has to be filled.",
   }),
   birthdate: z.coerce.date(),
-  sex: z.enum(['male', 'female'], {
-    required_error: 'You need to select a sex.',
+  sex: z.enum(["male", "female"], {
+    required_error: "You need to select a sex.",
   }),
+  recaptcha: z.string().min(1, "Please complete the reCAPTCHA verification"),
 });
 
 export default function RegisterStudent() {
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
+  const [loading, setLoading] = useState(false);
+  const [see, setSee] = useState(false);
   const router = useRouter();
+
   const form = useForm<z.infer<typeof StudentSchema>>({
     resolver: zodResolver(StudentSchema),
     defaultValues: {
-      email: '',
-      password: '',
-      fullName: '',
+      email: "",
+      password: "",
+      fullName: "",
       nis: 0,
-      major: '',
-      birthplace: '',
+      major: "",
+      birthplace: "",
       birthdate: new Date(),
-      sex: 'male',
+      sex: "male",
+      recaptcha: "",
     },
   });
 
   const { major, isLoading, isError } = useMajor();
-  const [loading, setLoading] = useState(false);
-  const [see, setSee] = useState(false);
+
+  async function handleChange(token: string | null) {
+    if (token) {
+      form.setValue("recaptcha", token);
+    } else {
+      form.setError("recaptcha", {
+        type: "manual",
+        message: "reCAPTCHA verification failed",
+      });
+    }
+  }
+
+  async function handleExpired() {
+    form.setValue("recaptcha", "");
+    form.setError("recaptcha", {
+      type: "manual",
+      message: "reCAPTCHA has expired, please verify again",
+    });
+  }
 
   async function onSubmit(data: z.infer<typeof StudentSchema>) {
     setLoading(true);
     try {
       await registerStudent(data);
-      router.push('/auth/verify-email');
+      router.push("/auth/verify-email");
     } catch (error) {
-      handleAxiosError(error, 'An error occurred while registering.');
+      handleAxiosError(error, "An error occurred while registering.");
+      recaptchaRef.current?.reset();
+      form.setValue("recaptcha", "");
     } finally {
       setLoading(false);
     }
   }
+
   if (isLoading) return <Loading />;
   if (isError) return <Error />;
 
@@ -180,7 +207,7 @@ export default function RegisterStudent() {
                   <FormControl>
                     <div className='relative'>
                       <Input
-                        type={see ? 'text' : 'password'}
+                        type={see ? "text" : "password"}
                         placeholder='Enter your password'
                         {...field}
                       />
@@ -332,14 +359,14 @@ export default function RegisterStudent() {
                     <PopoverTrigger asChild>
                       <FormControl>
                         <Button
-                          variant={'outline'}
+                          variant={"outline"}
                           className={cn(
-                            'w-full pl-3 text-left font-normal',
-                            !field.value && 'text-muted-foreground'
+                            "w-full pl-3 text-left font-normal",
+                            !field.value && "text-muted-foreground"
                           )}
                         >
                           {field.value ? (
-                            format(field.value, 'PPP')
+                            format(field.value, "PPP")
                           ) : (
                             <span>Pick a date</span>
                           )}
@@ -365,13 +392,33 @@ export default function RegisterStudent() {
                 </FormItem>
               )}
             />
-            <Button className='mt-6' disabled={loading}>
+            <FormField
+              control={form.control}
+              name='recaptcha'
+              render={({ field }) => (
+                <FormItem className='grid gap-2'>
+                  <FormControl>
+                    <ReCAPTCHA
+                      sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""}
+                      ref={recaptchaRef}
+                      onChange={handleChange}
+                      onExpired={handleExpired}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button
+              className='mt-6'
+              disabled={loading || !form.watch("recaptcha")}
+            >
               {loading ? (
                 <>
                   <Loader2 className='animate-spin' /> {`Loading...`}
                 </>
               ) : (
-                'Register'
+                "Register"
               )}
             </Button>
           </form>

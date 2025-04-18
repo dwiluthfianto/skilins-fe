@@ -22,15 +22,16 @@ import {
   CardDescription,
   CardHeader,
 } from "@/components/ui/card";
-import { Library, UserRound } from "lucide-react";
+import { Library, Loader2, UserRound } from "lucide-react";
 import { CardTitle } from "@/components/ui/card";
 import { Toaster } from "@/components/ui/toaster";
 import { login } from "@/utils/auth-service";
 import { useUser } from "@/hooks/use-user";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { Loading } from "@/components/loading";
 import { handleAxiosError } from "@/utils/handle-axios-error";
+import ReCAPTCHA from "react-google-recaptcha";
 const allowedDomains = ["@gmail.com", "@skilins.com"];
 
 const LoginSchema = z.object({
@@ -47,19 +48,41 @@ const LoginSchema = z.object({
       }
     ),
   password: z.string().min(8, "Password must be at least 8 characters."),
+  recaptcha: z.string().min(1, "Please complete the reCAPTCHA verification"),
 });
 
 export default function Login() {
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
   const router = useRouter();
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
       email: "",
       password: "",
+      recaptcha: "",
     },
   });
 
   const { user, isLoading, mutate } = useUser();
+
+  async function handleChange(token: string | null) {
+    if (token) {
+      form.setValue("recaptcha", token);
+    } else {
+      form.setError("recaptcha", {
+        type: "manual",
+        message: "reCAPTCHA verification failed",
+      });
+    }
+  }
+
+  async function handleExpired() {
+    form.setValue("recaptcha", "");
+    form.setError("recaptcha", {
+      type: "manual",
+      message: "reCAPTCHA has expired, please verify again",
+    });
+  }
 
   async function onSubmit(data: z.infer<typeof LoginSchema>) {
     try {
@@ -69,6 +92,8 @@ export default function Login() {
       router.push("/staff/dashboard");
     } catch (error) {
       handleAxiosError(error, "An error occurred while logging in.");
+      recaptchaRef.current?.reset();
+      form.setValue("recaptcha", "");
     }
   }
 
@@ -150,7 +175,28 @@ export default function Login() {
                     >
                       Forgot password ?
                     </Link>
-                    <Button type='submit'>Login</Button>
+                    <FormField
+                      control={form.control}
+                      name='recaptcha'
+                      render={({ field }) => (
+                        <FormItem className='grid gap-2'>
+                          <FormControl>
+                            <ReCAPTCHA
+                              sitekey={
+                                process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""
+                              }
+                              ref={recaptchaRef}
+                              onChange={handleChange}
+                              onExpired={handleExpired}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Button type='submit' disabled={!form.watch("recaptcha")}>
+                      Login
+                    </Button>
                   </form>
                 </Form>
               </CardContent>

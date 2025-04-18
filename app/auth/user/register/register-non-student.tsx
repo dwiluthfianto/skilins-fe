@@ -24,7 +24,8 @@ import {
 } from "@/components/ui/card";
 import { UserRound, Eye, EyeOff, Loader2 } from "lucide-react";
 import { handleAxiosError } from "@/utils/handle-axios-error";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import ReCAPTCHA from "react-google-recaptcha";
 
 const allowedDomains = ["@gmail.com", "@skilins.com"];
 
@@ -52,16 +53,37 @@ const LoginSchema = z.object({
       "Password must have at least 1 special symbol (@$!%*?&)"
     ),
   fullName: z.string().min(4, "Full name must be at least 4 characters."),
+  recaptcha: z.string().min(1, "Please complete the reCAPTCHA verification"),
 });
 
 export default function RegisterNonStudent() {
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
   const router = useRouter();
   const [see, setSee] = useState(false);
   const [loading, setLoading] = useState(false);
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
-    defaultValues: { email: "", password: "", fullName: "" },
+    defaultValues: { email: "", password: "", fullName: "", recaptcha: "" },
   });
+
+  async function handleChange(token: string | null) {
+    if (token) {
+      form.setValue("recaptcha", token);
+    } else {
+      form.setError("recaptcha", {
+        type: "manual",
+        message: "reCAPTCHA verification failed",
+      });
+    }
+  }
+
+  async function handleExpired() {
+    form.setValue("recaptcha", "");
+    form.setError("recaptcha", {
+      type: "manual",
+      message: "reCAPTCHA has expired, please verify again",
+    });
+  }
 
   async function onSubmit(data: z.infer<typeof LoginSchema>) {
     setLoading(true);
@@ -70,6 +92,8 @@ export default function RegisterNonStudent() {
       router.push("/auth/verify-email");
     } catch (error) {
       handleAxiosError(error, "An error occurred while registering.");
+      recaptchaRef.current?.reset();
+      form.setValue("recaptcha", "");
     } finally {
       setLoading(false);
     }
@@ -146,6 +170,23 @@ export default function RegisterNonStudent() {
                         )}
                       </div>
                     </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='recaptcha'
+              render={({ field }) => (
+                <FormItem className='grid gap-2'>
+                  <FormControl>
+                    <ReCAPTCHA
+                      sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""}
+                      ref={recaptchaRef}
+                      onChange={handleChange}
+                      onExpired={handleExpired}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
