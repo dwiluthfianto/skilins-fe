@@ -16,7 +16,7 @@ export default function VerifyEmail() {
   useEffect(() => {
     const verifyEmail = async () => {
       try {
-        const response = await axios.post(`auth/verify-email?token=${token}`);
+        const response = await axios.get(`auth/verify-email?token=${token}`);
         setVerificationStatus(response.data.message);
       } catch (error) {
         setVerificationStatus("Verification failed. Please try again.");

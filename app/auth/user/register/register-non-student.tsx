@@ -22,7 +22,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { UserRound, Eye, EyeOff } from "lucide-react";
+import { UserRound, Eye, EyeOff, Loader2 } from "lucide-react";
 import { handleAxiosError } from "@/utils/handle-axios-error";
 import { useState } from "react";
 
@@ -57,17 +57,21 @@ const LoginSchema = z.object({
 export default function RegisterNonStudent() {
   const router = useRouter();
   const [see, setSee] = useState(false);
+  const [loading, setLoading] = useState(false);
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     defaultValues: { email: "", password: "", fullName: "" },
   });
 
   async function onSubmit(data: z.infer<typeof LoginSchema>) {
+    setLoading(true);
     try {
       await register(data);
       router.push("/auth/verify-email");
     } catch (error) {
       handleAxiosError(error, "An error occurred while registering.");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -147,7 +151,13 @@ export default function RegisterNonStudent() {
                 </FormItem>
               )}
             />
-            <Button type='submit'>Register</Button>
+            <Button type='submit' disabled={loading}>
+              {loading ? (
+                <Loader2 className='size-4 animate-spin' />
+              ) : (
+                "Register"
+              )}
+            </Button>
           </form>
         </Form>
       </CardContent>

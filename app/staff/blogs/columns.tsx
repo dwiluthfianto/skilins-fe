@@ -151,7 +151,7 @@ export const columns: ColumnDef<Blogs>[] = [
           <DeleteDialog
             open={isDeleteDialogOpen}
             onOpenChange={setIsDeleteDialogOpen}
-            pathApi={`/contents/audios/${row.original.uuid}`}
+            pathApi={`/contents/blogs/${row.original.uuid}`}
           />
         </div>
       );

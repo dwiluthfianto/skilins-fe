@@ -256,7 +256,7 @@ export const columns: ColumnDef<eBooks>[] = [
           <DeleteDialog
             open={isDeleteDialogOpen}
             onOpenChange={setIsDeleteDialogOpen}
-            pathApi={`/contents/audios/${row.original.uuid}`}
+            pathApi={`/contents/ebooks/${row.original.uuid}`}
           />
         </div>
       );
