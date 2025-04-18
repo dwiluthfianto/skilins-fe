@@ -178,7 +178,7 @@ export default function RegisterNonStudent() {
             <FormField
               control={form.control}
               name='recaptcha'
-              render={({ field }) => (
+              render={() => (
                 <FormItem className='grid gap-2'>
                   <FormControl>
                     <ReCAPTCHA
@@ -192,7 +192,10 @@ export default function RegisterNonStudent() {
                 </FormItem>
               )}
             />
-            <Button type='submit' disabled={loading}>
+            <Button
+              type='submit'
+              disabled={loading || !form.watch("recaptcha")}
+            >
               {loading ? (
                 <Loader2 className='size-4 animate-spin' />
               ) : (

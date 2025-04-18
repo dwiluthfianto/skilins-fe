@@ -22,7 +22,7 @@ import {
   CardDescription,
   CardHeader,
 } from "@/components/ui/card";
-import { Library, Loader2, UserRound } from "lucide-react";
+import { Library, UserRound } from "lucide-react";
 import { CardTitle } from "@/components/ui/card";
 import { Toaster } from "@/components/ui/toaster";
 import { login } from "@/utils/auth-service";
@@ -178,7 +178,7 @@ export default function Login() {
                     <FormField
                       control={form.control}
                       name='recaptcha'
-                      render={({ field }) => (
+                      render={() => (
                         <FormItem className='grid gap-2'>
                           <FormControl>
                             <ReCAPTCHA
