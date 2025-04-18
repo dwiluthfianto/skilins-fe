@@ -17,6 +17,7 @@ export default function VerifyEmail() {
     const verifyEmail = async () => {
       try {
         const response = await axios.get(`auth/verify-email?token=${token}`);
+
         setVerificationStatus(response.data.message);
       } catch (error) {
         setVerificationStatus("Verification failed. Please try again.");
@@ -47,7 +48,7 @@ export default function VerifyEmail() {
                 Verification Email
               </h1>
               <p className='text-4xl font-bold tracking-tight text-gray-900 sm:text-4xl'>
-                {verificationStatus === "Verification successful!"
+                {verificationStatus === "Email verification successful"
                   ? "Successfully!"
                   : "Error!"}
               </p>
