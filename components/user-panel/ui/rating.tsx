@@ -5,6 +5,7 @@ import axios from "@/utils/axios";
 import { useUser } from "@/hooks/use-user";
 import { CommentRatings } from "@/components/ratings";
 import Link from "next/link";
+import { handleAxiosError } from "@/utils/handle-axios-error";
 
 export default function RatingComponent(props: { contentUuid: any }) {
   const { contentUuid } = props;
@@ -17,9 +18,11 @@ export default function RatingComponent(props: { contentUuid: any }) {
 
       try {
         const response = await axios.get(`/ratings/${contentUuid}/check`);
+        console.log(response.data.data);
+
         setUserRating(response.data.data.rating_value ?? 0);
       } catch (error) {
-        console.error("Failed to fetch user rating:", error);
+        handleAxiosError(error);
       }
     };
 
@@ -38,7 +41,7 @@ export default function RatingComponent(props: { contentUuid: any }) {
       );
       setUserRating(ratingValue);
     } catch (error) {
-      console.error("Failed to submit rating:", error);
+      handleAxiosError(error);
     }
   };
 
