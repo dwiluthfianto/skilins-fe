@@ -85,6 +85,12 @@ api.interceptors.response.use(
       return Promise.reject(error);
     }
 
+    // Skip refresh token untuk endpoint login
+    const isLoginRequest = originalRequest.url?.includes("/auth/login");
+    if (isLoginRequest) {
+      return Promise.reject(error);
+    }
+
     // Cek apakah status error adalah 401 dan permintaan belum diulang
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
