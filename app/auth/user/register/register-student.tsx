@@ -395,7 +395,7 @@ export default function RegisterStudent() {
             <FormField
               control={form.control}
               name='recaptcha'
-              render={({ field }) => (
+              render={() => (
                 <FormItem className='grid gap-2'>
                   <FormControl>
                     <ReCAPTCHA
