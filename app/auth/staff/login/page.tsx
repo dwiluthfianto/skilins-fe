@@ -92,8 +92,6 @@ export default function Login() {
       router.push("/staff/dashboard");
     } catch (error) {
       handleAxiosError(error, "An error occurred while logging in.");
-      recaptchaRef.current?.reset();
-      form.setValue("recaptcha", "");
     }
   }
 

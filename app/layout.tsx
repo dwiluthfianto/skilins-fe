@@ -1,23 +1,23 @@
-import type { Metadata } from 'next';
-import localFont from 'next/font/local';
-import './globals.css';
-import { ThemeProvider } from '@/providers/theme-provider';
+import type { Metadata } from "next";
+import localFont from "next/font/local";
+import "./globals.css";
+import { ThemeProvider } from "@/providers/theme-provider";
 
 const geistSans = localFont({
-  src: './fonts/GeistVF.woff',
-  variable: '--font-geist-sans',
-  weight: '100 900',
+  src: "./fonts/GeistVF.woff",
+  variable: "--font-geist-sans",
+  weight: "100 900",
 });
 const geistMono = localFont({
-  src: './fonts/GeistMonoVF.woff',
-  variable: '--font-geist-mono',
-  weight: '100 900',
+  src: "./fonts/GeistMonoVF.woff",
+  variable: "--font-geist-mono",
+  weight: "100 900",
 });
 
 export const metadata: Metadata = {
-  title: 'Skilins: Multimedia Learning Platform and E-Learning',
+  title: "Skilins: Multimedia Learning Platform and E-Learning",
   description:
-    'Multimedia Learning Platform and E-Learning by SMKN 1 GUNUNG PUTRI',
+    "Multimedia Learning Platform and E-Learning by SMKN 1 GUNUNG PUTRI",
 };
 
 export default function RootLayout({
@@ -27,6 +27,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
+      <head>
+        <script
+          src={`https://www.google.com/recaptcha/enterprise.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}`}
+        ></script>
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased `}
       >

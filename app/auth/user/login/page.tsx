@@ -107,12 +107,9 @@ export default function Login() {
   async function onSubmit(data: z.infer<typeof LoginSchema>) {
     try {
       await login(data.email, data.password);
-
       router.push("/");
     } catch (error) {
       handleAxiosError(error, "An error occurred while logging in.");
-      recaptchaRef.current?.reset();
-      form.setValue("recaptcha", "");
     }
   }
 
