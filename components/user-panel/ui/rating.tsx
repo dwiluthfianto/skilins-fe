@@ -18,11 +18,10 @@ export default function RatingComponent(props: { contentUuid: any }) {
 
       try {
         const response = await axios.get(`/ratings/${contentUuid}/check`);
-        console.log(response.data.data);
 
-        setUserRating(response.data.data.rating_value ?? 0);
+        setUserRating(response.data.data?.rating_value ?? 0);
       } catch (error) {
-        handleAxiosError(error);
+        console.log(error);
       }
     };
 
